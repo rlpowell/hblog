@@ -1,3 +1,4 @@
+.*.sw?
 dist
 cabal-dev
 *.o
@@ -14,3 +15,6 @@ cabal.sandbox.config
 *.prof
 *.aux
 *.hp
+_cache
+_site
+site
