@@ -34,12 +34,23 @@ RUN cabal update
 RUN cabal install cabal-install
 RUN cabal update
 
+# Get to the point where we can run apt-get again, in case we need more stuff
+USER root
+RUN DEBIAN_FRONTEND=noninteractive; apt-get update
+USER hakyll
+
 # Get the package we actually want
 RUN cabal install hakyll
+
+# And some friends
+USER root
+RUN DEBIAN_FRONTEND=noninteractive; apt-get install --no-install-recommends -y pkg-config
+USER hakyll
+RUN cabal install pcre-heavy
 
 # Mount stuff from the host
 VOLUME /home/hakyll/hblog
 
 USER hakyll
 
-ENTRYPOINT ["zsh"]
+CMD ["/bin/zsh"]
