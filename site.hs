@@ -1,13 +1,15 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE FlexibleContexts #-}
 import           Data.Monoid (mappend)
 import           Data.List
-import qualified Text.Regex.PCRE as PCRE
+import           Text.Regex.PCRE.Heavy as PCRE
+import           Data.String.Conversions
 import           Data.Maybe (listToMaybe)
 import           Control.Monad
 import           Hakyll
 import           Hakyll.Web.Tags
-import           Hakyll.Core.Util.String
 import           System.FilePath
 import           System.Posix.Files
 import           Hakyll.Web.Template.Context
@@ -150,6 +152,12 @@ postCtx tags categories = mconcat [
     , defaultContext
     ]        
 
+-- Pulls the title metadata out for an item
+getTitle :: MonadMetadata m => Identifier -> m String
+getTitle identifier = do
+    metadata <- getMetadata identifier
+    return $ maybe [] id $ M.lookup "title" metadata
+
 -- Get the first directory name after posts/ , call that the category
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
 myGetCategory x = return $ take 1 $ drop 1 $ dropWhile (/= "posts") $ splitDirectories $ toFilePath x
@@ -190,45 +198,15 @@ unWiki :: [String] -> String -> IO String
 unWiki titles filePath = do
     body <- readFile filePath
     case filePath of
+    -- FIXME: remove
       "posts/personal/my_views_on_the_future.md" ->
-          let newBody = replaceAllPCRE "\\s(qq[a-z]+)\\s(.*?)\\sqq\\s" (unWikiReplacer titles) body in do
+          let newBody = gsub [re|\s(qq[a-z]+)\s(.*?)\sqq\s|] (unWikiReplacer titles) body in do
             _ <- writeFile (filePath ++ ".hblog.tmp") newBody
             rename (filePath ++ ".hblog.tmp") filePath
             return newBody
-          -- return $ (intercalate " -- " titles) ++ body
       _ -> return body
 
--- Pulls the title metadata out for an item
-getTitle :: MonadMetadata m => Identifier -> m String
-getTitle identifier = do
-    metadata <- getMetadata identifier
-    return $ maybe [] id $ M.lookup "title" metadata
-
-unWikiReplacer :: [String] -> (PCRE.MatchResult String) -> String
-unWikiReplacer titles mr = case length subList > 0 of
+unWikiReplacer :: [String] -> String -> [String] -> String
+unWikiReplacer titles match subList = case length subList > 0 of
         True -> " --" ++ subList!!1 ++ "-- "
-        False -> PCRE.mrMatch mr
-    where
-        subList = PCRE.mrSubList mr
-
--- A very simple,
---
--- https://github.com/erantapaa/haskell-regexp-examples/blob/master/RegexExamples.hs
--- was very helpful to me in constructing this
---
--- I also used
--- https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Core/Util/String.hs
-replaceAllPCRE :: String              -- ^ Pattern
-           -> ((PCRE.MatchResult String) -> String)  -- ^ Replacement (called on capture)
-           -> String              -- ^ Source string
-           -> String              -- ^ Result
-replaceAllPCRE pattern f source =
-    if (source PCRE.=~ pattern) == True then
-      replaceAllPCRE pattern f newStr
-    else
-      source
-    where
-        mr = (source PCRE.=~ pattern)
-        newStr = (PCRE.mrBefore mr) ++ (f mr) ++ (PCRE.mrAfter mr)
-
--- todo: post ^^
+        False -> match
