@@ -1,17 +1,41 @@
-https://gist.github.com/kkspeed/1dfb964009b19ae00ac3
+TODO
+----
 
-better: https://github.com/kkspeed/WebBlog
+- Replace qql with a normal link to local: title, resolve said link
+  in the compilation step (and bail if you can't). IOW, preserve
+  some wiki ness in the source, even if not the qq syntax
+- Bail on dead links, both in hakyll loading and in tiki_to_md
+- Make a test shim that does file diffs, and a tests/ directory for
+same, instead of trying to pretend that posts/ is actual content
+- Nice-to-have: generate a history page for each page that does colored diff
+markup
 
-http://gist.github.com/kowey/5517578
+WTH?:
 
-https://github.com/search?q=buildTagsWith&type=Code&utf8=%E2%9C%93
-
-http://jaspervdj.be/
-
-  https://github.com/jaspervdj/jaspervdj/blob/ae5f215339a29d14269fe6a5fb5b34870be2c178/src/Main.hs
+  tags/CRAP.html
+  tags/README-CRAP.md:CRAP.html
 
 Note to self:
 
-Git file create time:
+  Git file create time:
 
-git log --diff-filter=A --follow --format=%aD -1 -- README.md
+    git log --diff-filter=A --follow --format=%aD -1 -- README.md
+
+  tiki export: 
+
+    https://www.mediawiki.org/wiki/Manual:TikiWiki_Conversion#Exporting
+
+hakyll examples:
+
+  https://gist.github.com/kkspeed/1dfb964009b19ae00ac3
+  
+  better: https://github.com/kkspeed/WebBlog
+  
+  http://gist.github.com/kowey/5517578
+  
+  https://github.com/search?q=buildTagsWith&type=Code&utf8=%E2%9C%93
+  
+  http://jaspervdj.be/
+  
+    https://github.com/jaspervdj/jaspervdj/blob/ae5f215339a29d14269fe6a5fb5b34870be2c178/src/Main.hs
+  

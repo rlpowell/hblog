@@ -1,0 +1,55 @@
+See moqups.com for visuals.
+
+Sub-Sites
+---------
+
+The site is divided into a number of sub-sites, associated with the
+top-level directories, and these are mostly presented in a distinct
+fashion as though each was a whole site.
+
+This is what blogs typically call "categories", more or less, so
+when looking for code samples or whatever, look for "categories".
+
+HBlog Sub-Site Main Page
+------------------------
+
+Sub-Sites have URLs like http://rlpblog.digitalkingdom.org/career/foo.html
+
+A: Hand-built list of articles of especial interest
+B: Administrivia stuff
+C: Contact / About should be the page that links back to the
+uber-site, so we can warn people  :)
+
+Article page is the same except article title
+
+Article list page (i.e. where you get from the tag cloud) is the
+same except titles and first paragraphs and some metadata
+
+Uber-site is the same except both main text and sidebar links are
+links to the sub-sites
+
+Tag Cloud
+---------
+
+For a sub-site, the tag cloud is selected of only "[sub-site]:foo"
+tags, and the "[sub-site]:" is stripped.  For the uber-site, the
+"[sub-site]:" tags are ignored and the others are presented.
+
+Tags
+----
+- TODO: Sub-directories within a sub-site automatically become tags;
+  might have a massage table for them to make them less jargon-y,
+  but maybe not
+- Every page gets tags with both the sub-site version and the
+  plain version, as well as every combo.  So a page in the
+  "computing" sub-site with "tags: programming, sysadminning" will
+  internally generate:
+  - programming
+  - sysadminning
+  - programming+sysadminning
+  - computing:programming
+  - computing:sysadminning
+  - computing:programming+sysadminning
+- When you're in a sub-site, all the non-"[site]:" tags are
+ignored for all purposes
+
