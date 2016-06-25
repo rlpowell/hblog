@@ -5,28 +5,32 @@ all:	docker_run site_copy
 # Runs Outside The Container
 #********************
 
-DOCKER_RUN_CMD=sudo docker run --name hblog -v /home/rlpowell/src/hblog:/home/hakyll/hblog:rw
+SLASH_DROPBOX=$(shell stat -c %F /dropbox/src/hblog 2>/dev/null)
+ifeq ($(SLASH_DROPBOX),directory)
+# Windows style; we're giving commands to the docker system we are,
+# in fact, running in; it's running on a windows box
+DOCKER_RUN_CMD=sudo docker run --name hblog -v /c/Users/rlpowell/Dropbox/src/hblog:/home/rlpowell/src/hblog:z --volumes-from stackstore
+else
+# On a real system/VM/something
+DOCKER_RUN_CMD=sudo docker run --name hblog -v /home/rlpowell/src/hblog:/home/rlpowell/src/hblog:z --volumes-from stackstore
+endif
 
 docker_clean:
 	sudo docker rmi rlpowell/hblog || true
 
 docker_build:
-	sudo -v
-	cp /home/rlpowell/config/dotfiles/zshrc .
-	cp /home/rlpowell/config/dotfiles/bothrc .
+	sudo id -a
 	sudo docker kill hblog || true
 	sudo docker rm hblog || true
-	sudo docker build --rm --force-rm -t rlpowell/hblog .
-	rm zshrc bothrc
+	sudo docker build -t rlpowell/hblog .
 
 docker_run_prep:		docker_build
-	sudo -v
-	sudo chcon -R -t svirt_sandbox_file_t /home/rlpowell/src/hblog
+	sudo id -a
 	sudo docker kill hblog || true
 	sudo docker rm hblog || true
 
 docker_run_interactive:		docker_run_prep
-	$(DOCKER_RUN_CMD) --rm -t -i rlpowell/hblog
+	$(DOCKER_RUN_CMD) --rm -t -i rlpowell/hblog zsh
 
 docker_run:		        docker_run_prep
 	$(DOCKER_RUN_CMD) --rm rlpowell/hblog /usr/bin/make site
