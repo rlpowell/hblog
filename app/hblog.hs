@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
+module Main where
 import           Data.Monoid (mappend)
 import           Data.List
 import           Text.Regex.PCRE.Heavy as PCRE
@@ -155,8 +156,8 @@ postCtx tags categories = mconcat [
 -- Pulls the title metadata out for an item
 getTitle :: MonadMetadata m => Identifier -> m String
 getTitle identifier = do
-    metadata <- getMetadata identifier
-    return $ maybe [] id $ M.lookup "title" metadata
+    metadata <- getMetadataField identifier "title"
+    return $ maybe [] id metadata
 
 -- Get the first directory name after posts/ , call that the category
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
@@ -178,8 +179,8 @@ simpleRenderLink tag (Just filePath) =
 -- FIXME: exmaple
 myGetTags :: MonadMetadata m => Identifier -> m [String]
 myGetTags identifier = do
-    metadata <- getMetadata identifier
-    let maintags = map (intercalate "+") $ drop 1 $ subsequences $ sort $ maybe [] (map trim . splitAll ",") $ M.lookup "tags" metadata
+    tags <- getTags identifier
+    let maintags = map (intercalate "+") $ drop 1 $ subsequences $ sort tags
     cat <- myGetCategory identifier
     return $ maintags ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
 

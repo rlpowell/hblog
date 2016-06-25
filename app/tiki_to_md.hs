@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
+module Main where
 import           Data.Monoid (mappend)
 import           Data.List
 import           Text.Regex.PCRE.Heavy as PCRE
