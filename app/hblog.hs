@@ -3,22 +3,21 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
-import           Data.Monoid (mappend)
+-- import           Data.Monoid (mappend)
 import           Data.List
 import           Text.Regex.PCRE.Heavy as PCRE
-import           Data.String.Conversions
-import           Data.Maybe (listToMaybe)
-import           Control.Monad
+-- import           Data.String.Conversions
+-- import           Data.Maybe (listToMaybe)
 import           Hakyll
-import           Hakyll.Web.Tags
+-- import           Hakyll.Web.Tags
 import           System.FilePath
 import           System.Posix.Files
-import           Hakyll.Web.Template.Context
+-- import           Hakyll.Web.Template.Context
 import           Text.Blaze.Html                 (toHtml, toValue, (!))
-import           Text.Blaze.Html.Renderer.String (renderHtml)
+-- import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
-import qualified Data.Map                        as M
+-- import qualified Data.Map                        as M
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -45,7 +44,7 @@ main = hakyll $ do
 
     titles <- mapM getTitle ids
 
-    match "posts/**" $ do
+    match ("posts/**" .&&. complement "**/index.html") $ do
         route $ setExtension "html"
         compile $ do
             wikiCompiler titles
