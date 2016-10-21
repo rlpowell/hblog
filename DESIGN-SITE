@@ -37,7 +37,7 @@ tags, and the "[sub-site]:" is stripped.  For the uber-site, the
 
 Tags
 ----
-- TODO: Sub-directories within a sub-site automatically become tags;
+- Sub-directories within a sub-site automatically become tags;
   might have a massage table for them to make them less jargon-y,
   but maybe not
 - Every page gets tags with both the sub-site version and the

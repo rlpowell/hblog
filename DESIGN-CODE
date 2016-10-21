@@ -1,0 +1,108 @@
+
+Phone Shortcuts
+===============
+
+This is basically a description of how "unphone" works.
+
+I have ended up in the past doing a decent amount of writing on my
+phone, and I wanted to have a way to support that.  In particular,
+typing out [foo](bar) for a link on basically any phone every is a
+terrible pain in the ass.
+
+This led to the first form of markup that unphone supports:
+
+    qwl look a link! qwu https://www.google.com/ qw
+
+becomes
+
+    [look a link!](https://www.google.com)
+
+There is additional complexity, though, when we use a
+local/wiki-style link; that is, a link that isn't a URL and doesn't
+appear to match a file name, like this:
+
+    qwl local link title/text qwu how wifi works qw
+
+That complexity lives in rectifier; see [Wiki Links].
+
+The Substitutions
+-----------------
+
+     qwl x qw                [x](x)
+     qwl x qwu y qw          [x](y) qwu == url (although it's not usually an actual URL)
+
+Wiki Links
+==========
+
+Wiki links are links in the markdown to items elsewhere in our blog,
+rather than to external items, that are linked by title.
+
+Wiki links are checked and sanitized by "rectifier"; the actual
+linking to the final HTML location is handled by "hblog".
+
+Rectification
+-------------
+
+An example:
+
+    [local link text](how wifi works)
+
+Note that "how wifi works" is not actually the correct, full title;
+it's "How WiFi Actually Works".  Rectifier's job is to find these
+cases and make them be titled exactly correctly for the current
+version of the file's title.
+
+This proceeds as follows:
+
+1.  If the target matches the title (in the YAML metadata)
+    of a file, do nothing.
+
+2.  If the target case-insesitively matches the title of a file,
+    rectify it to the actual title.
+
+
+3.  Replace all whitespace in the target with .* ; if exactly one
+    file's title matches the resulting regex, rectify the target to
+    that title.
+
+4.  Sort every file title by edit distance to the target, present
+    the first 5 to the user, and give the user option to select one
+    or simply fail.  If the user selects one, rectify the target to
+    that title.  This step *does not* have a #/header version (see
+    below); try to get those sufficiently correct that one of the
+    other steps succeeds.
+
+For every step in the above table, we actually perform it twice:
+First as specified, and then again if the target contains exactly
+one #. In that case, we perform the given step using everything
+before the # , and then run all steps up to and including the
+current step against the headers of the file we matched instead of
+the usual file titles.  If both match, rectify the target to the
+actual title, #, the actual header.
+
+Linking
+-------
+
+During the actual "hblog" run, we figure out where the link should
+actually be pointing and emit the appropriate HTML.  This proceeds
+in the following order:
+
+1.  If the target is a URI, do nothing.
+
+2.  If the target exactly matches the title (in the YAML metadata)
+    of a file, link to that.
+
+3.  If the target exactly matches a header name in the current file,
+    do nothing; this will be handled by Pandoc's usual markdown
+    processing.
+
+4.  If the target has exactly one # in it, and the part before the #
+    exactly matches the title of a file, and the part after exactly
+    matches the name of a header in that file, linke to that.
+
+    FIXME: This is tricky becuase we may have to link to our best
+    guess of the header identifier; hopefully we can get pandoc to
+    tell us somehow?  See
+    http://pandoc.org/MANUAL.html#extension-auto_identifiers and
+    http://pandoc.org/MANUAL.html#extension-ascii_identifiers
+
