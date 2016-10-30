@@ -1,0 +1,3 @@
+description: fails to convert a wiki link that is too ambiguous
+type: failure
+stderr: Found more than one match for "wifi works"

@@ -1,0 +1,3 @@
+description: fails due to duplicate options
+type: failure
+stderr: Found more than one match for "TitleTest"
