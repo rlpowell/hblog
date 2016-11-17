@@ -54,31 +54,38 @@ version of the file's title.
 
 This proceeds as follows:
 
-1.  If the target matches the title (in the YAML metadata)
-    of a file, do nothing.
+NB: All steps (except the last) fail on multiple matches!
 
-2.  If the target case-insesitively matches the title of a file,
-    rectify it to the actual title.
+0.  If the link contains exactly one # , treat it as a fragment
+    style link.  Run through all the steps below on the left side,
+    and *if* we get a match, run through all the steps below on the
+    right side but limit the possible targets to the headers in the
+    file we found in the first pass. If both passes work, rectify
+    the link to "[actual title]#[actual header]".  If it's not a
+    fragment style linke, run through all the steps below first with
+    just headers in this same file, and then with all titles.
 
+1.  If the link text is a valid URL, leave it alone.
 
-3.  Replace all whitespace in the target with .* ; if exactly one
-    file's title matches the resulting regex, rectify the target to
-    that title.
+2.  If the link text matches the title (in the YAML metadata) of a
+    file, rectify it to the actual title (aka do nothing).
 
-4.  Sort every file title by edit distance to the target, present
-    the first 5 to the user, and give the user option to select one
-    or simply fail.  If the user selects one, rectify the target to
-    that title.  This step *does not* have a #/header version (see
-    below); try to get those sufficiently correct that one of the
-    other steps succeeds.
+3.  If the link text case-insensitively matches the title (in the
+    YAML metadata) of a file, rectify it to the actual title (aka do
+    nothing).
 
-For every step in the above table, we actually perform it twice:
-First as specified, and then again if the target contains exactly
-one #. In that case, we perform the given step using everything
-before the # , and then run all steps up to and including the
-current step against the headers of the file we matched instead of
-the usual file titles.  If both match, rectify the target to the
-actual title, #, the actual header.
+4.  If the link text matches the filename (with or without .md) of a
+    file, rectify it to the actual title.
+
+5.  If the link text case-insensitively matches the filename (with
+    or without .md) of a file, rectify it to the actual title.
+
+6.  Replace all whitespace in the link text with .* ; if exactly one
+    file's title or filename matches the resulting regex, rectify
+    the link text to that title.
+
+7.  Sort every file title and filename by edit distance to the link
+    text, present the first 10 to the user, and bail.
 
 Linking
 -------
@@ -106,3 +113,200 @@ in the following order:
     http://pandoc.org/MANUAL.html#extension-auto_identifiers and
     http://pandoc.org/MANUAL.html#extension-ascii_identifiers
 
+TikiWiki Conversion
+===================
+
+tiki_to_md is a partial implementation of TikiWiki markup as a
+Pandoc reader.  Like the other programs, it takes an input directory
+and an output directory, and walks the tree converting files and
+placing them in the output directory.
+
+Handling Lists
+--------------
+
+I had a lot of trouble with TikiWiki lists; i.e. stuff like:
+
+* Level 1 (bulleted list)
+** Level 2 (bulleted list)
+### Level 3 (numbered list)
+### Level 3 (numbered list)
+** Level 2 (bulleted list)
+
+Some of the problem was the actual conversion of a list of such
+items into a nested tree, which led to the following code:
+
+```
+module Main where
+  data Tree a = Leaf a | Branch [Tree a] deriving (Ord, Eq, Show)
+
+  foo = [1,2,2,1,2,3,2]
+  -- Should become:
+  -- Branch [
+  --    Leaf 1,
+  --    Branch [
+  --        Leaf 2,
+  --        Leaf 2
+  --    ],
+  --    Leaf 1,
+  --    Branch [
+  --        Leaf 2,
+  --        Branch [
+  --            Leaf 3
+  --        ],
+  --        Leaf 2
+  --   ]
+  -- ]
+
+  walkFoo :: Int -> [Int] -> ([Tree Int], [Int])
+  walkFoo nest (item:rest) =
+    case compare item nest of
+      GT -> let (newTree, newList) = walkFoo (nest + 1) (item:rest)
+                (newTree2, newList2) = walkFoo nest newList
+            in
+            ([Branch newTree] ++ newTree2, newList2)
+      EQ -> let (newTree, newList) = walkFoo nest rest
+            in
+            ([Leaf item] ++ newTree, newList)
+      LT -> ([], (item:rest))
+  walkFoo nest [] = ([], [])
+
+  main :: IO ()
+  main = do
+    putStrLn $ show $ walkFoo 0 foo
+```
+
+Specifically, I had trouble with constructing the GT case, which is
+how we get a tree instead of single branch.  It's important to note
+that for this to work, each recursive call needs to return both the
+branch thus generated and the remainder of the list, for us to
+operate on further in a new branch.
+
+It turns out, though, that this isn't good enough as is, because
+doing the obvious conversion of this code into Pandoc Reader code
+doesn't get you nested lists.  That is, this:
+
+```
+*Main Text.Pandoc.Builder> putStrLn $ writeHtmlString def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2", bulletList [ plain "bl2.1" ] ]
+<ul>
+<li>bl1.1</li>
+<li>bl1.2</li>
+<li><ul>
+<li>bl2.1</li>
+</ul></li>
+</ul>
+*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2", bulletList [ plain "bl2.1" ] ]
+-   bl1.1
+-   bl1.2
+-   -   bl2.1
+```
+
+doesn't work.  To get the behaviour we want requires instead:
+
+```
+*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2" <> bulletList [ plain "bl2.1" ] ]
+-   bl1.1
+-   bl1.2
+    -   bl2.1
+```
+
+Note that the <> is joining two Blocks, aka Many Block; it's a
+Text.Pandoc.Builder thing.  This means there are two monoids at the
+level where the <> occurs: the [...] of the bulletList [...], and
+the Blocks of the items within that list.
+
+Anyway, this makes everything much harder.  A first pass that I
+tried was "if a list is coming next, join the current item to that
+list with mappend/<>", but that leads to:
+
+```
+*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2" <> bulletList [ plain "bl2.1", plain "bl2.2" <> orderedList [ plain
+"nl1.1" ] ] ]
+-   bl1.1
+-   bl1.2
+    -   bl2.1
+    -   bl2.2
+        1.  nl1.1
+```
+
+, where that last list should have been at the first level.
+
+The solution seems to be that in the case where the item we're
+working on is at the current nesting level, we look ahead a second
+item, and if that second item is at a deeper level, mconcat the
+current item with the results of processing the sub-tree starting at
+the second item.
+
+Whilst working on that, I discovered that in this particular case,
+we don't *have* to track the remaining list on the way back up when
+processing, because we can split the list into parts and concatenate
+them from a purely top-down view.  Specifically: split the remaining
+list into "everything (at or) below the current level" and
+"everything after those", and the processed form of each of those
+lists becomes two new branches.
+
+This leads to the following simplified-case code, where "MCBranch"
+means "mconcat this stuff", although in the real code we'll probably
+use mappend.
+
+```
+module Main where
+  data Tree a = Leaf a | Branch [Tree a] | MCBranch [Tree a] deriving (Ord, Eq, Show)
+
+  foo = [1,2,2,1,2,3,2]
+  -- Should become:
+  -- Branch [
+  --   MCBranch [
+  --     Leaf 1,
+  --     Branch [
+  --       Leaf 2,
+  --       Leaf 2
+  --     ]
+  --   ],
+  --   MCBranch [
+  --     Leaf 1,
+  --     Branch [
+  --       MCBranch [
+  --         Leaf 2,
+  --         Branch [
+  --           Leaf 3
+  --         ]
+  --       ],
+  --       Leaf 2
+  --     ]
+  --   ]
+  -- ]
+
+  spanWalk nest1 nest2 items =
+    let (gtList, ltList) = span (> nest1) items
+        newTree1 = walkFoo nest2 gtList
+        newTree2 = walkFoo nest1 ltList
+    in
+      (newTree1, newTree2)
+
+  walkFoo :: Int -> [Int] -> [Tree Int]
+  walkFoo nest [] = []
+  walkFoo nest all@(item1:rest) =
+    case compare item1 nest of
+      GT -> let (newTree1, newTree2) = spanWalk nest (nest+1) all in
+            [Branch newTree1] ++ newTree2
+      EQ -> let (newTree1, newTree2) = spanWalk nest nest rest
+                retTree1 = [Leaf item1] ++ newTree1
+                retTree2 = newTree2
+            in
+              if length rest < 2 then
+                retTree1 ++ retTree2
+              else
+                let (item2:rest2) = rest in
+                  case compare item1 item2 of
+                    EQ -> retTree1 ++ retTree2
+                    GT -> retTree1 ++ retTree2
+                    LT -> [MCBranch retTree1] ++ retTree2
+
+      LT -> []
+
+  main :: IO ()
+  main = do
+    putStrLn $ show $ walkFoo 0 foo
+``` 
+
+So, that's why the foldUpList code is so freaking complicated.
