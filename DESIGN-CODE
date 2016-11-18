@@ -203,110 +203,26 @@ doesn't get you nested lists.  That is, this:
 doesn't work.  To get the behaviour we want requires instead:
 
 ```
-*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2" <> bulletList [ plain "bl2.1" ] ]
+*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", mappend (plain "bl1.2") (bulletList [ plain "bl2.1" ]) ]
 -   bl1.1
 -   bl1.2
     -   bl2.1
 ```
 
-Note that the <> is joining two Blocks, aka Many Block; it's a
+Note that the mappend is joining two Blocks, aka Many Block; it's a
 Text.Pandoc.Builder thing.  This means there are two monoids at the
-level where the <> occurs: the [...] of the bulletList [...], and
-the Blocks of the items within that list.
+level where the mappend occurs: the [...] of the bulletList [...],
+and the Blocks of the items within that list.
 
-Anyway, this makes everything much harder.  A first pass that I
-tried was "if a list is coming next, join the current item to that
-list with mappend/<>", but that leads to:
+Anyway, this makes everything much harder.
 
-```
-*Main Text.Pandoc.Builder> putStrLn $ writeMarkdown def $ doc $ bulletList [ plain "bl1.1", plain "bl1.2" <> bulletList [ plain "bl2.1", plain "bl2.2" <> orderedList [ plain
-"nl1.1" ] ] ]
--   bl1.1
--   bl1.2
-    -   bl2.1
-    -   bl2.2
-        1.  nl1.1
-```
+I eventually ended up doing two things:
 
-, where that last list should have been at the first level.
-
-The solution seems to be that in the case where the item we're
-working on is at the current nesting level, we look ahead a second
-item, and if that second item is at a deeper level, mconcat the
-current item with the results of processing the sub-tree starting at
-the second item.
-
-Whilst working on that, I discovered that in this particular case,
-we don't *have* to track the remaining list on the way back up when
-processing, because we can split the list into parts and concatenate
-them from a purely top-down view.  Specifically: split the remaining
-list into "everything (at or) below the current level" and
-"everything after those", and the processed form of each of those
-lists becomes two new branches.
-
-This leads to the following simplified-case code, where "MCBranch"
-means "mconcat this stuff", although in the real code we'll probably
-use mappend.
-
-```
-module Main where
-  data Tree a = Leaf a | Branch [Tree a] | MCBranch [Tree a] deriving (Ord, Eq, Show)
-
-  foo = [1,2,2,1,2,3,2]
-  -- Should become:
-  -- Branch [
-  --   MCBranch [
-  --     Leaf 1,
-  --     Branch [
-  --       Leaf 2,
-  --       Leaf 2
-  --     ]
-  --   ],
-  --   MCBranch [
-  --     Leaf 1,
-  --     Branch [
-  --       MCBranch [
-  --         Leaf 2,
-  --         Branch [
-  --           Leaf 3
-  --         ]
-  --       ],
-  --       Leaf 2
-  --     ]
-  --   ]
-  -- ]
-
-  spanWalk nest1 nest2 items =
-    let (gtList, ltList) = span (> nest1) items
-        newTree1 = walkFoo nest2 gtList
-        newTree2 = walkFoo nest1 ltList
-    in
-      (newTree1, newTree2)
-
-  walkFoo :: Int -> [Int] -> [Tree Int]
-  walkFoo nest [] = []
-  walkFoo nest all@(item1:rest) =
-    case compare item1 nest of
-      GT -> let (newTree1, newTree2) = spanWalk nest (nest+1) all in
-            [Branch newTree1] ++ newTree2
-      EQ -> let (newTree1, newTree2) = spanWalk nest nest rest
-                retTree1 = [Leaf item1] ++ newTree1
-                retTree2 = newTree2
-            in
-              if length rest < 2 then
-                retTree1 ++ retTree2
-              else
-                let (item2:rest2) = rest in
-                  case compare item1 item2 of
-                    EQ -> retTree1 ++ retTree2
-                    GT -> retTree1 ++ retTree2
-                    LT -> [MCBranch retTree1] ++ retTree2
-
-      LT -> []
-
-  main :: IO ()
-  main = do
-    putStrLn $ show $ walkFoo 0 foo
-``` 
-
-So, that's why the foldUpList code is so freaking complicated.
+1.  I changed the way the main list handling works; it now splits
+    the list into "goes in the tree of the first item" and
+    "everything else", recurses on those, and joins.  This
+    simplificed things considerably, at least in terms of reasoning.
+    This is spanFoldUpList
+2.  I moved the mappend stuff out to a second pass over the data,
+    because reasoning about both problems at once was just too
+    difficult.  This is fixListNesting

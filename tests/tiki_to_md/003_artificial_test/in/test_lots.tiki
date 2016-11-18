@@ -1,0 +1,180 @@
+Lists:
+
+# Level_1_(numbered_list)
+** Level_2_(bulleted_list)
+## Level_2_(numbered_list)
+## Level_2_(numbered_list)
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* Level_1_(bulleted_list)
+## Level_2_(numbered_list)
+** Level_2_(bulleted_list)
+** Level_2_(bulleted_list)
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* Level_1_(bulleted_list)
+** Level_2_(bulleted_list)
+*** Level_3_(bulleted_list)
+# Level_1_(numbered_list)
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+
+* Level_1_(bulleted_list)
+** Level_2_(bulleted_list)
+*** Level_3_(bulleted_list)
+* Level_1_(bulleted_list)
+* Level_1_(bulleted_list)
+# Level_1_(numbered_list)
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* Level_1_(bulleted_list)
+** Level_2_(bulleted_list)
+### Level_3_(numbered_list)
+### Level_3_(numbered_list)
+** Level_2_(bulleted_list)
+*** Level_3_(bulleted_list)
+# Level_1_(numbered_list)
+** Level_2_(bulleted_list)
+## Level_2_(numbered_list)
+## Level_2_(numbered_list)
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* bl1
+** bl2
+* bl1
+## nl2_num1
+*** bl3
++++ CONT_bl3
+## nl2_num2
+** bl2
+## nl2_num1
+## nl2_num2
+* bl1
+** bl2
+## nl2_num1
+## nl2_num2
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+# nl1.1
+** bl2.1
+** bl2.2
+# nl1.2
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* bl1.1
+## nl2.1
+## nl2.2
+* bl1.2
+
+gap (because just a blank line looks like https://github.com/jgm/pandoc/issues/3232 )
+
+* bl1.1
+* bl1.2
+** bl2.1
+** bl2.2
+* bl1.3
+** bl2.1
+** bl2.2
+
+internal link:
+
+* ((plain link))
+* ((PluginVersions url|The Versions Plugin title))
+* ((Using Wiki Pages url|#The_Wiki_Menu anchor|The Wiki Menu title)) for anchors
+* ((Using Wiki Pages url||The Wiki Menu title)) for anchors
+
+Link to a heading on the same page:
+
+* [#Related_Pages url|Related Pages title]
+* [Wiki+Plugin#Plugin_Syntax url|Plugin Syntax title]
+
+Link to a Web page: [http://www.somesite.org url] or [http://www.somesite.org url|Some Site title]
+
+line break: foo %%% bar
+
+superscript: {TAG(tag=>sup)}super{TAG} / {SUP()}super2{SUP}
+
+subscript: {TAG(tag=>sub)}sub{TAG} / {SUB()}sub2{SUB}
+
+headings:
+! heading1
+!! heading2
+!!! heading3
+
+
+bar
+
+code: {CODE()}
+__not bold__
+''not italic''
+{CODE}
+
+foo
+
+code with attrs: {CODE(colors="php")}
+__not bold__
+''not italic''
+{CODE}
+
+baz
+
+
+Bold   __text__
+
+Italic ''text''
+
+Monospaced     -+text+-
+
+Deleted        --text--
+
+Display syntax ~np~ __not bold__ ~/np~
+~np~
+__not bold__
+''not italic''
+~/np~
+
+---------------
+
+square brackets: [[not a link]
+
+non-breaking space: ~hs~
+
+html comments: ~hc~...~/hc~
+
+Bulleted list:
+* item1
+* item2
+
+Numbered list:
+# item1
+# item2
+
+Definition list:
+;term1:definition1
+;term2:definition2
+
+Horizontal line: ----
+
+Special characters: ~126~
+For this one, maybe just bail and alert the user.
+
+Tables: ||row1-column1|row1-column2||row2-column1|row2-column2||
+For this one, maybe just bail and alert the user.
+
+Image display: {img attId="39" imalign="right" link="http://info.tikiwiki.org" alt="Panama Hat"} / {img attId="37", thumb="mouseover", styleimage="border", desc="
+150"} / {img src="img/wiki_up/393px-Pears.jpg" thumb="y" imalign="center" stylebox="border" button="y" desc="Pretty pears" max="200" rel="box"}
+For this one, maybe just bail and alert the user.
+
+~white,white:text~~ ; colored text
+
+Centered       NOPE: ::text::
+Underlined     NOPE: ===text===
+Text box       NOPE: ^text^
+

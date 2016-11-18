@@ -161,23 +161,15 @@ mixedList = try $ do
   let stuff = mconcat $ fixListNesting $ spanFoldUpList (LN None 0) items
   return $ trace (show stuff) stuff
 
-recurseOnList :: B.Blocks -> B.Blocks
-recurseOnList item | trace ("rOL: " ++ (show $ length $ B.toList item) ++ ", " ++ (show $ B.toList item)) False = undefined
-recurseOnList items
-  | (length $ B.toList items) == 1 =
-    let itemBlock = head $ B.toList items in
-      case itemBlock of
-        BulletList listItems -> B.bulletList $ fixListNesting $ map B.fromList listItems
-        OrderedList _ listItems -> B.orderedList $ fixListNesting $ map B.fromList listItems
-        _ -> items
-  -- This works because we constructed the blocks, and we know for a
-  -- fact that no mappends have been run on them; each Blocks
-  -- consists of exactly one Block.
-  --
-  -- Anything that's not like that has already been processed by
-  -- fixListNesting; don't bother to process it again.
-  | otherwise = items
-
+-- See the "Handling Lists" section of DESIGN-CODE for why this
+-- function exists.  It's to post-process the lists and do some
+-- mappends.
+--
+-- We need to walk the tree two items at a time, so we can see what
+-- we're going to join *to* before we get there.
+--
+-- Because of that, it seemed easier to do it by hand than to try to
+-- figre out a fold or something.
 fixListNesting :: [B.Blocks] -> [B.Blocks]
 fixListNesting [] = []
 fixListNesting (first:[]) = [recurseOnList first]
@@ -189,26 +181,33 @@ fixListNesting all@(first:second:rest) =
       OrderedList _ _ -> fixListNesting $ [(mappend (recurseOnList first) (recurseOnList second))] ++ rest
       _ -> [recurseOnList first] ++ fixListNesting (second:rest)
 
--- Many {unMany = fromList [OrderedList (1,DefaultStyle,DefaultDelim) [
---   [
---     Plain [Str "nl1.1",Space],BulletList [[Plain [Str "bl2.1",Space]],[Plain [Str "bl2.2",Space]]]
--- ],[Plain [Str "nl1.2",Space]]]]} 
+-- This function walks the Block structure for fixListNesting,
+-- because it's a bit complicated, what with converting to and from
+-- lists and so on.
+recurseOnList :: B.Blocks -> B.Blocks
+recurseOnList item | trace ("rOL: " ++ (show $ length $ B.toList item) ++ ", " ++ (show $ B.toList item)) False = undefined
+recurseOnList items
+  | (length $ B.toList items) == 1 =
+    let itemBlock = head $ B.toList items in
+      case itemBlock of
+        BulletList listItems -> B.bulletList $ fixListNesting $ map B.fromList listItems
+        OrderedList _ listItems -> B.orderedList $ fixListNesting $ map B.fromList listItems
+        _ -> items
 
--- Give an LN and an (LN, Blocks) pair, return true IFF the LN in
--- the pair has a higher nesting value.
-splitListNesting :: ListNesting -> (ListNesting, B.Blocks) -> Bool
-splitListNesting ln1 (ln2, _) =
-  if (lnnest ln1) < (lnnest ln2) then
-    True
-  else
-    if ln1 == ln2 then
-      True
-    else
-      False
+  -- The otherwise works because we constructed the blocks, and we
+  -- know for a fact that no mappends have been run on them; each
+  -- Blocks consists of exactly one Block.
+  --
+  -- Anything that's not like that has already been processed by
+  -- fixListNesting; don't bother to process it again.
+  | otherwise = items
 
-lnPlus1 :: ListNesting -> ListNesting
-lnPlus1 ln = LN (lntype ln) ((lnnest ln) + 1)
 
+-- Turn the list if list items into a tree by breaking off the first
+-- item, splitting the remainder of the list into items that are in
+-- the tree of the first item and those that aren't, wrapping the
+-- tree of the first item in its list time, and recursing on both
+-- sections.
 spanFoldUpList :: ListNesting -> [(ListNesting, B.Blocks)] -> [B.Blocks]
 spanFoldUpList _ [] = []
 spanFoldUpList ln (first:[]) =
@@ -220,6 +219,22 @@ spanFoldUpList ln (first:rest) =
   in
     newTree1 ++ newTree2
 
+-- Decide if the second item should be in the tree of the first
+-- item, which is true if the second item is at a deeper nesting
+-- level and of the same type.
+splitListNesting :: ListNesting -> (ListNesting, B.Blocks) -> Bool
+splitListNesting ln1 (ln2, _) =
+  if (lnnest ln1) < (lnnest ln2) then
+    True
+  else
+    if ln1 == ln2 then
+      True
+    else
+      False
+
+-- If we've moved to a deeper nesting level, wrap the new level in
+-- the appropriate type of list.
+listWrap :: ListNesting -> ListNesting -> [(ListNesting, B.Blocks)] -> [B.Blocks]
 listWrap upperLN curLN retTree =
   if upperLN == curLN then
     retTree
@@ -227,98 +242,6 @@ listWrap upperLN curLN retTree =
     case lntype curLN of
       Bullet -> [B.bulletList retTree]
       Numbered -> [B.orderedList retTree]
-
--- listWrap checkLN checkTree retTree =
---   if length retTree < 1 then
---     []
---   else
---     let firstLN = fst $ head checkTree in
---       if lntype firstLN == lntype firstLN && lnnest firstLN == lnnest firstLN then
---         retTree
---       else
---         case lntype firstLN of
---           Bullet -> [B.bulletList retTree]
---           Numbered -> [B.orderedList retTree]
--- 
--- foldUpList :: ListNesting -> [(ListNesting, B.Blocks)] -> [B.Blocks]
--- foldUpList nest [] = []
--- foldUpList nest all | trace ("\n\nfoldUpList: " ++ (show nest) ++ "\n\nall: " ++ (show all)) False = undefined
--- foldUpList nest all@((ni1, item1):rest) =
---   case compare (lnnest ni1) (lnnest nest) of
---     GT -> let (newTree1, newTree2) = spanFoldUpList nest { lntype = (lntype ni1) } (LN (lntype ni1) ((lnnest nest) + 1)) nest { lntype = (lntype ni1) } all in
---           newTree1 ++ newTree2
---     EQ -> let (newTree1, newTree2) = spanFoldUpList nest nest { lntype = (lntype ni1) } nest { lntype = (lntype ni1) } rest
---               retTree1 = [item1] ++ newTree1
---               retTree2 = newTree2
---           in
---             if length rest < 2 then
---               retTree1 ++ retTree2
---             else
---               let ((ni2, item2):rest2) = rest in
---                 case compare (lnnest ni1) (lnnest ni2) of
---                   EQ -> retTree1 ++ retTree2
---                   GT -> retTree1 ++ retTree2
---                   LT -> [mconcat retTree1] ++ retTree2
--- 
---     LT -> []
-
--- foldUpList :: ListNesting -> [(ListNesting, B.Blocks)] -> ([B.Blocks], [ListNesting], [(ListNesting, B.Blocks)])
--- -- foldUpList current ((nextLN, nextBlocks):rest) | trace ("foldUpList: " ++ (show current) ++ " -1- " ++ (show nextLN) ++ " -2- " ++ (show nextBlocks) ++ " -3- " ++ (show rest)) False = undefined
--- foldUpList current all@((nextLN, nextBlocks):rest) =
---   case ((lntype current) == (lntype nextLN), compare (lnnest current) (lnnest nextLN)) of
---     -- Level increased, means a new sub-list.  Or new list type,
---     -- means a new sub-list.
---     --
---     -- Collect all the things in that sublist and get the remainder,
---     -- then also recurse on that remainder.  Concat the new sub-list
---     -- with the results of running on the remainder.
---     --
---     -- FIXME: Can we combine two case guards?
---     (_, LT) -> newSubList current all
---     (False, _) -> newSubList current all
---     -- Same type, same level; concat this item to the results of
---     -- recursing on the rest.
---     (True, EQ) -> let (newBlocksList, newLNList, newRest) = foldUpList nextLN rest in
---                     -- sub-lists need to be folded into the list
---                     -- item above them
---                     let returning =
---                           case newBlocksList of
---                                [] -> ([nextBlocks], newLNList, newRest)
---                                -- FIXME: explain this
---                                _ -> if not (endsWithList [nextBlocks]) && startsWithList newBlocksList then
---                                          trace ("list joining: ") ([mappend nextBlocks (head newBlocksList)] ++ tail newBlocksList, newLNList, newRest)
---                                     else
---                                          trace ("no join: " ++ show (head $ B.toList $ head newBlocksList)) ([nextBlocks] ++ newBlocksList, newLNList, newRest)
---                     in
---                     trace ("\n\n***** retmain: current: " ++ (show current) ++ "\n\nall: " ++ (show all) ++ "\n\nnextBlocks: " ++ (show nextBlocks) ++ "\n\n  newBlocks " ++ (show newBlocksList) ++ "\n\nnewLNList: " ++ (show newLNList) ++ "\n\nnewRest: " ++ (show newRest) ++ "\n\n returning:  " ++ (show returning)) returning
---     -- Level decreased; close out the current list by ending.
---     (_, GT) -> ([], [], all)
--- foldUpList _ [] = ([], [], [])
--- 
--- startsWithList :: [B.Blocks] -> Bool
--- startsWithList blocks =
---   case head $ B.toList $ head blocks of
---     (BulletList x) -> True
---     (OrderedList q r) -> True
---     _ -> False
--- 
--- endsWithList :: [B.Blocks] -> Bool
--- endsWithList blocks | trace ("lastlast: " ++ show blocks) False = undefined
--- endsWithList blocks =
---   case last $ B.toList $ last blocks of
---     (BulletList x) -> True
---     (OrderedList q r) -> True
---     _ -> False
--- 
--- newSubList current all@((nextLN, nextBlocks):rest) =
---   let (newBlocks, newLNList, newRest) = foldUpList nextLN all
---       (newBlocks2, newLNList2, newRest2) = foldUpList current newRest
---   in
---     case (lntype nextLN) of
---          Numbered -> let returning = ([(B.orderedList $ newBlocks)] ++ newBlocks2, newLNList2, newRest2) in
---                       trace ("retnsl1: " ++ (show returning)) returning
---          Bullet -> let returning = ([(B.bulletList $ newBlocks)] ++ newBlocks2, newLNList2, newRest2) in
---                       trace ("\n\nretnsl2: " ++ (show all) ++ "\n\n newrest2:" ++ (show newRest2) ++ "\n\nnewBlocks: " ++ (show newBlocks) ++ "\n\nnewRest: " ++ (show newRest) ++ "\n\nnewBlocks2: " ++ (show newBlocks2) ++ "\n\n returning:  " ++ (show returning)) returning
 
 listItem :: TikiWikiParser (ListNesting, B.Blocks)
 listItem = choice [
@@ -339,22 +262,6 @@ numberedItem = try $ do
   many1 $ char ' '
   content <- listItemLine (length prefix)
   return $ (LN Numbered (length prefix), B.plain content)
-
--- parseList :: String -> TikiWikiParser Char -> TikiWikiParser a -> TikiWikiParser B.Blocks
--- parseList prefix marker delim = do
---   (indent, style) <- lookAhead $ string prefix *> listStyle <* delim
---   blocks <- many $ parseListItem (prefix ++ indent) (char style <* delim)
---   return $ case style of
---     '#' -> B.orderedListWith (1, DefaultStyle, DefaultDelim) blocks
---     _   -> B.bulletList blocks
---   where
---     listStyle = do
---       indent <- many $ string "   "
---       style <- marker
---       return (concat indent, style)
--- 
--- parseListItem :: Show a => String -> TikiWikiParser a -> TikiWikiParser B.Blocks
--- parseListItem prefix marker = string prefix >> marker >> listItemLine prefix marker
 
 listItemLine :: Int -> TikiWikiParser B.Inlines
 listItemLine nest = lineContent >>= parseContent >>= return
