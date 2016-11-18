@@ -1,6 +1,8 @@
 {-# LANGUAGE RelaxedPolyRec, FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+-- Much of this was stolen wholesale from Text.Pandoc.Readers.TWiki
+
 module Text.Pandoc.Readers.TikiWiki ( readTikiWiki
                                     , readTikiWikiWithWarnings
                                     ) where
@@ -19,8 +21,6 @@ import Text.HTML.TagSoup
 import Data.Char (isAlphaNum)
 import qualified Data.Foldable as F
 import Text.Pandoc.Error
-
-
 
 -- Much of this was stolen wholesale from Text.Pandoc.Readers.TWiki
 
@@ -92,6 +92,7 @@ blockElements = choice [ -- separator
                        -- , verbatim
                        -- , literal
                        , mixedList
+                       , definitionList
                        -- , table
                        -- , blockQuote
                        -- , noautolink
@@ -117,31 +118,17 @@ para = many1Till inline endOfParaElement >>= return . result . mconcat
                       then mempty
                       else B.para $ B.trimInlines content
 
--- list :: String -> TikiWikiParser B.Blocks
--- list prefix = choice [ bulletList prefix
---                      , orderedList prefix
---                      , definitionList prefix]
--- 
--- definitionList :: String -> TikiWikiParser B.Blocks
--- definitionList prefix = tryMsg "definitionList" $ do
---   indent <- lookAhead $ string prefix *> (many1 $ string "   ") <* string "$ "
---   elements <- many $ parseDefinitionListItem (prefix ++ concat indent)
---   return $ B.definitionList elements
---   where
---     parseDefinitionListItem :: String -> TikiWikiParser (B.Inlines, [B.Blocks])
---     parseDefinitionListItem indent = do
---       string (indent ++ "$ ") >> skipSpaces
---       term <- many1Till inline $ string ": "
---       line <- listItemLine indent $ string "$ "
---       return $ (mconcat term, [line])
--- 
--- bulletList :: String -> TikiWikiParser B.Blocks
--- bulletList prefix = tryMsg "bulletList" $
---                     parseList prefix (char '*') (char ' ')
--- 
--- orderedList :: String -> TikiWikiParser B.Blocks
--- orderedList prefix = tryMsg "orderedList" $
---                      parseList prefix (char '#') (char ' ')
+definitionList :: TikiWikiParser B.Blocks
+definitionList = tryMsg "definitionList" $ do
+  elements <- many1 $ parseDefinitionListItem
+  return $ B.definitionList elements
+  where
+    parseDefinitionListItem :: TikiWikiParser (B.Inlines, [B.Blocks])
+    parseDefinitionListItem = do
+      skipSpaces >> char ';' <* skipSpaces
+      term <- many1Till inline $ char ':' <* skipSpaces
+      line <- listItemLine 1
+      return $ (mconcat term, [B.plain line])
 
 data ListType = None | Numbered | Bullet deriving (Ord, Eq, Show)
 
@@ -157,9 +144,7 @@ tripleFst (x, _, _) = x
 mixedList :: TikiWikiParser B.Blocks
 mixedList = try $ do
   items <- try $ many1 listItem
-  -- FIXME: ?? check the list length; error out if more than one
-  let stuff = mconcat $ fixListNesting $ spanFoldUpList (LN None 0) items
-  return $ trace (show stuff) stuff
+  return $ mconcat $ fixListNesting $ spanFoldUpList (LN None 0) items
 
 -- See the "Handling Lists" section of DESIGN-CODE for why this
 -- function exists.  It's to post-process the lists and do some
@@ -173,7 +158,7 @@ mixedList = try $ do
 fixListNesting :: [B.Blocks] -> [B.Blocks]
 fixListNesting [] = []
 fixListNesting (first:[]) = [recurseOnList first]
-fixListNesting all | trace ("\n\nfixListNesting: " ++ (show all)) False = undefined
+-- fixListNesting all | trace ("\n\nfixListNesting: " ++ (show all)) False = undefined
 fixListNesting all@(first:second:rest) = 
   let secondBlock = head $ B.toList second in
     case secondBlock of
@@ -185,7 +170,7 @@ fixListNesting all@(first:second:rest) =
 -- because it's a bit complicated, what with converting to and from
 -- lists and so on.
 recurseOnList :: B.Blocks -> B.Blocks
-recurseOnList item | trace ("rOL: " ++ (show $ length $ B.toList item) ++ ", " ++ (show $ B.toList item)) False = undefined
+-- recurseOnList item | trace ("rOL: " ++ (show $ length $ B.toList item) ++ ", " ++ (show $ B.toList item)) False = undefined
 recurseOnList items
   | (length $ B.toList items) == 1 =
     let itemBlock = head $ B.toList items in
@@ -234,7 +219,7 @@ splitListNesting ln1 (ln2, _) =
 
 -- If we've moved to a deeper nesting level, wrap the new level in
 -- the appropriate type of list.
-listWrap :: ListNesting -> ListNesting -> [(ListNesting, B.Blocks)] -> [B.Blocks]
+listWrap :: ListNesting -> ListNesting -> [B.Blocks] -> [B.Blocks]
 listWrap upperLN curLN retTree =
   if upperLN == curLN then
     retTree
@@ -422,9 +407,9 @@ externalLink :: TikiWikiParser B.Inlines
 externalLink = makeLink "[" "]|" "]"
 
 -- NB: this wiki linking is unlikely to work for anyone besides me
--- (rlpowell); it happens to work for me because we have
+-- (rlpowell); it happens to work for me because my Hakyll code has
 -- post-processing that treats pandoc .md titles as valid link
--- targets, so [see also this other post](My Other Page) is
--- perfectly valid.
+-- targets, so something like
+-- [see also this other post](My Other Page) is perfectly valid.
 wikiLink :: TikiWikiParser B.Inlines
 wikiLink = makeLink "((" ")|" "))"
