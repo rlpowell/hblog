@@ -1,3 +1,3 @@
-description: fails to convert a wiki link that is too ambiguous
+description: fails to convert a wiki link that has no matches at all
 type: failure
-stderr: Found more than one match for "wifi works"
+stderr: "Possible targets include:"
