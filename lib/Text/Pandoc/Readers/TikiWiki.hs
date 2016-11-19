@@ -356,12 +356,46 @@ subMacro = try $ do
 code :: TikiWikiParser B.Inlines
 code = try $ between (string "-+") (string "+-") nestedString >>= return . B.code . fromEntities
 
+macroAttr :: TikiWikiParser (String, String)
+macroAttr = try $ do
+  key <- many1 (noneOf "=)")
+  char '='
+  optional $ char '"'
+  value <- many1 (noneOf " )\"")
+  optional $ char '"'
+  return (key, value)
+
+macroAttrs :: TikiWikiParser [(String, String)]
+macroAttrs = try $ do
+  attrs <- sepEndBy macroAttr spaces
+  return attrs
+
+-- Turn the CODE macro attributes into Pandoc code block attributes.
+mungeAttrs :: [(String, String)] -> (String, [String], [(String, String)])
+mungeAttrs rawAttrs = ("", classes, rawAttrs)
+  where
+    -- "colors" is TikiWiki CODE macro for "name of language to do
+    -- highlighting for"; turn the value into a class
+    color = fromMaybe "" $ lookup "colors" rawAttrs
+    -- ln = 1 means line numbering.  It's also the default.  So we
+    -- emit numberLines as a class unless ln = 0
+    lnRaw = fromMaybe "1" $ lookup "ln" rawAttrs
+    ln = if lnRaw == "0" then
+            ""
+         else
+            "numberLines"
+    classes = filter (/= "") [color, ln]
+
 codeMacro :: TikiWikiParser B.Inlines
 codeMacro = try $ do
   string "{CODE("
-  manyTill anyChar (string ")}")
-  body <- manyTill anyChar (string "{CODE}")
-  return $ B.code body
+  rawAttrs <- macroAttrs
+  string ")}"
+  body <- manyTill anyChar (try (string "{CODE}"))
+  if length rawAttrs > 0 then
+    return $ B.codeWith (mungeAttrs rawAttrs) body
+  else
+    return $ B.code body
 
 noparse :: TikiWikiParser B.Inlines
 noparse = try $ do
@@ -377,18 +411,19 @@ symbol = count 1 nonspaceChar >>= return . B.str
 
 -- The ((...)) wiki links and [...] external links are handled
 -- exactly the same; this abstracts that out
-makeLink :: String -> String -> String -> TikiWikiParser B.Inlines
-makeLink start middle end = try $ do
+makeLink :: String -> String -> String -> String -> TikiWikiParser B.Inlines
+makeLink start butnot middle end = try $ do
   st <- getState
   guard $ stateAllowLinks st
   setState $ st{ stateAllowLinks = False }
-  (url, title, anchor) <- wikiLinkText start middle end
+  (url, title, anchor) <- wikiLinkText start butnot middle end
   setState $ st{ stateAllowLinks = True }
   return $ B.link (url++anchor) "" $ B.text title
 
-wikiLinkText :: String -> String -> String -> TikiWikiParser (String, String, String)
-wikiLinkText start middle end = do
+wikiLinkText :: String -> String -> String -> String -> TikiWikiParser (String, String, String)
+wikiLinkText start butnot middle end = do
   string start
+  notFollowedBy $ string butnot
   url <- many1 (noneOf middle)
   seg1 <- option url linkContent
   seg2 <- option "" linkContent
@@ -404,7 +439,7 @@ wikiLinkText start middle end = do
       return $ str
 
 externalLink :: TikiWikiParser B.Inlines
-externalLink = makeLink "[" "]|" "]"
+externalLink = makeLink "[" "[" "]|" "]"
 
 -- NB: this wiki linking is unlikely to work for anyone besides me
 -- (rlpowell); it happens to work for me because my Hakyll code has
@@ -412,4 +447,4 @@ externalLink = makeLink "[" "]|" "]"
 -- targets, so something like
 -- [see also this other post](My Other Page) is perfectly valid.
 wikiLink :: TikiWikiParser B.Inlines
-wikiLink = makeLink "((" ")|" "))"
+wikiLink = makeLink "((" "" ")|" "))"
