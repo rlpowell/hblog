@@ -16,7 +16,7 @@ See "Phone Shortcuts" in DESIGN-CODE for full details.
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
--- import          System.Directory
+import          System.Directory (createDirectoryIfMissing)
 import          System.FilePath
 -- import          System.Posix.Files
 import          System.Environment
@@ -46,6 +46,7 @@ handleFile indir outdir fname = do
   let shortname = makeRelative indir fname
   body <- readFile $ indir </> shortname
   let newBody = unPhone body in do
+    _ <- createDirectoryIfMissing True (takeDirectory $ (outdir </> shortname))
     _ <- writeFile (outdir </> shortname) newBody
     return ()
 
