@@ -1,3 +1,96 @@
+Image display:
+
+{img attId="39" imalign="right" link="http://info.tikiwiki.org" alt="Panama Hat"}
+
+{img attId="37", thumb="mouseover", styleimage="border", desc="150"}
+
+{img src="img/wiki_up/393px-Pears.jpg" thumb="y" imalign="center" stylebox="border" button="y" desc="Pretty pears" max="200" rel="box"}
+
+Tables:
+
+||foo||
+
+||row1-column1|row1-column2||row2-column1|row2-column2||
+
+||row1-column1|row1-column2
+row2-column1|row2-column2||
+
+||row1-column1|row1-column2
+row2-column1|row2-column2||row3-column1|row3-column2||
+
+-------------
+
+Special characters: ~246~
+
+~~white,white:text~~ ; colored text
+
+Centered       NOPE: ::text::
+
+Underlined     NOPE: ===text===
+
+Text box       NOPE: ^text^
+
+square brackets:
+
+[[not a link
+
+a
+
+b
+
+
+[[not a link]
+
+non-breaking space:
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~hs~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+html comments: ~hc~...~/hc~
+
+Horizontal line:
+----
+
+code:
+
+{CODE()}
+__not bold__
+''not italic''
+{CODE}
+
+foo
+
+code with attrs:
+
+{CODE(colors="php" ln=1 caption="foo")}
+__not bold__
+''not italic''
+{CODE}
+
+baz
+
+code with attrs:
+
+{CODE(ln=0 caption="foo")}
+__not bold__
+''not italic''
+{CODE}
+
+qux
+
+Definition list:
+
+;term1:definition1
+;term2:definition2
+
+Bulleted list:
+
+* item1
+* item2
+
+Numbered list:
+
+# item1
+# item2
+
 Lists:
 
 # Level_1_(numbered_list)
@@ -99,9 +192,9 @@ Link to a Web page: [http://www.somesite.org url] or [http://www.somesite.org ur
 
 line break: foo %%% bar
 
-superscript: {TAG(tag=>sup)}super{TAG} / {SUP()}super2{SUP}
+superscript: foo{TAG(tag=>sup)}super{TAG}foo / bar{SUP()}super2{SUP}bar
 
-subscript: {TAG(tag=>sub)}sub{TAG} / {SUB()}sub2{SUB}
+subscript: baz{TAG(tag=>sub)}sub{TAG}qux / qux{SUB()}sub2{SUB}qux
 
 headings:
 ! heading1
@@ -110,20 +203,6 @@ headings:
 
 
 bar
-
-code: {CODE()}
-__not bold__
-''not italic''
-{CODE}
-
-foo
-
-code with attrs: {CODE(colors="php")}
-__not bold__
-''not italic''
-{CODE}
-
-baz
 
 
 Bold   __text__
@@ -139,42 +218,3 @@ Display syntax ~np~ __not bold__ ~/np~
 __not bold__
 ''not italic''
 ~/np~
-
----------------
-
-square brackets: [[not a link]
-
-non-breaking space: ~hs~
-
-html comments: ~hc~...~/hc~
-
-Bulleted list:
-* item1
-* item2
-
-Numbered list:
-# item1
-# item2
-
-Definition list:
-;term1:definition1
-;term2:definition2
-
-Horizontal line: ----
-
-Special characters: ~126~
-For this one, maybe just bail and alert the user.
-
-Tables: ||row1-column1|row1-column2||row2-column1|row2-column2||
-For this one, maybe just bail and alert the user.
-
-Image display: {img attId="39" imalign="right" link="http://info.tikiwiki.org" alt="Panama Hat"} / {img attId="37", thumb="mouseover", styleimage="border", desc="
-150"} / {img src="img/wiki_up/393px-Pears.jpg" thumb="y" imalign="center" stylebox="border" button="y" desc="Pretty pears" max="200" rel="box"}
-For this one, maybe just bail and alert the user.
-
-~white,white:text~~ ; colored text
-
-Centered       NOPE: ::text::
-Underlined     NOPE: ===text===
-Text box       NOPE: ^text^
-

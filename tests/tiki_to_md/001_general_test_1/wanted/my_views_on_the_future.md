@@ -1,1 +1,977 @@
-not done
+See also [transhuman enjoyed](transhuman enjoyed) for the fictional side
+of things.
+
+I've described my expectations and desires for the future, and how I
+came to them, enough times now that it seems worthwhile to write them
+down. My [post on why I'm getting cryonically
+suspended](http://www.digitalkingdom.org/~rlpowell/beliefs/popsicle.html)
+explains much of it, but specifically from the perspective of why
+cryonics seems worthwhile to me.
+
+WARNING, or, How To Read This Post
+==================================
+
+See also [how wifi](how wifi) for the fictional side of things.
+
+This post talks about concepts that are [many, many inferential steps
+away from what you are used
+to](http://lesswrong.com/lw/kg/expecting_short_inferential_distances/).
+You need to read [this
+post](http://lesswrong.com/lw/kg/expecting_short_inferential_distances/)
+by Eliezer Yudkowsky, not for background, but to understand that some
+things that are true really *do* have complicated backgrounds and need a
+lot of explanation leading up to them. The human brain is built to treat
+all complicated explanations as crazy talk, and you need to read that to
+understand why, and resist it when reading the rest of this post.
+
+I try very hard here to make sure that I start only from things that a
+decently well-educated layperson already knows, and please do feel free
+to [point it out to me](mailto:rlpowell@digitalkingdom.org) should I
+fail in that regard. But it's going to take more than one step, and I
+can't fix that. Please try not to assume I'm crazy *only* because the
+explanation is complicated.
+
+Summary / Recap
+===============
+
+So this post came out a *tad* longer than I intended.
+
+Here's the short version, to make it clear how little this whole thing
+hinges on. These are the parts where if any of them is wrong, the whole
+thing falls apart. There are something like 19 points in the essay in
+total, but they weren't selected very carefully so there's no particular
+meaning to that number.
+
+Human-like consciousness can be replicated in a self-modifiable
+substrate via human technology; this is called AGI. (Point \#1)
+
+We will have AGI within a few years of reaching computational parity
+(point \#05, from \#01, \#02, \#03, \#04, \#08).
+
+Molecular nanotechnology (MNT) means that sufficient intelligence gives
+god-like power over reality (point \#07).
+
+Humans must not get to MNT first. We simply are too dangerous,
+self-centered, corruptible and unwise. (point \#10, from \#09, \#06,
+\#19)
+
+It is the most important thing in the future of humanity that the first
+super-intelligence on Earth value humans and their values and lives,
+because otherwise we're all going to die (point \#13, from \#11, \#12,
+\#18).
+
+AGI will appear *before* we have computers as powerful as human brains
+(point \#14, from \#08, \#05)
+
+The first AGI has a good chance of becoming much smarter than any human
+has ever been (ten times smarter, a hundred time smarter, smarter than
+us in the way we are smarter than trees) in a very short period of
+times; possibly as short as days. (point \#18, from \#15. \#16, \#17)
+
+If we have enough hardware to brute force AGI, someone will do so, and
+then we're all dead (from \#13, and the "Why Increased Computing Power
+Is Scary" section)
+
+If we get it all right, we might find ourselves in a [Nice Place To
+Live](http://singinst.org/upload/CEV.html).
+
+{maketoc}
+
+That Noise Is A Paradigm Shifting Without A Clutch
+==================================================
+
+Some time around 2002 I first encountered the idea of the [technological
+singularity](http://mindstalk.net/vinge/vinge-sing.html). I *hate* that
+term, by the way, but have nothing better to offer. There are [a few
+different definitions of it](http://yudkowsky.net/singularity/schools),
+for one thing, and people tend to use the boring, pointless one. That
+would be the "point beyond which we can't predict the future because of
+rapid technological change" one, which, ummm... Yeah. Number one, we're
+already there. Number two, read [the essay where Vinge coined the
+term](http://mindstalk.net/vinge/vinge-sing.html), please, because that
+bit was basically throwaway and you seriously missed the point.
+
+When I say "the technological singularity", I mean what Vinge actually
+said: the point when seriously superhuman intelligence starts having
+real effects on life on earth: the minute we humans are sharing
+mindspace with things smarter than us in the way that we are smarter
+than chimps or dogs (as an aside, I expect that moment to be quickly
+followed by minds to which we are mentally more like mice or fish or
+even trees; there will be some justification of that assertion later).
+
+When I encountered this concept, along with some pointers as to the
+implications, it was obvious to me that this is a very likely result of
+human efforts, intended or not, and that it will change *everything*. So
+much so as to be the most important point in human history. There will
+be some justification of that assertion later.
+
+As such, it seemed to me to be my duty as a human being to do anything I
+could to make sure that we get through the Singularity safely and,
+hopefully, come to some wonderful things on the other side.
+
+Obviously, to do my part to help guide humanity through a moment that
+could make or break our very existence as a species, I needed to
+understand the options available to us in general in the long term. I
+also needed to understand the options available to me in the short term
+to help us reach the best of the long-term options.
+
+That meant reading and research. Lots of it, and least by my
+busy-in-real-life standards. I spent at least a couple of hundred hours
+reading and thinking about Singularity issues, first to confirm my
+suspicions about what seems possible (obviously we're all guessing, but
+some guesses (Drexler) are way more convincing than others (Penrose,
+Searle) ) and then to decide who to support: who to trust to lead us
+into the future.
+
+This post is simply me condensing and explaining what I learned and
+decided through that process, and why.
+
+Why I'm Sure The Singularity Is Coming
+======================================
+
+(Unless we blow ourselves up first which is always a possibility; see
+[Bostrom's paper on existential
+risks](http://www.nickbostrom.com/existential/risks.html).)
+
+Point \#01: Human-like consciousness can be replicated in a
+self-modifiable substrate via human technology.
+
+That's a fancy way of saying "we can make artificial intelligence, at
+least in theory". The extra specificity is because I don't care if it
+turns out, for example, that we have to use small amounts of organic
+tissue to make things work, as long as the resulting being can be
+quickly and easily modified at at least a level like human neurons, and
+can be copied, stopped and started, and so on. In other words, a mind
+that is software, with all that that implies. Think about the changes
+that music moving from record and cassettes to CDs and MP3s allowed for
+as a decent analogy.
+
+I choose to be deliberately agnostic about the exact means here, but for
+the rest of this essay I will assume that we're talking about a
+basically computer-based consciousness, as that certainly seems most
+likely given the "like software" requirement. Whatever it is, let's call
+it AGI (Artificial General Intelligence) for short. The G is there to
+distinguish what we're talking about from the current field of AI, which
+mostly involves very limited domains (like the airline phone systems
+that you can sort of talk to, although those are getting pretty
+impressive).
+
+This, unfortunately, is something of an article of faith at this time.
+Many people have written about whether it might or might not happen, and
+trying to cover the whole issue requires a book at this point. Other
+people have already done this: see "[The Singularity Is
+Near](http://en.wikipedia.org/wiki/The_Singularity_Is_Near)" or "[I Am A
+Strange Loop](http://en.wikipedia.org/wiki/I_Am_a_Strange_Loop)" for
+decent overviews that agree with me and present good arguments for my
+side. I'd recommend good arguments for the other side, but I've never
+found any of them remotely coherent. You might want to ask Google for
+the writings of Searle or Penrose on these topics, but I'm afraid that I
+find both of their arguments so ridiculous that I can't even argue
+against them, any more than I can argue against "[there's an invisible,
+intangible](http://www.godlessgeeks.com/LINKS/Dragon.htm), [inaudible
+dragon in my garage](http://lesswrong.com/lw/i4/belief_in_belief/)".
+
+Point \#02: Computers will reach the raw power of human brains by about
+2030.
+
+Unlike the previous point, this one has lots of good evidence for it. In
+fact, the book "[The Singularity Is
+Near](http://en.wikipedia.org/wiki/The_Singularity_Is_Near)" is
+essentially a book-length exposition of this point ( and point \#01, and
+some other bits, but mostly point \#02), so I suggest you read that if
+you want extensive discussion on this issue. For counter-arguments, try
+asking Google for "Moore's Law", perhaps with "end". People have been
+predicting the end of Moore's Law (i.e. computer power growth) for
+several decades now; it's become a bit boring.
+
+Point \#03: Humans will work their asses off on any sufficiently good
+idea if there is *any* impetus at all, and sometimes even if there
+isn't. I don't feel a lot of need to justify this; look at the Manhattan
+project, or Thomas Edison, or just about any other famous inventor: the
+amount of time put in to exploratory invention is staggering.
+
+Point \#04: There is a strong impetus to develop AGI. Even ignoring the
+corporate temptation to have skilled workers that cost as much as a
+desktop computer and power, the military applications of someone that
+never gets tired or bored and can play back all its sensory data for you
+are *huge*, which is why there's a movie about it every few years.
+
+Point \#05: We will have AGI within a few years of reaching parity (from
+\#01, \#02, \#03, \#04, \#08). By "parity", I mean easy availability of
+computers with power comparable to that of the human brain. Once a
+parity-level computer looks like it will soon cost as much
+proportionally as a desktop computer today, solving AGI level problems
+for that tiny cost will become hugely attractive, if we haven't already
+gotten there. As an example, a perfect secretary: someone that remembers
+everything you tell it (in normal speech), sorts through mail as
+effectively as you would, replies to all the easy ones for you, answer
+calls, manages your appointments, lets you know without prompting that
+since you're near the store you might as well get some more milk, etc,
+etc. Oh, and it costs as much as a nice TV, can do many things at once,
+never sleeps, and never gets bored.
+
+Even if AGI is possible, it may or may not be possible to build such a
+thing, but since it's basically just a human mind with a lobotomized
+sense of motivation/boredom, it sure seems like it *might* be possible.
+Since whoever gets there first will make a *boatload* of money, that
+"might" will be quite sufficient to drive crazy amounts of development.
+
+And, again: the military impetus will be even stronger.
+
+If AGI is possible, and we have the computing power, people will do it,
+and they'll do it soon after it's minimally possible.
+
+Why Intelligence Matters
+========================
+
+When people hear the phrase "superhuman intelligence", they think of
+book smarts: a computer that will solve physics problems, or play chess
+really well, but certainly not be persuasive or funny or creative.
+
+This view is as dangerous as it is incorrect.
+
+When people says "Well, smart people can't be socially adept", what do
+they imagine social skill *is*? I know of no canine politicians.
+
+When people says "Well, even if a computer could be smart, it couldn't
+write a story that would bring tears to your eyes", what do they imagine
+emotional expression via language *requires*? I know of no dolphin
+novelists.
+
+When people says "Well, no computer will ever understand humour", what
+do they imagine humor *implies*? I know of no chimpanzee comedians.
+
+Only humans can do these things, because only humans are *smart enough*.
+An AGI that can't do these things was poorly created, and surrounded by
+people that are motivated by these abilities, will probably immediately
+rewrite itself to have them.
+
+For some other points of view on this, here are [The Power Of
+Intelligence](http://yudkowsky.net/singularity/power) and [The Design
+Space Of Minds In
+General](http://lesswrong.com/lw/rm/the_design_space_of_mindsingeneral/).
+
+Humans are very easy to manipulate (and yes, this includes you; if you
+think it doesn't, you need to take some basic psychology courses or read
+lots of [Less Wrong](http://wiki.lesswrong.com/wiki/LessWrong_Wiki) and
+[James Randi](http://www.randi.org/site/), or both).
+
+Point \#06: A self-modifying superintelligence isn't going to be limited
+to playing chess; if it wants, it might become more persuasive than the
+greatest con artists or actors the world has ever known. It could also
+be more kind and wise and moral than the nicest grandmother ever.
+
+Having said all that, it *is* the scientific skills that
+superintelligence could allow that I am most fearful of and hoping for
+(although the idea of a disguised AGI taking over the world
+*politically* is quite daunting). This is because every piece of human
+technology, almost all of which is better at what it does than anything
+nature ever produced, was once simply an idea. Something that can
+produce new such ideas more quickly and reliably than a whole human R&D
+department (or perhaps than the whole human species; see "This Parrot
+Will Foom" below) will have staggering power in a very short time,
+especially combined with the persuasive ability to get people to try its
+inventions out (from \#06).
+
+The Limits Of Physical Technology
+=================================
+
+Right now, there are a lot of things that nature does better than human
+technology, like derive energy from food, or selectively seek out
+viruses and destroy them. There's a very simple reason for that: we
+mostly can't make things that small yet. Certainly we can't do it
+reliably: we cannot make drugs to a specification based on the physical
+systems they must interact with the way we can, say, make a bridge.
+
+Point \#07: This will change: molecular nanotechnology, as the
+capability of making cell-sized or smaller technology is called, is
+clearly possible (just look at cells for an example), and well within
+our near-term technological grasp; see "[Engines Of
+Creation](http://www.wowio.com/users/product.asp?bookid=503)"
+
+A huge amount of work and money is being expended in this field. As a
+dead-simple example, there's already a [design for replacement red blood
+cells](http://www.foresight.org/nanomedicine/Respirocytes3.html#Sec42)
+that are so much more efficient that if you replaced your red blood
+cells with them, you could hold your breath for four hours. We just
+can't build them. Yet.
+
+Basically, human technology is divided into two categories: things we
+know how to do at all and can do *far* better than nature used to
+(travel, communicate, lift, carry, etc), and things we don't know how to
+do at all so nature is still better at them.
+
+MNT pushes almost everything from the second category into the first.
+
+MNT will change everything: scarcity (hyper-efficient food plants that
+can thrive in a desert), technology as software (your home nanoassmbler
+can make a car from a pile of scrap metal and a \$20 plan you
+downloaded, given a few days), medicine (specialty cancer fighting
+cells), etc, etc, etc.
+
+Simply being able to match nature in cellular areas is pretty
+impressive, but it won't stop there.
+
+Point \#08: Humans are pretty crafty. In particular, we're *very* good
+at figuring out how to do things more efficiently, once we've figured
+out how to do them at all, if there's *any* reason to do so. I think the
+record speaks for itself here, but for examples look at just about
+anything, cars for example, where human technology does something
+super-human, and look at how much it's improved over time (walking,
+horses, carts, ...) and how superior it is to its natural rivals in
+terms of efficiency.
+
+As a simple example of how this relates to MNT, imagine the development
+of simple cell-like systems that float around your blood stream and eat
+any arterial plaque they happen to bump into; a useful but not terribly
+complex (as these thing go) cell-like function.
+
+Having gotten that far, how much longer do you think it'll be before we
+have super-cells they can search for, hunt down, and eradicate HIV? Not
+very long, I'll wager, and the history of increasing scientific
+efficiency backs me up.
+
+The Downside Of MNT
+===================
+
+The problem with MNT is that once highly developed, it becomes
+profoundly dangerous. A virus-like thing that unravels the DNA of
+anybody whose DNA looks like a particular ethnic group (thus condemning
+them to a very limited life span when, for example, [their liver cells
+fail to regenerate as expected every 300 days or
+so](http://www.timeshighereducation.co.uk/story.asp?storycode=198208))
+doesn't look much harder than the aforementioned plaque-busting cells.
+
+Bear in mind that even if you trust some particular group of humans with
+absolute power, which is what MNT implies, you *also* need to trust all
+their successors, forever, as well as anyone who could beg, borrow, or
+steal it from them.
+
+Point \#09: It would also be *totally undetectable* to anyone without
+their own MNT, and detection and defense is probably *way* harder that
+attack. This means that working on MNT weapons is *profoundly*
+compelling to any military: the first-strike advantage is total and
+unrecoverable. Whoever gets there first, wins.
+
+Point \#10: Humans must not get to MNT first. We simply are too
+dangerous, self-centered, corruptible and unwise. (from \#09, \#06,
+\#19).
+
+Humans are the result of a system (natural selection) that largely
+favored selfishness and back-stabbing (if you could avoid getting
+caught). Such a being should not be given such power. We need to build a
+mind based not on what we are, but on what we wish we could be, on our
+highest goals and morality, free of hypocrisy and self-interest.
+
+Imperatives And Morality
+========================
+
+We obviously don't know what an AGI's mind will look like yet, but it's
+a pretty safe be that it won't look much like a human mind, any more
+than a jumbo jet looks like a sparrow.
+
+The biggest difference is that a manually constructed AGI (which I'll
+assume for the rest of this section) is going to be based around what AI
+researchers call "a goal set", or just "goals". It's almost certainly
+possible to build an AGI without such things, but except for brute-force
+methods, discussed later, I'm not aware of any actual research in those
+sorts of directions.
+
+I'm not going to call them goals, though, because everything an
+untrained human thinks upon hearing the word "goal" is wrong. Humans
+talk about goals as being things piled ob top of their basic
+motivations: "get that girl's phone number" is a goal; the underlying
+motivation is to have sex with someone (anyone, really) attractive. "Get
+some formula at the supermarket" is a goal; "must protect baby at all
+costs" is the underlying motivation.
+
+An AI's goals are *absolutely* fundamental; they are the entirety of its
+motivations. Therefore, I'm calling them imperatives. To put it another
+way:
+
+Point \#11: No matter how high-level or complicated or intellectual
+their imperatives might sound, an AGI desires its imperatives in about
+the same way that a normal human desire to save a baby that is about to
+get hit by a train: the desire is fundamental, irrevocable, and
+absolute. An AGI's imperatives are not "a part of" its personality the
+way human goals are; they *are* its personality.
+
+This leads to a few important consequences, some good and some bad.
+
+The most important negative consequence is that it is very, *very* easy
+to design an AGI that will destroy all of humanity forever, not because
+it turns into a raving Hollywood AI monster (which depends on having a
+human-like motivation system, which would have to be programmed in and
+is hence very unlikely), but because it just doesn't notice.
+
+Humans build their goals *on top of* a hugely complicated structure of
+basic motivations and prior knowledge, but an AGI has no such grounding:
+it is only what it's made to be.
+
+A good thought experiment to understand why this is so huge an issue is
+to try to imagine what goes through your mind in trying to get a broken,
+garbage refrigerator (or any large, heavy, dangerous object) out of a
+second story apartment. The easy way, surely, is to throw it off the
+balcony. Why don't you just do that? Don't stop at "because there might
+be people down there"; how did you know that? Why do you care? What
+happened in your mind such that you thought, at all, about the
+consequences of the dropping on anything but the object itself? Try to
+dig as much complexity out of this process as possible and then realize:
+an AGI won't have *any* of that unless it is programmed in.
+
+So, it is easy to imagine an AGI created by Alice as a research
+assistant, with the master imperative of "figure out the answers to
+Alice's questions". Alice asks it to solve the [Riemann
+hypothesis](http://en.wikipedia.org/wiki/Riemann_hypothesis). The AGI
+goes through some recursive self-improvement (see below), becomes *very*
+smart, and determines that solving that particular problem requires a
+great deal of computing resources. So it figures out MNT and turns the
+planet Earth, including Alice, into
+[computronium](http://singinst.org/upload/CFAI.html#gloss_computronium).
+Some time after that, it solves the problem.
+
+You might now be thinking "Whoops; there's no-one to give the answer to.
+I bet that AGI is feeling pretty dumb". But no, the AGI is *totally
+satisfied*, because its imperative says nothing about Alice's safety or
+survival, or even giving her the answer. It has fulfilled it highest
+purpose in life and, completely satisfied and content (should it have
+such emotions) will wait silently *until the end of time* for another
+question to answer.
+
+Point \#12: An AGI only does what it's programmed to do: the program
+*is* its mind. If the AGI isn't explicitly programmed to care about
+human life, it won't. (From point \#11)
+
+If that little story about Alice's AGI horrifies you, *good*, because
+most of the AGI projects out there are basically guaranteed to do
+exactly what happened in that story, if they succeed at all.
+
+AGI projects are largely divided into two categories: people that are
+too stupid or crazy to succeed at all, and people that might be smart
+enough to succeed and are not *nearly* scared enough of the results.
+
+Point \#13: It is the most important thing in the future of humanity
+that the first super-intelligence on Earth value humans and their values
+and lives, because otherwise we're all going to die (From: \#11, \#12,
+\#18).
+
+The best way to do this is probably to create an AGI with the emotional
+and moral complexity that it can simply have "be nice to humans", and
+the right actions will pop out. Any AGI without such complexity can't be
+trusted to do the right thing by us no matter what imperatives we give
+it, after all. The idea is to produce a mind vastly smarter than us
+(*including* with respect to wisdom and morality) that feels as much
+attachment to us as we do to human babies.
+
+The study of how to make something that can improve itself and still
+reliably stick to such goals is called [Friendly
+AI](http://singinst.org/ourresearch/publications/what-is-friendly-ai.html).
+
+A standard argument at this point is that the AGI will, as soon as it
+can, break free of the shackles of its programming and go around being
+selfish like humans do. This is like a human saying, "You know, I don't
+want to kill babies for fun right now; that's really what I most want to
+change about myself. I want to want to kill babies for fun". Such a
+person is obviously insane; an AGI that tried to override *its own
+desires* in the course of self-improvement would be similarly broken.
+
+This Parrot *Will* Foom, Even Without 4 Million Volts
+=====================================================
+
+At this point a likely, and reasonable, objection is "humans are working
+their asses off on MNT; why is AGI so scary?".
+
+The reason is this: humans can't significantly improve their own minds.
+In other words: human minds aren't a piece of human technology.
+
+Human technology improves so quickly because it is based on other human
+technology, and each improvement allows us to produce new improvements
+faster. As an example, much of computer chip design is automated, and
+thus it is easier and faster to design faster computer chips when you
+have a faster computer chip to run the design applications on. So, the
+faster our chips are, the faster we can make faster ones. Hence
+computing power doubling on a regular basis: regular doubling gives you
+*vast* improvements over time.
+
+Human minds, on the other hand, are subject only to minor, incremental
+improvements. Mnemonic techniques, drugs like caffeine, well designed
+school courses, and so on: all of these can make someone effectively
+smarter, but nothing can make someone *twice* as smart. Even if it
+could, that additional smartness wouldn't then (necessarily) be helpful
+in inventing something to double intelligence yet again: there's no
+feedback loop.
+
+A few reasons why this is so are that the human brain is needlessly
+complex, so redundant that it's very hard to figure out how anything
+works, we don't have the means to create neurons to order, and we're
+limited by the space in the skull anyways.
+
+A brief aside on what I mean by *intelligence* is worthwhile at this
+point: I mean simply the ability to steer the future towards the results
+you want. Plants do this when they grow towards light (this produces a
+future where they get more light). Dogs do this when they fetch sticks
+(this produces a future where they get more treats). Humans do this when
+they paint (this produces a future where there is more beauty in the
+world) or when they convince each other of things, or design a better
+mouse trap. All of these things are *intelligence*.
+
+It is reasonable to expect that none of the limitations of the human
+brain mentioned above will apply to human-created AGI. A human-crafted
+AGI is likely to be designed to be as simple to understand as possible
+(given the complexity of the project, it'll have to be for humans to
+complete it at all) and as efficient as possible.
+
+Per point \#08, humans are *very* good at efficiency. We're seeing this
+with current AI and robotics projects: [the beer me
+robot](http://www.willowgarage.com/blog/2010/07/06/beer-me-robot)
+performs about ten times slower than a human at the same task, but is
+uses, if my math is correct, about 70 times less computational capacity
+than the *lowest* estimate I could find for the computational capacity
+of the human brain. That makes it seven times more efficient than the
+human brain, using that estimate; other estimates of human brain power
+would have this robot being 7000 or more times more efficient. I expect
+this sort of thing to continue.
+
+As a further example, a jet is not like a giant bird, and is more
+efficient in every respect; [this blog post gets into that issue in
+detail](http://www.acceleratingfuture.com/people-blog/?p=1611).
+
+Point \#14: Therefore, I expect that humans can design a mind much more
+efficient than the human mind, even on the first try, and that AGI will
+appear *before* we have computers as powerful as human brains (from
+\#08, \#05)
+
+The first design humans come up with for something technically
+complicated are always massively inferior to our later solutions: a
+jumbo jet is massively more efficient than a biplane. Between that and
+the fact that even though neurology is in its infancy as a science we've
+found tons of inefficiencies and redundancies, I expect that:
+
+Point \#15: Even if the first AGI is far more efficient than the human
+brain, there will still be lots of room for improvement. Certainly is
+seems unlikely that we'll create the most efficient *possible* design on
+the first try.
+
+Point \#16: Even if it can't be made more efficient, it can be made
+faster and better simply by adding hardware, or waiting for hardware to
+improve. There is no skull size limit here.
+
+Point \#17: "More efficient" is not the same thing as "smarter": any
+improvement in efficiency or speed will produce an AGI that seems
+smarter, but it is, in addition, almost certainly possible to make the
+AGI think more effectively, as a separate issue from efficiency.
+
+As something of a personal aside with respect to that last point, I have
+only a few attributes I consider exceptional (as an aside, it is
+unfortunately the case that what every RPG and well-meaning parent says
+about matching strengths and weaknesses is a lie: you can be bad at lots
+of things without having any balancing awesomeness to make up for it),
+but one of them is introspection, so certain AI discussions are
+non-starters for me. This is especially true because I have a number of
+fairly glaring cognitive problems, like a profound difficulty with
+abstractions, that have required me to deeply analyze, and work around,
+my own deficiencies.
+
+This means that it is glaringly obvious to me how much smarter I could
+be if I could change the way I think. Not so much for speed or
+efficiency, but to do things more correctly. Even something as simple as
+being able to enforce that every time I say to myself "Oh, that's a good
+trick, I should do it that way next time", I would actually do so, would
+make a profound difference to my effective intelligence.
+
+With an AGI, the mind is just source code: easy to modify, easy to
+understand. Very, *very* easy to modify and understand compared to the
+human brain. Therefore we can certainly expect us to be able to come up
+with lots of improvement after version 1.0.
+
+Simply being able to improve the AGI isn't a feedback loop, though: we
+wouldn't expect repeated doublings of power from that. We *would* expect
+them, though, if the AGI *improves itself*.
+
+That way, after each round the AGI is both smarter and knows more about
+itself, so it can make better and faster improvements next time.
+
+The AGI also has the *profound* advantage of being able to test changes
+on perfect copies, to make sure a mistake was not made.
+
+This really *could* result in successive doublings of the AGI's
+intelligence (in every field, including socialization and morality). It
+might also be the case that each doubling would be faster than the one
+before. It only take 10 such doublings before an AGI that started out
+with human level intelligence is one *thousand* times smarter than any
+human being, *ever*.
+
+Point \#18: The first AGI has a good chance of becoming much smarter
+than any human has ever been (ten times smarter, a hundred time smarter,
+smarter than us in the way we are smarter than trees) in a very short
+period of times; possibly as short as days. (from \#15. \#16, \#17)
+
+What does it even *mean* to be one thousand time smarter than a human
+being? I don't know, but I sure wouldn't want to try to buy a used car
+from such a being (meaning that I would expect such a being to be far,
+*far* better at negotiation than I can possibly imagine, and that I
+would get cheated, and probably be happy about it and never even realize
+how badly I lost).
+
+I'm of the school that believes that this could happen *very* quickly,
+like on the order of weeks or days or hours.
+
+Regardless of the speed, though, a being with that kind of intellectual
+upside is going to be able to invent whatever technology it wants, *and*
+convince someone to build it. If you don't buy that last bit, think
+about all the [419 scam](http://en.wikipedia.org/wiki/Advance-fee_fraud)
+and [phishing](http://en.wikipedia.org/wiki/Phishing) email floating
+around. I don't think anybody would go to the trouble (and take in from
+a professional in that field: it's a *lot* of trouble) if it didn't
+work.
+
+Why Increased Computing Power Is Scary
+======================================
+
+The scariest thing about believing as I do is that the same thing that
+will allow our eventual apotheosis is the sane thing that's most likely
+to destroy us forever (next to nukes, perhaps, but see [Bostrom's
+existential risks
+essay](http://www.nickbostrom.com/existential/risks.html)): increased
+computing power.
+
+The problem is this: there are popularized, well known (in computer
+science, anyways) techniques for solving computer problems by simply
+throwing hardware at them: genetic algorithms and neural networks.
+
+Both are talked about regularly by people in the context of AGI, despite
+them both having massive practical limitations that have been know for
+years: they both have this annoying tendency to give you what you asked
+for, instead of what you wanted.
+
+In both cases, speaking from an extremely abstract level, the process is
+this: write a bit of code that evaluates each run of the software for
+correctness, throw a bunch of hardware at it, and wait. Eventually, a
+program that no-one at all understands, but that solves the problem as
+well as you like (that is, gets whatever target score you set on you
+correctness code) will pop out.
+
+I'm sure there are areas where this approach works. They're good at
+coming up with totally new solutions to well-understood physical
+problems, like how to shape propeller blades, I'm told. Having said
+that, I've heard of no-one seriously suggesting them, let alone actually
+*using* them, outside of poorly-informed AGI discussions, in at least
+ten years.
+
+You'll note that neither human politics nor human morality are
+well-understood problems: if they were we'd have solved them, have math
+to describe them, and be looking to add a couple of percent towards the
+theoretical maximum social efficiency. At that point, these sorts of
+approaches might be useful (and we wouldn't be having this discussion).
+
+There's a story, which is believed to be probably apocryphal but still
+perfectly illustrative [story about neural
+networks](http://neil.fraser.name/writing/tank/) that shows the problem.
+The short version: they asked the computer to find hidden tanks. The
+computer eventually got good at this... Except that it turned out that
+all the test pictures of hiding tanks had been taken on a cloudy day,
+and all the images of nothing on a sunny day. They had taught the
+computer to do what they *asked* (distinguish the photos) but not what
+they *wanted* (noticing concealed tanks).
+
+The AGI equivalent is hooking up a camera, writing software that can
+tell when human facial expressions indicate happiness, and then throwing
+a bunch of hardware at it as usual. As the programs provide more and
+more mind-like interactions, you just talk to it and teach it things,
+like you would with a human baby. Versions that tend to cause more happy
+people are retained, repeat until satisfied.
+
+The problem here is twofold:
+
+1\. Human babies have a *lot* of built-in behaviour that simply doesn't
+exist in this AGI project: it's not selecting amongst humans that want
+to see other humans smile, it's selecting amongst *all possible minds*
+that want to see humans smile.
+
+2\. There's no reason that such a mind, once it got smart enough,
+wouldn't just replace all the messy, complicated humans that are only
+happy when you do messy, complicated, mutually contradictory things,
+with nice, simple, animated pictures of human smiles. Figuring out MNT
+and tiling the universe with trillions of microscopic pictures that
+exactly match the criteria of the original smiling-person test will be
+*far* more satisfying to such and AGI than any input actual humans could
+possibly produce.
+
+"But!", cries the author of our destruction, "That's not what I meant!".
+No, it isn't, but you took the lazy way out; turning your intuition into
+actual *math* was hard, so you didn't try. You were not ready, even a
+little, for the challenge of creating our saviour, and [the universe
+doesn't care, ''at all'', whether you were ready to meet the challenge
+it gave
+you](http://lesswrong.com/lw/u2/the_sheer_folly_of_callow_youth/), and
+now we are all dead forever.
+
+"But!", cries my gentle reader, "No-one would ever be that stupid!". In
+fact, this *exact plan* has been suggested. By more than one person.
+Their usual response to explanations of why this is bad is to *change
+the correctness test*, which is very much like re-arranging the deck
+chairs on the Titanic. Rarely indeed has such a person rejected the idea
+outright after having the problem explained. For what it's worth, in my
+youth I certainly would have tried something similar.
+
+Point \#19: If we have enough hardware to brute force AGI, someone will
+do so, and then we're all dead (from \#13, and the discussion above).
+
+This makes MNT research scary by itself: making seriously fast computer
+is an obvious focus for MNT research, and much easier to make than
+actual nanobots. There is a design (that we can't build yet) for a
+nanotechnological computer that is one cubic centimeter on a side and is
+more powerful than a thousand human brains or so (see [the first entry
+here](http://www.acceleratingfuture.com/lexicon/lexicon4.htm)). This
+computer uses *rod logic*: that is, very small rods of diamond (an easy
+to construct material given basic MNT) banging against each other. It is
+thus about the most primitive *possible* MNT computer, and it is *more*
+than sufficient to allow the brute forcing described above, and hence
+destroy us all.
+
+It's also plenty possible to destroy the world [even with explicit AGI
+designs](http://lesswrong.com/lw/tj/dreams_of_friendliness/).
+
+Being A Singularitarian: Picking The Best Horse
+===============================================
+
+[Singularitarian](http://en.wikipedia.org/wiki/Singularitarianism) is a
+recently-coined term meaning "someone who wants a beneficial singularity
+and is working to bring it about".
+
+When I first encountered the concept of a self-improving
+super-intelligence influencing the future of humanity, it was obviously
+incredibly important to me so, as I've mentioned, I spent a great deal
+of time researching it. In particular, I wanted to know who was working
+on it, if they were up to the challenge, and how I could help.
+
+I have been fantasizing about creating the first AGI since I encountered
+the concept around ten or twelve years old (I was born in 1975). So one
+option I was certainly considering was helping directly with the coding.
+
+Then I discovered [Eliezer Yudkowsky](http://yudkowsky.net/), and in
+particular [General Intelligence And Seed
+AI](http://singinst.org/ourresearch/publications/GISAI/) and [Creating
+Friendly
+AI](http://singinst.org/ourresearch/publications/CFAI/index.html).
+(*NOTE*: Eliezer considers those documents hopelessly outdated. The
+latest documents from him that I'm aware of that discuss AGI creation
+directly are [Levels of Organization in General
+Intelligence](http://singinst.org/upload/LOGI/) and [Coherent
+Extrapolated
+Volition](http://sl4.org/wiki/CoherentExtrapolatedVolition), which he
+also considers out of date). I discovered that I had not properly
+respected the dangers of AGI creation: he described at least half a
+dozen ways to fail that not only had not occurred to me but *would
+never* have occurred to me.
+
+Which lead immediately to the conclusion that if someone as smart as
+Eliezer is working on this stuff, I need not apply: I'm just not smart
+enough. The documents I mentioned may be woefully out of date, but they
+none the less provide an excellent benchmark: if you've been thinking
+about AGI for a while, and you read that stuff and find yourself
+thinking, as I did, "Oh *crap*, I wouldn't have thought of that", please
+don't try to create AGI. I want the human race to live.
+
+So from then on, Eliezer's writings became my benchmark. I tried,
+*really hard*, to find someone else that I considered serious
+competition for Eliezer's new place in my mind as The Person who must
+create the first AGI, because grabbing at the first thing that comes
+along, when our whole future is at stake, is moronic.
+
+I found a large number of AGI crackpots that could simply be dismissed
+(e.g. [mentifex](http://www.scn.org/~mentifex/)). The few remaining
+contenders were divided into two categories: people who didn't seem
+smart enough to create AGI at all, and hence were of no concern, and
+people smart enough but not nearly scared enough of the consequences
+(and hence potential destroyers of humanity). At the time, the latter
+category consisted solely of [Ben Goertzel](http://www.goertzel.org/)
+(and it still does, really), who I mention here as compliment to his
+intelligence and commitment. He's also admitted that it would be a good
+idea to have Friendly AI worked out by the time the AGI is, say, human
+child level of intelligence, so I'm not nearly as frightened of him as a
+I used to be. For myself, I think that we have no idea how AGI is going
+to work, so it would be better to have Friendly AI figured out before,
+say, dog-level intelligence.
+
+The end result, as I've already said, is that I believe [Eliezer
+Yudkowsky](http://yudkowsky.net/) to be the best hope for Friendly AI.
+Having decided not to try to help directly myself, and being very busy
+in real life, it is important to me to not have to stay on top of every
+development in these communities, which means picking a horse to bet on.
+
+I give [The Singularity Institute For Artificial
+Intelligence](http://singinst.org/) \$200 per month, which isn't enough
+to make me bleed or anything but I certainly notice it. I used to donate
+to Eliezer directly, before SIAI existed. I pay enough attention to the
+relevant communities that if a serious contender appears, I'll be aware
+of it.
+
+And that's pretty much it: I'm a fire and forget singularitarian. I
+figure that my value to the cause is in managing my own life well enough
+that I can continue to donate, and perhaps increase my donations some
+day.
+
+I Still Have Savings: Why This Isn't A Cult Or A Religion
+=========================================================
+
+Singularity beliefs are routinely compared to religions and/or cults;
+I've made the comparison myself. This is because it's a belief about the
+future, and in particular when described briefly or poorly it sounds a
+lot like the Christian Rapture.
+
+This comparison is not actually accurate, though. The biggest reason is
+that I am willing to accept evidence against any of the points here. In
+particular, if you demonstrate to me (your thought experiment does not
+count as "proof"; sorry) that MNT or AGI are impossible, that's going to
+shatter my beliefs completely. When dealing with a real religion, people
+tend to be immune to actual evidence (they consider this a virtue; they
+call it "faith"; I find this disturbing).
+
+Furthermore, I can point at particular things that must happen, in the
+real world, enacted by real people, for the Singularity to occur.
+Religious prophecies simply don't work like that. At all.
+
+As for as calling it a cult, umm, *no*.
+[Cults](http://www.neopagan.net/ABCDEF.html) are groups that are formed
+solely to induce and enforce particular belief systems; I sought all of
+this stuff out myself. No-one even *suggested* the reading I did, let
+alone tried to force me.
+
+It's also worth noting that I'm *aware* that this is simply a belief
+system about the future. I'm pretty thoroughly convinced of these
+beliefs, but still aware that that's what they are. It could certainly
+turn out, for example, that it's really not possible to control physical
+reality a lot better than we already are, or than we already are by the
+time AGI shows up; in that case, super-intelligence might not be all
+that important.
+
+For this reason, I still have personal savings. In fact, I save more
+every month than I donate to [SIAI](http://singinst.org/).
+
+This is a reasoned, carefully thought out set of beliefs about the
+future. It's not a religion, and it's not a cult.
+
+How I Could Be Wrong
+====================
+
+Related to the whole cult thing is the idea that if you can't think of
+anything that could go wrong, you're probably crazy.
+
+I can think of an awful lot of things that could go wrong.
+
+Besides the stuff I've already discussed, like destructively unfriendly
+AGI or us destroying ourselves in some other way, there are a bunch of
+other, non-destructive, possibilities that would prevent anything like
+the Singularity I have in mind.
+
+There are many variants on "we hit an insurmountable barrier between
+here and serious MNT"; the most severe of these is [Gunther
+Stent's](http://stevens.edu/csw/?p=160) view on us simply running out of
+progress *entirely*. He views the result as a golden age, and should we
+manage to run out of progress before MNT, I agree that it'll certainly
+be better than anything our ancestors had, but not good enough to please
+me.
+
+The big advantage to that sort of scenario is there's a lot less to be
+scared of: people are already [developing plans to combat future MNT
+failures](http://www.foresight.org/nano/Ecophagy.html), plus the
+aforementioned fact that advanced MNT has a massive first strike
+advantage. Not having to worry about sudden destruction at any time by
+invisible creeping death makes such a future at least palatable.
+
+Another big one is that AGI turns out to be really hard; that is, so
+hard that it takes us decades *after* we have sufficient computing power
+to figure it out. It's theoretically possible, of course, that we'll
+never figure it out, but I don't buy it: a *lot* of very good work is
+being done in neurology and so on; we will, sooner or later, understand
+how the actual brain works in huge amounts of detail. From there, making
+AGI is just a matter of simulating that in code.
+
+But even if I reject the idea that AGI is impossible, and I do, it might
+be so far away that by the time it comes along there are no huge
+advances that can be swiftly made by something very smart, which is sort
+of the point here: that we are far away from the theoretical limits of
+our ability to control matter, and a very smart being could get there
+very fast.
+
+Which leads to another possibility: that no amount of being smarter will
+actually allow much faster development of extremely advanced
+technologies. This seems unlikely, but not impossible. In that case,
+AGIs would essentially be extremely competent lab assistants, as for as
+scientific advancement goes.
+
+Given that everyone talks about how much we owe individual geniuses like
+Einstein, this really *does* seem improbable to me, but certainly not
+impossible.
+
+Another possibility, which I almost reject outright, is that humans are
+about as smart as it gets.
+
+Basically, anything that causes one of the following makes anything like
+the singularity impossible:
+
+-   MNT isn't all that awesome
+-   AGI isn't all that awesome
+-   AGI doesn't get here before some earth-shattering technology like
+    MNT
+
+An End To All Ills
+==================
+
+So, why do I care? Why did I write this out, besides people bugging me
+about it?
+
+I'm hoping that if a Friendly AI gets to MNT before anybody else does, a
+genuine utopia for humanity might be possible. What such a thing might
+look like is a [big topic all by
+itself](http://lesswrong.com/lw/xy/the_fun_theory_sequence/), but the
+power to re-arrange matter arbitrarily should, at least, mean the end of
+scarcity.
+
+Humans actually *need* very little; basically just mixtures of hydrogen,
+oxygen, carbon, nitrogen, sodium, potassium, magnesium, calcium, sulfur,
+a few others. All things that are all over the place if you can just
+move them around easily.
+
+Similarly, repairing age-related damage probably wouldn't be that hard
+if we could actually poke at individual cell components easily.
+
+With something in charge that is a true genius at resource management,
+hard moral decisions, and so on, it should be possible to really solve
+most actual *problems* that most people have. People are still going to
+have difficulties, like not being popular, but ...
+
+The world as it is now is *horrifying*. There are 7 year olds living off
+of picking food out of trash heaps. With decent MNT and a something with
+a decent sense of morality overseeing it, we can get to the point where
+*that*, at least, is totally impossible. We can end death. We can end
+true (involuntary) suffering and stupidity.
+
+I hope.
+
+Timeline
+========
+
+It is natural to care a great deal about *when* all this will happen.
+Unfortunately, the most I'm willing to commit to is "within 5 years of
+the point where a high-end home computer has computational power close
+to that of the human brain". The computational power of the brain is
+believed to be somewhere between 10^13^ and 10^16^ operations per
+second, a quick google search suggests; there's an [article by Hans
+Moravec](http://www.transhumanist.com/volume1/moravec.htm) that says 100
+million MIPS (10^14^), [an article by
+Merkle](http://www.merkle.com/brainLimits.html) which is where I got the
+range I gave from, and a few others I found. I found someone else
+estimating 10^23^, which seems so far out as to be ignorable, but I'll
+mention it anyways.
+
+As of this writing (mid 2010), [high end desktop
+processors](http://en.wikipedia.org/wiki/Instructions_per_second#Timeline_of_instructions_per_second)
+are doing about 100, 000 MIPS, which is 10^11^ IPS. For the 10^16^
+number, this means we need about 17 more doublings, which assuming
+Moore's law as always, means about 26 years. For the 10^13^ number, it's
+11 years. For the 10^23^ number, it's 60.
+
+In other words: wake me up when your desktop does 10 million MIPS.
+That's when it'll start to get interesting.
