@@ -19,6 +19,7 @@ import Text.Pandoc.XML (fromEntities)
 import Data.Maybe (fromMaybe)
 import Text.HTML.TagSoup
 import Data.Char (isAlphaNum)
+import Data.List (intercalate)
 import qualified Data.Foldable as F
 import Text.Pandoc.Error
 
@@ -88,15 +89,24 @@ block = do
 
 blockElements :: TikiWikiParser B.Blocks
 blockElements = choice [ -- separator
-                       header
+                       table
+                       , hr
+                       , header
                        -- , verbatim
                        -- , literal
                        , mixedList
                        , definitionList
-                       -- , table
+                       , codeMacro
                        -- , blockQuote
                        -- , noautolink
                        ]
+
+hr :: TikiWikiParser B.Blocks
+hr = try $ do
+  string "----"
+  many (char '-')
+  newline
+  return $ B.horizontalRule
 
 header :: TikiWikiParser B.Blocks
 header = tryMsg "header" $ do
@@ -106,6 +116,23 @@ header = tryMsg "header" $ do
   content <- B.trimInlines . mconcat <$> manyTill inline newline
   attr <- registerHeader nullAttr content
   return $ B.headerWith attr level $ content
+
+tableRow :: TikiWikiParser [B.Blocks]
+tableRow = try $ do
+  row <- sepBy1 (many1 $ noneOf "\n|") (try $ string "|" <* notFollowedBy (oneOf "|\n")) 
+  return $ map (B.plain . B.text) row
+
+table :: TikiWikiParser B.Blocks
+table = try $ do
+  string "||"
+  rows <- sepBy1 tableRow (try $ string "\n" <|> (string "||" <* notFollowedBy (string "\n")))
+  string "||"
+  newline
+  return $ B.simpleTable (headers rows) $ trace ("rows: " ++ (show rows)) rows
+  where
+    -- The headers are as many empty srings as the number of columns
+    -- in the first row
+    headers rows = map (B.plain . B.str) $ take (length $ rows !! 0) $ repeat ""
 
 para :: TikiWikiParser B.Blocks
 para = many1Till inline endOfParaElement >>= return . result . mconcat
@@ -261,6 +288,34 @@ listItemLine nest = lineContent >>= parseContent >>= return
       parsed <- parseFromString (many1 inline) x
       return $ mconcat parsed
 
+-- Turn the CODE macro attributes into Pandoc code block attributes.
+mungeAttrs :: [(String, String)] -> (String, [String], [(String, String)])
+mungeAttrs rawAttrs = ("", classes, rawAttrs)
+  where
+    -- "colors" is TikiWiki CODE macro for "name of language to do
+    -- highlighting for"; turn the value into a class
+    color = fromMaybe "" $ lookup "colors" rawAttrs
+    -- ln = 1 means line numbering.  It's also the default.  So we
+    -- emit numberLines as a class unless ln = 0
+    lnRaw = fromMaybe "1" $ lookup "ln" rawAttrs
+    ln = if lnRaw == "0" then
+            ""
+         else
+            "numberLines"
+    classes = filter (/= "") [color, ln]
+
+codeMacro :: TikiWikiParser B.Blocks
+codeMacro = try $ do
+  string "{CODE("
+  rawAttrs <- macroAttrs
+  string ")}"
+  body <- manyTill anyChar (try (string "{CODE}"))
+  newline
+  if length rawAttrs > 0 then
+    return $ B.codeBlockWith (mungeAttrs rawAttrs) body
+  else
+    return $ B.codeBlock body
+
 
 --
 -- inline parsers
@@ -268,19 +323,26 @@ listItemLine nest = lineContent >>= parseContent >>= return
 
 inline :: TikiWikiParser B.Inlines
 inline = choice [ whitespace
-                , br
                 , noparse
                 , strong
                 , emph
+                , nbsp
+                , image
+                , htmlComment
                 , strikeout
                 , code
-                , codeMacro
                 , wikiLink
+                , notExternalLink
                 , externalLink
                 , superTag
                 , superMacro
                 , subTag
                 , subMacro
+                , escapedChar
+                , colored
+                , centered
+                , underlined
+                , boxed
                 , breakChars
                 , str
                 , symbol
@@ -291,8 +353,17 @@ whitespace = (lb <|> regsp) >>= return
   where lb = try $ skipMany spaceChar >> linebreak >> return B.space
         regsp = try $ skipMany1 spaceChar >> return B.space
 
-br :: TikiWikiParser B.Inlines
-br = try $ string "%BR%" >> return B.linebreak
+nbsp :: TikiWikiParser B.Inlines
+nbsp = try $ do
+  string "~hs~" 
+  return $ B.str " NOT SUPPORTED BEGIN: ~hs~ (non-breaking space) :END "
+
+htmlComment :: TikiWikiParser B.Inlines
+htmlComment = try $ do
+  string "~hc~" 
+  inner <- many1 $ noneOf "~"
+  string "~/hc~"
+  return $ B.str $ " NOT SUPPORTED: ~hc~ (html comment opener) BEGIN: " ++ inner ++ " ~/hc~ :END "
 
 linebreak :: TikiWikiParser B.Inlines
 linebreak = newline >> notFollowedBy newline >> (lastNewline <|> innerNewline)
@@ -316,8 +387,70 @@ nestedInlines end = innerSpace <|> nestedInline
     innerSpace   = try $ whitespace <* (notFollowedBy end)
     nestedInline = notFollowedBy whitespace >> nested inline
 
+image :: TikiWikiParser B.Inlines
+image = try $ do
+  string "{img "
+  rawAttrs <- sepEndBy1 imageAttr spaces
+  string "}"
+  let src = fromMaybe "" $ lookup "src" rawAttrs
+  let title = fromMaybe src $ lookup "desc" rawAttrs
+  let alt = fromMaybe title $ lookup "alt" rawAttrs
+  let classes = map fst $ filter (\(a,b) -> b == "" || b == "y") rawAttrs
+  if length src > 0 then
+    return $ B.imageWith ("", classes, rawAttrs) src title (B.str alt)
+  else
+    return $ B.str $ " NOT SUPPORTED: image without src attribute BEGIN: {img " ++ (printAttrs rawAttrs) ++ "} :END "
+  where
+    printAttrs attrs = intercalate " " $ map (\(a, b) -> a ++ "=\"" ++ b ++ "\"") attrs
+
+imageAttr :: TikiWikiParser (String, String)
+imageAttr = try $ do
+  key <- many1 (noneOf "=} \t\n")
+  char '='
+  optional $ char '"'
+  value <- many1 (noneOf "}\"\n")
+  optional $ char '"'
+  optional $ char ','
+  return (key, value)
+
+
 strong :: TikiWikiParser B.Inlines
 strong = try $ enclosed (string "__") nestedInlines >>= return . B.strong
+
+escapedChar :: TikiWikiParser B.Inlines
+escapedChar = try $ do
+  string "~"
+  inner <- many1 $ oneOf "0123456789"
+  string "~"
+  return $ B.str $ [(toEnum ((read inner) :: Int)) :: Char]
+
+centered :: TikiWikiParser B.Inlines
+centered = try $ do
+  string "::"
+  inner <- many1 $ noneOf ":\n"
+  string "::"
+  return $ B.str $ " NOT SUPPORTED: :: (centered) BEGIN: ::" ++ inner ++ ":: :END "
+
+colored :: TikiWikiParser B.Inlines
+colored = try $ do
+  string "~~"
+  inner <- many1 $ noneOf "~\n"
+  string "~~"
+  return $ B.str $ " NOT SUPPORTED: ~~ (colored) BEGIN: ~~" ++ inner ++ "~~ :END "
+
+underlined :: TikiWikiParser B.Inlines
+underlined = try $ do
+  string "==="
+  inner <- many1 $ noneOf "=\n"
+  string "==="
+  return $ B.str $ " NOT SUPPORTED: ==== (underlined) BEGIN: ===" ++ inner ++ "=== :END "
+
+boxed :: TikiWikiParser B.Inlines
+boxed = try $ do
+  string "^"
+  inner <- many1 $ noneOf "^\n"
+  string "^"
+  return $ B.str $ " NOT SUPPORTED: ^ (boxed) BEGIN: ^" ++ inner ++ "^ :END "
 
 emph :: TikiWikiParser B.Inlines
 emph = try $ enclosed (string "''") nestedInlines >>= return . B.emph
@@ -370,33 +503,6 @@ macroAttrs = try $ do
   attrs <- sepEndBy macroAttr spaces
   return attrs
 
--- Turn the CODE macro attributes into Pandoc code block attributes.
-mungeAttrs :: [(String, String)] -> (String, [String], [(String, String)])
-mungeAttrs rawAttrs = ("", classes, rawAttrs)
-  where
-    -- "colors" is TikiWiki CODE macro for "name of language to do
-    -- highlighting for"; turn the value into a class
-    color = fromMaybe "" $ lookup "colors" rawAttrs
-    -- ln = 1 means line numbering.  It's also the default.  So we
-    -- emit numberLines as a class unless ln = 0
-    lnRaw = fromMaybe "1" $ lookup "ln" rawAttrs
-    ln = if lnRaw == "0" then
-            ""
-         else
-            "numberLines"
-    classes = filter (/= "") [color, ln]
-
-codeMacro :: TikiWikiParser B.Inlines
-codeMacro = try $ do
-  string "{CODE("
-  rawAttrs <- macroAttrs
-  string ")}"
-  body <- manyTill anyChar (try (string "{CODE}"))
-  if length rawAttrs > 0 then
-    return $ B.codeWith (mungeAttrs rawAttrs) body
-  else
-    return $ B.code body
-
 noparse :: TikiWikiParser B.Inlines
 noparse = try $ do
   string "~np~"
@@ -409,22 +515,28 @@ str = (many1 alphaNum <|> count 1 characterReference) >>= return . B.str
 symbol :: TikiWikiParser B.Inlines
 symbol = count 1 nonspaceChar >>= return . B.str
 
+notExternalLink :: TikiWikiParser B.Inlines
+notExternalLink = try $ do
+  start <- string "[["
+  body <- many (noneOf "\n[]")
+  end <- string "]"
+  return $ B.text (start ++ body ++ end)
+
 -- The ((...)) wiki links and [...] external links are handled
 -- exactly the same; this abstracts that out
-makeLink :: String -> String -> String -> String -> TikiWikiParser B.Inlines
-makeLink start butnot middle end = try $ do
+makeLink :: String -> String -> String -> TikiWikiParser B.Inlines
+makeLink start middle end = try $ do
   st <- getState
   guard $ stateAllowLinks st
   setState $ st{ stateAllowLinks = False }
-  (url, title, anchor) <- wikiLinkText start butnot middle end
+  (url, title, anchor) <- wikiLinkText start middle end
   setState $ st{ stateAllowLinks = True }
   return $ B.link (url++anchor) "" $ B.text title
 
-wikiLinkText :: String -> String -> String -> String -> TikiWikiParser (String, String, String)
-wikiLinkText start butnot middle end = do
+wikiLinkText :: String -> String -> String -> TikiWikiParser (String, String, String)
+wikiLinkText start middle end = do
   string start
-  notFollowedBy $ string butnot
-  url <- many1 (noneOf middle)
+  url <- many1 (noneOf $ middle ++ "\n")
   seg1 <- option url linkContent
   seg2 <- option "" linkContent
   string end
@@ -439,7 +551,7 @@ wikiLinkText start butnot middle end = do
       return $ str
 
 externalLink :: TikiWikiParser B.Inlines
-externalLink = makeLink "[" "[" "]|" "]"
+externalLink = makeLink "[" "]|" "]"
 
 -- NB: this wiki linking is unlikely to work for anyone besides me
 -- (rlpowell); it happens to work for me because my Hakyll code has
@@ -447,4 +559,4 @@ externalLink = makeLink "[" "[" "]|" "]"
 -- targets, so something like
 -- [see also this other post](My Other Page) is perfectly valid.
 wikiLink :: TikiWikiParser B.Inlines
-wikiLink = makeLink "((" "" ")|" "))"
+wikiLink = makeLink "((" ")|" "))"
