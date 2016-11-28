@@ -1,3 +1,12 @@
+[1:NOTES][2:DESIGN-CODE][3:tiki_to_md.hs][4:Spec.hs]*!
+
+./run_tests.sh -m unphone
+
+stack runghc test/Spec.hs -- -m rectifier
+
+stack hoogle -- server --local -p 8084 --host '*' 
+
+
 DESIGN-SITE is what we're aiming for the site to look like.
 
 DESIGN-CODE is the design of the code itself.
