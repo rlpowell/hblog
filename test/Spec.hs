@@ -7,12 +7,12 @@ import Test.Hspec
 -- import Test.QuickCheck
 import System.Process
 import System.Exit
-import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, doesPathExist, removeDirectoryRecursive, createDirectoryIfMissing, isSymbolicLink)
+import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, removeDirectoryRecursive, createDirectoryIfMissing, isSymbolicLink)
 import Control.Monad
 import GHC.Generics
 import Data.Yaml
 import System.FilePath
-import System.Posix.Files (createSymbolicLink)
+import System.Posix.Files (createSymbolicLink, fileExist)
 
 data AutoTest = AutoTest { description :: String, ttype :: String, tstderr :: String } deriving (Ord, Eq, Show, Generic)
 
@@ -71,7 +71,7 @@ hblogTest autoTest dir = it (description autoTest) $ do
   mainDir <- getCurrentDirectory
   rm_rf $ dir </> "_site"
   rm_rf $ dir </> "_cache"
-  dfe <- doesPathExist (dir </> "templates")
+  dfe <- fileExist (dir </> "templates")
   if dfe then
     do
       isl <- isSymbolicLink (dir </> "templates")
@@ -83,7 +83,7 @@ hblogTest autoTest dir = it (description autoTest) $ do
     createSymbolicLink (mainDir </> "templates") (dir </> "templates")
   hblogRunCmd dir mainDir "hblog" ["build"]
   rm_rf $ dir </> "_cache"
-  hblogRunCmd dir mainDir "diff" ["-r", "_site", "wanted"]
+  hblogRunCmd dir mainDir "diff" ["-r", (mainDir </> dir </> "_site"), (mainDir </> dir </> "wanted")]
 
 pathKids :: Bool -> FilePath -> IO [FilePath]
 pathKids full dir = do
