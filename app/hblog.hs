@@ -3,29 +3,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
--- import           Data.Monoid (mappend)
 import           Data.List
-import           Text.Regex.PCRE.Heavy as PCRE
--- import           Data.String.Conversions
--- import           Data.Maybe (listToMaybe)
 import           Hakyll
--- import           Hakyll.Web.Tags
 import           System.FilePath
-import           System.Posix.Files
--- import           Hakyll.Web.Template.Context
 import           Text.Blaze.Html                 (toHtml, toValue, (!))
--- import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
--- import qualified Data.Map                        as M
-import Text.Pandoc (writePlain, def, nullMeta)
-import Text.Pandoc.Definition (Pandoc(..), Inline(..), Block(..))
-import Text.Pandoc.Walk (walk, query)
-import Data.Maybe (isJust, fromJust)
-import Debug.Trace
-import Network.URI (unEscapeString)
-import Hakyll.Core.Identifier (toFilePath)
-import Text.Regex.PCRE.Heavy as PCRE
+import           Text.Pandoc                     (writePlain, def, nullMeta)
+import           Text.Pandoc.Definition          (Pandoc(..), Inline(..), Block(..))
+import           Text.Pandoc.Walk                (walk, query)
+import           Data.Maybe                      (isJust, fromJust)
+import           Debug.Trace
+import           Network.URI                     (unEscapeString)
+import           Hakyll.Core.Identifier          (toFilePath)
 
 --------------------------------------------------------------------------------
 main :: IO ()
