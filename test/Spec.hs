@@ -7,7 +7,7 @@ import Test.Hspec
 -- import Test.QuickCheck
 import System.Process
 import System.Exit
-import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, removeDirectoryRecursive, createDirectoryIfMissing, isSymbolicLink)
+import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, doesPathExist, removeDirectoryRecursive, createDirectoryIfMissing, isSymbolicLink)
 import Control.Monad
 import GHC.Generics
 import Data.Yaml
@@ -71,9 +71,14 @@ hblogTest autoTest dir = it (description autoTest) $ do
   mainDir <- getCurrentDirectory
   rm_rf $ dir </> "_site"
   rm_rf $ dir </> "_cache"
-  isl <- isSymbolicLink (dir </> "templates")
-  if isl then
-    return ()
+  dfe <- doesPathExist (dir </> "templates")
+  if dfe then
+    do
+      isl <- isSymbolicLink (dir </> "templates")
+      if isl then
+        return ()
+      else
+        createSymbolicLink (mainDir </> "templates") (dir </> "templates")
   else
     createSymbolicLink (mainDir </> "templates") (dir </> "templates")
   hblogRunCmd dir mainDir "hblog" ["build"]
