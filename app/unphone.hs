@@ -2,7 +2,6 @@
 Module      : unphone
 Description : Convert partial-markdown using special phone-friendly markup to our regular "wiki-style" markdown.  See "Phone Shortcuts" in DESIGN-CODE for full details.
 Copyright   : (c) Robin Lee Powell, 2016
-                  Someone Else, 2014
 License     : MIT
 Maintainer  : rlpowell@digitalkingdom.org
 Stability   : experimental
