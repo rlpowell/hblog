@@ -28,7 +28,7 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["about.rst", "contact.markdown"]) $ do
+    match (Hakyll.fromList ["about.rst", "contact.markdown"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
@@ -201,17 +201,22 @@ fixPath path =
 
 titleFixerInternal :: [(String, FilePath)] -> [(String, String)] -> Inline -> Inline
 -- titleFixerInternal titles link@(Link _ _ (url, _)) | trace ("url: " ++ (show url) ++ ", titles: " ++ (show titles)) False = undefined
-titleFixerInternal titles headers link@(Link x y (rawURL, z)) =
+titleFixerInternal titles headers link@(Link x text (rawURL, z)) =
   let fixedURL = unEscapeString rawURL
       maybePath = lookup fixedURL titles
       maybeHeader = lookup fixedURL headers
+      fixedText =
+        if length text == 0 then
+          [Str fixedURL]
+        else
+          text
   in
     if isJust maybePath then
       let newURL = "/" </> replaceExtension (fromJust maybePath) ".html" in
-        Link x y (newURL, z)
+        Link x fixedText (newURL, z)
     else
       if isJust maybeHeader then
-        Link x y ("#" ++ (fromJust maybeHeader), z)
+        Link x fixedText ("#" ++ (fromJust maybeHeader), z)
       else
         link
 titleFixerInternal _ _ x = x

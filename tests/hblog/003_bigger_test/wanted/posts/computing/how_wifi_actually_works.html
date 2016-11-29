@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>My Hakyll Blog - How WiFi Actually Works</title>
+        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../../">My Hakyll Blog</a>
+            </div>
+            <div id="navigation">
+                <a href="../../">Home</a>
+                <a href="../../about.html">About</a>
+                <a href="../../contact.html">Contact</a>
+                <a href="../../archive.html">Archive</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>How WiFi Actually Works</h1>
+
+            <div class="info">
+    Posted on August 25, 2015
+    
+<div class="soft">
+Cat in: <a href="../../categories/computing.html">computing</a>.
+Posted in: .
+</div>
+</div>
+
+<h1 id="note-no-tags">Note no tags</h1>
+<p>25-15:31 &lt; treed&gt; In the ideal situation for wifi, you have one station per AP, on non-overlapping channels</p>
+<p>25-15:31 &lt; treed&gt; which in the best possible 2.4Ghz case gets you 3 stations</p>
+<p>25-15:31 &lt; treed&gt; but the closer you can get to that ideal, the better</p>
+<p>25-15:31 &lt; rlpowell&gt; “station”?</p>
+<p>25-15:31 &lt; treed&gt; more APs and wire the fuck out of everything that can be wired</p>
+<p>25-15:32 &lt; treed&gt; generic term for “thing speaking wifi”</p>
+<p>25-15:32 &lt; rlpowell&gt; I’m sorry, are you telling me that the ideal ration of wifi consumer to WAP is 1:1 ?</p>
+<p>25-15:32 &lt; rlpowell&gt; Because if not, I’m lost.</p>
+<p>25-15:32 &lt; treed&gt; Absolutely.</p>
+<p>25-15:32 &lt; Tene&gt; rlpowell: Yes; that will get you optimal performance</p>
+<p>25-15:32 &lt; treed&gt; Having more than 1:1 means it has to share the air.</p>
+<p>25-15:32 &lt; treed&gt; And sharing means collisions.</p>
+<p>25-15:32 &lt; rlpowell&gt; OK, bear in mind that this is all magic to me.</p>
+<p>25-15:33 &lt; rlpowell&gt; It what?</p>
+<p>25-15:33 &lt; treed&gt; Remember how ethernet used to be before switches?</p>
+<p>25-15:33 &lt; rlpowell&gt; I have one Ubiquiti with perhaps 6 consumers at any given time.</p>
+<p>25-15:33 &lt; treed&gt; Where if one devices was talking, nothing else could talk?</p>
+<p>25-15:33 &lt; rlpowell&gt; 25-15:33 &lt; treed&gt; Remember how ethernet used to be before switches? – No.</p>
+<p>25-15:33 &lt; treed&gt; That is also true of wireless.</p>
+<p>25-15:33 &lt; Tene&gt; rlpowell: radio waves are a shared medium; remember how old ethernet hubs worked with collisions?</p>
+<p>25-15:33 &lt; treed&gt; Oh, well, that’s how it used to be.</p>
+<p>25-15:33 &lt; rlpowell&gt; ’k.</p>
+<p>25-15:33 &lt; treed&gt; One device could talk at a time</p>
+<p>25-15:33 &lt; treed&gt; if something else tried to talk, they’d both bail out and wait</p>
+<p>25-15:33 &lt; rlpowell&gt; I guess I vaaaaaaaguely remember that.</p>
+<p>25-15:34 &lt; treed&gt; ~g CSMA-CD</p>
+<p>25-15:34 &lt; Sexymans&gt; treed: https://en.wikipedia.org/wiki/Carrier_sense_multiple_access_with_collision_detection</p>
+<p>25-15:34 &lt; treed&gt; That’s what ethernet used to use</p>
+<p>25-15:34 &lt; treed&gt; wifi uses CSMA-CA, but it’s similar</p>
+<p>25-15:34 &lt; treed&gt; Only one thing can be talking on a shared medium at the same time</p>
+<p>25-15:34 &lt; treed&gt; otherwise you get interference</p>
+<p>25-15:34 &lt; treed&gt; think about being in the car on like AM radio</p>
+<p>25-15:35 &lt; treed&gt; and how if you’re in between the locations of the radio stations, you’ll get one or the other depending on like… where trees are and shit</p>
+<p>25-15:35 &lt; treed&gt; whichever one is being blocked less gets to you</p>
+<p>25-15:35 &lt; treed&gt; this applies to all radio</p>
+<p>25-15:35 &lt; rlpowell&gt; I had no idea that wifi counted as a shared medium in this sense.</p>
+<p>25-15:35 &lt; treed&gt; which is one reason the FCC regulates the airwaves</p>
+<p>25-15:35 &lt; rlpowell&gt; 25-15:35 &lt; treed&gt; and how if you’re in between the locations of the radio stations, – Of two radio stations on the same frequency, you mean.</p>
+<p>25-15:36 &lt; treed&gt; if everyone could just shit out anything they want on any frequency, you’d get… well you’d get wifi</p>
+<p>25-15:36 &lt; treed&gt; rlpowell: Yes.</p>
+<p>25-15:36 &lt; rlpowell&gt; OK.</p>
+<p>25-15:36 &lt; treed&gt; Radio, TV, and wifi are all on the same EM spectrum</p>
+<p>25-15:36 &lt; treed&gt; just different places</p>
+<p>25-15:36 &lt; rlpowell&gt; So given that I <em>don’t</em> want to spend $1000 on my home wifi, what do you suggest?</p>
+<p>25-15:36 &lt; treed&gt; so the same physics apply to all of them, if a little differently depending on their wavelength</p>
+<p>25-15:36 &lt; treed&gt; rlpowell: Best practical case is three APs on channels 1, 6, 11</p>
+<p>25-15:36 &lt; rlpowell&gt; I have a ubiquiti, a bunch of WRT-54GLs, and this trendnet thing, but <em>exactly one</em> place that the ethernet cable can go to the upstairs.</p>
+<p>25-15:36 &lt; treed&gt; spread out</p>
+<p>25-15:37 &lt; rlpowell&gt; And all the consumers are upstairs.</p>
+<p>25-15:37 &lt; treed&gt; and wire everything that you can</p>
+<p>25-15:37 &lt; treed&gt; so send that one cable up to a switch</p>
+<p>25-15:37 &lt; treed&gt; and then spread it out from there</p>
+<p>25-15:37 &lt; rlpowell&gt; Yeah, basically I can’t wire anything at all.</p>
+<p>25-15:37 &lt; rlpowell&gt; There’s no way to get the cables from RA’s office to anywhere else.</p>
+<p>25-15:37 &lt; rlpowell&gt; Come over for B5 and I’ll show you what I mean. :P</p>
+<p>25-15:38 &lt; rlpowell&gt; Like, it’s certainly <em>possible</em>, but <em>ugh</em>.</p>
+<p>25-15:38 &lt; rlpowell&gt; So we’ve been relying on wifi.</p>
+<p>25-15:38 &lt; treed&gt; other option: Point-to-point high-bandwidth link between the two floors</p>
+<p>25-15:38 &lt; treed&gt; and then ethernet from there</p>
+<p>25-15:38 &lt; treed&gt; when IMVU was split between two buildings we had two pairs of point-to-point wifi connecting the buildings</p>
+<p>25-15:38 &lt; treed&gt; with each side having its own ethernet network</p>
+<p>25-15:38 &lt; rlpowell&gt; So the router is in the basement, and we run ethernet to RA’s office.</p>
+<p>25-15:39 &lt; rlpowell&gt; Everything else is wifi. In particular, the living room, RA’s laptop, RJ’s laptop, and my room.</p>
+<p>25-15:39 &lt; treed&gt; So you have an upper floor ethernet network</p>
+<p>25-15:39 &lt; treed&gt; and then do a PTP link that <em>only</em> bridges the upper network to the lower network</p>
+<p>25-15:39 &lt; rlpowell&gt; No, that’s the thing; there’s no sane way to get cables from RA’s office to anywhere else.</p>
+<p>25-15:39 &lt; treed&gt; Yes</p>
+<p>25-15:39 &lt; treed&gt; So put it on the ceiling of her office</p>
+<p>25-15:39 &lt; treed&gt; Or is that on the top floor?</p>
+<p>25-15:39 &lt; rlpowell&gt; Which, the WAP?</p>
+<p>25-15:39 &lt; rlpowell&gt; her office is on the top floor.</p>
+<p>25-15:39 &lt; treed&gt; Two WAPs</p>
+<p>25-15:39 &lt; treed&gt; One on either side of a surface</p>
+<p>25-15:39 &lt; treed&gt; pointed at each other</p>
+<p>25-15:40 &lt; rlpowell&gt; Huh. OK. Why?</p>
+<p>25-15:40 &lt; treed&gt; Next best thing to drilling a hole through the wall</p>
+<p>25-15:40 &lt; treed&gt; You then only have one wifi link to care about</p>
+<p>25-15:40 &lt; treed&gt; and you wire everything else</p>
+<p>25-15:40 &lt; rlpowell&gt; I think we’re miscommunicating. I’ll show you the next time you come over.</p>
+<p>25-15:40 &lt; treed&gt; k</p>
+<p>25-15:40 &lt; rlpowell&gt; (i.e. your responses are not relating to what I believe I’m describing, so I’m giving up on text)</p>
+<p>25-15:40 &lt; treed&gt; k</p>
+<p>25-15:41 &lt; rlpowell&gt; treed: Ignoring that aspect of it, though: 3 WAPs on 1/6/11 ; would they be different SSIDs or bridged or what?</p>
+<p>25-15:41 &lt; treed&gt; rlpowell: In general an answer to “I can’t run a cable from point A to point B” is “so make a point-to-point wireless link”</p>
+<p>25-15:41 &lt; treed&gt; Same SSID, and bridged.</p>
+<p>25-15:42 &lt; treed&gt; Wifi clients will automatically get the strongest one and switch as necessary</p>
+<p>25-15:42 &lt; treed&gt; if they have the same SSID</p>
+<p>25-15:42 &lt; treed&gt; and security settings</p>
+<p>25-15:42 &lt; rlpowell&gt; treed: “point-to-point wireless link” here means “a wap on each end with <em>no other job</em> than to talk to this specific other thing”, yes?</p>
+<p>25-15:42 &lt; treed&gt; Yes.</p>
+<p>25-15:42 &lt; treed&gt; This thing talks to this thing, directionally. Nothing else talks to either thing on wireless, but they bridge two separate segments of wired network.</p>
+<p>25-15:42 &lt; rlpowell&gt; And that’s significantly better than having a bunch of clients on one WAP, I imagine.</p>
+<p>25-15:43 &lt; treed&gt; You can actually buy directional antennas that work better for this specific purpose.</p>
+<p>25-15:43 &lt; rlpowell&gt; Because I can <em>do</em> that; I’ve got lie 3 WRT54GLs lying around.</p>
+<p>25-15:43 &lt; rlpowell&gt; Oh?</p>
+<p>25-15:43 &lt; treed&gt; Right.</p>
+<p>25-15:43 &lt; treed&gt; Yeah, most WAP antennas are omnidirecitonal</p>
+<p>25-15:43 &lt; treed&gt; but you can buy aftermarket antennas</p>
+<p>25-15:43 &lt; treed&gt; including extra gain</p>
+<p>25-15:43 &lt; rlpowell&gt; <em>nod</em></p>
+<p>25-15:43 &lt; rlpowell&gt; That seems like worth doing for my room, for example.</p>
+<p>25-15:43 &lt; treed&gt; (which may actually contravene FCC rules depending on how you do it)</p>
+<p>25-15:43 &lt; rlpowell&gt; Because that’s the one place in the house where the internet <em>has to</em> work, and it routinely doesn’t. -_-</p>
+<p>25-15:44 &lt; treed&gt; But, if they’re just on the other side of the wall from each other, you can probably get away with stock antennas.</p>
+<p>25-15:44 &lt; rlpowell&gt; hahahah no.</p>
+<p>25-15:44 &lt; treed&gt; So if you have three extra WAPS, you have A))~<sub>~</sub>((B—–C-))</p>
+<p>25-15:44 &lt; rlpowell&gt; Well what i was specifically thinking of is dedicating 2 WAPs just to my room.</p>
+<p>25-15:45 &lt; rlpowell&gt; For each end of that connection.</p>
+<p>25-15:45 &lt; treed&gt; where ((()) is wifi, ~~ is a wireless connection, and – is wired</p>
+<p>25-15:45 &lt; rlpowell&gt; Yeah.</p>
+<p>25-15:45 &lt; treed&gt; or C can be a regular switch</p>
+<p>25-15:45 &lt; treed&gt; plugged into desktops and whatnot</p>
+<p>25-15:45 &lt; rlpowell&gt; The annoying part is that the WRT54GLs are 802.11g. :P</p>
+<p>25-15:45 &lt; treed&gt; yeah</p>
+<p>25-15:45 &lt; treed&gt; But a better signal at a lower speed is probably preferable to shit signal of whatever speed.</p>
+<p>25-15:45 &lt; rlpowell&gt; True dat.</p>
+<p>25-15:45 &lt; treed&gt; also I’ve found that WRT54GLs can’t do gigabit ethernet very well either</p>
+<p>25-15:46 &lt; rlpowell&gt; But now that I’ve got this trendnet thingy I could burn that to fixing up my room.</p>
+<p>25-15:46 &lt; rlpowell&gt; treed: I don’t think anything I have does gigabit.</p>
+<p>25-15:46 &lt; treed&gt; wat</p>
+<p>25-15:46 &lt; treed&gt; Is everything you own from the 90s?</p>
+<p>25-15:46 &lt; rlpowell&gt; The reason I care about N in my room is that sometimes we do steam in-home streaming.</p>
+<p>25-15:47 &lt; rlpowell&gt; treed: “actually is doing gigabit in practice”; I’m sure it’s mostly capable of doing so.</p>
+<p>25-15:47 &lt; treed&gt; Ah.</p>
+<p>25-15:47 &lt; rlpowell&gt; My ethernet cables probably <em>are</em> from the 90s. :D</p>
+<p>25-15:47 &lt; treed&gt; s/does/needs/</p>
+<p>25-15:47 &lt; rlpowell&gt; I thought you needed cat 6 for gigabit?</p>
+<p>25-15:47 &lt; rlpowell&gt; Like I didn’t think gigabit would just work; ithoughty ou needed special shit.</p>
+<p>25-15:47 &lt; Tene&gt; Nope</p>
+<p>25-15:48 &lt; treed&gt; nope</p>
+<p>25-15:48 &lt; treed&gt; cat 5e is totally sufficient for gigabit</p>
+<p>25-15:48 &lt; treed&gt; you need 6 for 10G</p>
+<p>25-15:48 &lt; rlpowell&gt; Huh.</p>
+<p>25-15:48 &lt; rlpowell&gt; TIL.</p>
+<p>25-15:48 &lt; treed&gt; Yeah, gigabit is old as balls now dude</p>
+<p>25-15:48 &lt; rlpowell&gt; Maybe I’m thinking 10G then?</p>
+<p>25-15:48 &lt; treed&gt; Nothing should do less than gigabit.</p>
+<p>25-15:48 &lt; treed&gt; You probably are.</p>
+<p>25-15:48 &lt; rlpowell&gt; That would explain this conversation a lot.</p>
+<p>25-15:48 &lt; treed&gt; Well, nothing wired should do less than gigabit.</p>
+<p>25-15:48 &lt; treed&gt; 40Gb is a thing now</p>
+<p>25-15:49 &lt; treed&gt; And 100Gb is coming if not already here</p>
+<p>25-15:49 &lt; treed&gt; We just deployed 10Gb network shit at IMVU.</p>
+<p>25-15:49 &lt; rlpowell&gt; 25-15:48 &lt; treed&gt; 40Gb is a thing now – Goo lord.</p>
+<p>25-15:49 &lt; rlpowell&gt; treed: This has been a hugely informative discussion, thank you.</p>
+<p>25-15:49 &lt; treed&gt; NP</p>
+<p>25-15:49 &lt; treed&gt; rlpowell: We actually use 40Gb in production too</p>
+<p>25-15:49 &lt; treed&gt; but just for cross-connection between the two core switches</p>
+<p>25-15:49 &lt; rlpowell&gt; WRT interference: I guess I think of clients as being “consumers” if you will.</p>
+<p>25-15:49 &lt; treed&gt; I think it’s actually a pair of 40Gb links</p>
+<p>25-15:50 &lt; treed&gt; rlpowell: That would be true if you never had to send data.</p>
+<p>25-15:50 &lt; treed&gt; TV/radio are definitely producer/consumer</p>
+<p>25-15:50 &lt; treed&gt; but all wifi stations talk</p>
+<p>25-15:50 &lt; rlpowell&gt; Going to expand on that in a minute.</p>
+<p>25-15:54 &lt; rlpowell&gt; So I guess my intuitive sense is that each client is talking seperately to the WAP?</p>
+<p>25-15:54 &lt; rlpowell&gt; Because they’re each in a different direction.</p>
+<p>25-15:54 &lt; treed&gt; Ah.</p>
+<p>25-15:54 &lt; rlpowell&gt; But what I’m hearing you say is that whichever one is talking loudest wins because physics.</p>
+<p>25-15:54 &lt; treed&gt; That’s kinda how it works with MIMO.</p>
+<p>25-15:55 &lt; rlpowell&gt; I’m visualizing a pool of water and imagining signalling someone by making waves, and it’s fairly obvious there that if two of us are talking at once we’re fucked.</p>
+<p>25-15:55 &lt; treed&gt; MIMO is a thing that became available as of N, where it’ll actually have multiple distinct antennas for talking to different devices.</p>
+<p>25-15:55 &lt; treed&gt; Yup.</p>
+<p>25-15:55 &lt; rlpowell&gt; Yeah, that … explains a lot.</p>
+<p>25-15:55 &lt; rlpowell&gt; So like my dropbox, which is a constant-communication sort of thing, could fuck other people’s ability to do anything just because it keeps talking all the time.</p>
+<p>25-15:56 &lt; treed&gt; Everything is talking all the time, but yeah.</p>
+<p>25-15:56 &lt; rlpowell&gt; And TCP is bi-directional, so that alone could explain why it all goes to shit when the girls watch something on netflix.</p>
+<p>25-15:56 &lt; treed&gt; CSMA-CA means that the wifi card will be watching</p>
+<p>25-15:56 &lt; treed&gt; trying to wait for the pool to be still</p>
+<p>25-15:56 &lt; rlpowell&gt; Like we were doing OK-ish and then you added one more talker and suddenly the pool is <em>never</em> still.</p>
+<p>25-15:56 &lt; treed&gt; so it’ll buffer up a little bit and then send</p>
+<p>25-15:56 &lt; treed&gt; so it’s not as bad as it could be</p>
+<p>25-15:56 &lt; treed&gt; (The CA there stands for “carrier avoidance”, as opposed to the mere “carrier detection” that 802.3 (ethernet) did)</p>
+<p>25-15:57 &lt; rlpowell&gt; You get that this convo implies that basically everyone is doing wifi wrong, yeah?</p>
+<p>25-15:57 &lt; treed&gt; Yup.</p>
+<p>25-15:57 &lt; rlpowell&gt; Like every office I’ve ever been in has 20:1 or more wifi ratios.</p>
+<p>25-15:57 &lt; rlpowell&gt; (why the fuck do my fingers keep typing “rations”? :P )</p>
+<p>25-15:57 &lt; treed&gt; This also explains why my apartment has the best goddamn wifi.</p>
+<p>25-15:57 &lt; treed&gt; I get 80Mbit to my couch.</p>
+<p>25-15:57 &lt; rlpowell&gt; :D</p>
+<p>25-15:57 &lt; treed&gt; or more</p>
+<p>25-15:57 &lt; treed&gt; I can pull from steam at 11-12MB/sec</p>
+<p>25-15:57 &lt; treed&gt; It’ll actually be better soon too</p>
+<p>25-15:58 &lt; treed&gt; Since I got my SRX-240 configured and running, I can now move the switch I had in my closet out to the TV stand</p>
+<p>25-15:58 &lt; treed&gt; and wire up the PS4, TV, and Chromecast</p>
+<p>25-15:58 &lt; treed&gt; which removes three things from my wifi</p>
+<p>25-15:58 &lt; rlpowell&gt; <em>nod</em></p>
+<p>25-15:58 &lt; treed&gt; Regarding 20:1 on office wifi: Yuuuuuup</p>
+<p>25-15:58 &lt; treed&gt; Notably</p>
+<p>25-15:58 &lt; treed&gt; When I’m at home, sitting around doing nothing, my phone uses like no power</p>
+<p>25-15:58 &lt; treed&gt; but a day of sitting around doing nothing at the office will eat like half the battery</p>
+<p>25-15:58 &lt; treed&gt; because it has to use so much more power on the wifi</p>
+<p>25-15:58 &lt; rlpowell&gt; Because it’s spending all its time fi.. yeah.</p>
+<p>25-15:59 &lt; rlpowell&gt; Fuck I have learned so much in this conversation. :D</p>
+<p>25-15:59 &lt; treed&gt; :D</p>
+<p>25-15:59 &lt; treed&gt; So, I lucked out when I got my current place</p>
+<p>25-15:59 &lt; rlpowell&gt; Do you mind if I save it off somewhere web-accessible for future editing?</p>
+<p>25-15:59 &lt; rlpowell&gt; (i.e. do you care if this is on the web verbatim for now?)</p>
+<p>25-15:59 &lt; treed&gt; it actually has a switching panel in the closet with 4 ethernet jacks that go to different places</p>
+<p>25-15:59 &lt; treed&gt; Nah, go for it.</p>
+
+<p>
+Browse: 
+</p>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
