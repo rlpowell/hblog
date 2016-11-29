@@ -15,10 +15,22 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      lib
   exposed-modules:     HBlog.Lib
+                     , Text.Pandoc.Readers.TikiWiki
+                     , Text.Pandoc.Parsing
+                     , Text.Pandoc.Asciify
   build-depends:       base >= 4.7 && < 5
                      , pcre-light
                      , pcre-heavy
                      , template-haskell
+                     , pandoc
+                     , pandoc-types
+                     , parsec
+                     , network-uri
+                     , containers
+                     , texmath
+                     , tagsoup
+                     , mtl
+                     , data-default
   default-language:    Haskell2010
 
 executable hblog
@@ -32,6 +44,9 @@ executable hblog
                   , blaze-html
                   , containers
                   , string-conversions
+                  , pandoc-types
+                  , network-uri
+                  , pandoc
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
@@ -39,12 +54,13 @@ executable tiki_to_md
   main-is:          tiki_to_md.hs
   hs-source-dirs:   app
   build-depends:    base == 4.*
-                  , hakyll == 4.9.*
-                  , pcre-heavy
                   , filepath
-                  , unix
-                  , blaze-html
-                  , containers
+                  , pandoc
+                  , pandoc-types
+                  , hblog
+                  , filemanip
+                  , directory
+                  , text
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
@@ -70,6 +86,14 @@ executable rectifier
                   , filepath
                   , unix
                   , filemanip
+                  , pandoc
+                  , pandoc-types
+                  , network-uri
+                  , pcre-heavy
+                  , pcre-light
+                  , bytestring
+                  , edit-distance
+                  , text
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
@@ -85,6 +109,7 @@ test-suite hblog-test
                      , transformers
                      , yaml
                      , filepath
+                     , unix
   ghc-options:         -threaded -Wall
   default-language:    Haskell2010
 
