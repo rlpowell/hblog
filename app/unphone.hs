@@ -20,10 +20,7 @@ import          System.FilePath
 -- import          System.Posix.Files
 import          System.Environment
 import          Text.Regex.PCRE.Heavy as PCRE
-import          Text.Regex.PCRE.Light.Base as PCREL
 import          System.FilePath.Find
-import          Control.Monad
-import          Data.Monoid
 import          HBlog.Lib
 
 --------------------------------------------------------------------------------
