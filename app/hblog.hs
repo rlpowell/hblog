@@ -18,6 +18,14 @@ import           Text.Blaze.Html                 (toHtml, toValue, (!))
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
 -- import qualified Data.Map                        as M
+import Text.Pandoc (writePlain, def, nullMeta)
+import Text.Pandoc.Definition (Pandoc(..), Inline(..), Block(..))
+import Text.Pandoc.Walk (walk, query)
+import Data.Maybe (isJust, fromJust)
+import Debug.Trace
+import Network.URI (unEscapeString)
+import Hakyll.Core.Identifier (toFilePath)
+import Text.Regex.PCRE.Heavy as PCRE
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -42,14 +50,13 @@ main = hakyll $ do
 
     ids <- getMatches "posts/**"
 
-    titles <- mapM getTitle ids
+    titles <- trace "wibble" $ fmap mconcat $ mapM getTitlePair ids
 
-    match ("posts/**" .&&. complement "**/index.html") $ do
+    match "posts/**" $ do
+    -- match ("posts/**" .&&. complement "**/index.html") $ do
         route $ setExtension "html"
         compile $ do
-            wikiCompiler titles
-            -- pandocCompiler
-            >>= renderPandoc
+            pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions (titleFixer titles)
             >>= loadAndApplyTemplate "templates/post.html"    (postCtx tags categories)
             >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories)
             >>= relativizeUrls
@@ -153,10 +160,13 @@ postCtx tags categories = mconcat [
     ]        
 
 -- Pulls the title metadata out for an item
-getTitle :: MonadMetadata m => Identifier -> m String
-getTitle identifier = do
+getTitlePair :: MonadMetadata m => Identifier -> m [(String, FilePath)]
+getTitlePair identifier = do
     metadata <- getMetadataField identifier "title"
-    return $ maybe [] id metadata
+    if isJust metadata then
+      return $ [(fromJust metadata, toFilePath $ identifier)]
+    else
+      return []
 
 -- Get the first directory name after posts/ , call that the category
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
@@ -183,30 +193,35 @@ myGetTags identifier = do
     cat <- myGetCategory identifier
     return $ maintags ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
 
--- wikiCompiler :: [String] -> Item String -> Compiler (Item String)
--- wikiCompiler titles (Item i x) = do
---     return (Item i ((toFilePath i) ++ (intercalate " -- " titles)))
+getHeaders :: Block -> [(String, String)]
+getHeaders (Header _ (slug, _, _) xs) = [(writePlain def $ Pandoc nullMeta $ [Plain xs], slug)]
+getHeaders _ = []
 
-wikiCompiler :: [String] -> Compiler (Item String)
-wikiCompiler titles = do
-    -- FIXME: describe
-    filePath <- toFilePath <$> getUnderlying
-    -- FIXME: describe
-    makeItem =<< unsafeCompiler (unWiki titles filePath)
+titleFixer :: [(String, FilePath)] -> Pandoc -> Pandoc
+titleFixer titles doc = 
+  let headers = query getHeaders doc in
+    walk (titleFixerInternal titles headers) doc
 
-unWiki :: [String] -> String -> IO String
-unWiki titles filePath = do
-    body <- readFile filePath
-    case filePath of
-    -- FIXME: remove
-      "posts/personal/my_views_on_the_future.md" ->
-          let newBody = gsub [re|\s(qq[a-z]+)\s(.*?)\sqq\s|] (unWikiReplacer titles) body in do
-            _ <- writeFile (filePath ++ ".hblog.tmp") newBody
-            rename (filePath ++ ".hblog.tmp") filePath
-            return newBody
-      _ -> return body
+fixPath :: FilePath -> FilePath
+fixPath path =
+  if takeExtension path == ".md" then
+    "/" </> replaceExtension path ".html"
+  else
+    "/" </> path
 
-unWikiReplacer :: [String] -> String -> [String] -> String
-unWikiReplacer titles match subList = case length subList > 0 of
-        True -> " --" ++ subList!!1 ++ "-- "
-        False -> match
+titleFixerInternal :: [(String, FilePath)] -> [(String, String)] -> Inline -> Inline
+-- titleFixerInternal titles link@(Link _ _ (url, _)) | trace ("url: " ++ (show url) ++ ", titles: " ++ (show titles)) False = undefined
+titleFixerInternal titles headers link@(Link x y (rawURL, z)) =
+  let fixedURL = unEscapeString rawURL
+      maybePath = lookup fixedURL titles
+      maybeHeader = lookup fixedURL headers
+  in
+    if isJust maybePath then
+      let newURL = "/" </> replaceExtension (fromJust maybePath) ".html" in
+        Link x y (newURL, z)
+    else
+      if isJust maybeHeader then
+        Link x y ("#" ++ (fromJust maybeHeader), z)
+      else
+        link
+titleFixerInternal _ _ x = x
