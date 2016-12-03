@@ -1,6 +1,4 @@
 ---
-origdate: '2222-08-25'
-published: '2222-08-25'
 tags: 'transhumanism, fiction'
 title: 'Post-Singularity And Transhumanist Fiction I''ve Enjoyed'
 ---

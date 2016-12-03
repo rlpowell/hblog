@@ -1,6 +1,4 @@
 ---
-origdate: '2015-08-25'
-published: '2015-08-25'
 title: How WiFi Actually Works
 ---
 

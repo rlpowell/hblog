@@ -1,7 +1,5 @@
 ---
 title: MD Test
-origdate: 2222-08-25
-published: 2222-08-25
 ---
 Key Bindings
 ============

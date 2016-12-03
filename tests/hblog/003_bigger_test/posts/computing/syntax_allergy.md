@@ -1,6 +1,4 @@
 ---
-origdate: '14 Nov 2012 (or earlier)'
-published: '2012-11-14'
 tags: 'programming, psychology'
 title: My Allergy To Syntax In Programming Languages
 ---
