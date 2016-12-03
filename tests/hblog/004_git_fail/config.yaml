@@ -1,0 +1,3 @@
+description: fails when it can't check post's git commit times
+type: hblog-fail
+stderr: which was supposed to be the orig date
