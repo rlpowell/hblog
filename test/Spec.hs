@@ -29,9 +29,9 @@ instance FromJSON AutoTest where
 -- sure we fail in the right way, or we get the output as a
 -- "foo\nbar\n" sort of string.
 runCmd :: AutoTest -> String -> [String] -> String -> Bool -> IO ()
-runCmd autoTest cmd args stdin failType = do
+runCmd autoTest cmd args stdin shouldFail = do
   (exit, stdout, stderr) <- readProcessWithExitCode cmd args stdin
-  if failType then
+  if shouldFail then
     do
       exit `shouldNotBe` ExitSuccess
       (stdout ++ stderr) `shouldContain` (tstderr autoTest)
@@ -45,18 +45,24 @@ runCmd autoTest cmd args stdin failType = do
     else
       exit `shouldBe` ExitSuccess
 
-hblogRunCmd :: FilePath -> FilePath -> String -> [String] -> IO ()
-hblogRunCmd appDir mainDir cmd args = do
+hblogRunCmd :: Bool -> AutoTest -> FilePath -> FilePath -> String -> [String] -> IO ()
+hblogRunCmd shouldFail autoTest appDir mainDir cmd args = do
   setCurrentDirectory appDir
   (exit, stdout, stderr) <- readProcessWithExitCode cmd args ""
   setCurrentDirectory mainDir
-  if exit /= ExitSuccess then
-    -- Gives us the properly formatted output
-    expectationFailure $ 
-      "stdout: \n\n" ++ stdout ++
-      "\n\nstderr: \n\n" ++ stderr
+  if shouldFail then
+    do
+      exit `shouldNotBe` ExitSuccess
+      (stdout ++ stderr) `shouldContain` (tstderr autoTest)
+      -- (stderr =~ (compile (pack (tstderr autoTest)) [])) `shouldBe` True
   else
-    exit `shouldBe` ExitSuccess
+    if exit /= ExitSuccess then
+      -- Gives us the properly formatted output
+      expectationFailure $ 
+        "stdout: \n\n" ++ stdout ++
+        "\n\nstderr: \n\n" ++ stderr
+    else
+      exit `shouldBe` ExitSuccess
 
 rm_rf :: FilePath -> IO ()
 rm_rf dir = do
@@ -66,8 +72,8 @@ rm_rf dir = do
   else
     return ()
 
-hblogTest :: AutoTest -> FilePath -> SpecWith ()
-hblogTest autoTest dir = it (description autoTest) $ do
+hblogTest :: Bool -> AutoTest -> FilePath -> SpecWith ()
+hblogTest shouldFail autoTest dir = it (description autoTest) $ do
   mainDir <- getCurrentDirectory
   rm_rf $ dir </> "_site"
   rm_rf $ dir </> "_cache"
@@ -81,9 +87,15 @@ hblogTest autoTest dir = it (description autoTest) $ do
         createSymbolicLink (mainDir </> "templates") (dir </> "templates")
   else
     createSymbolicLink (mainDir </> "templates") (dir </> "templates")
-  hblogRunCmd dir mainDir "hblog" ["build"]
+
+  hblogRunCmd shouldFail autoTest dir mainDir "hblog" ["build"]
   rm_rf $ dir </> "_cache"
-  hblogRunCmd dir mainDir "diff" ["-r", (mainDir </> dir </> "_site"), (mainDir </> dir </> "wanted")]
+
+  if (ttype autoTest) == "hblog" then
+    do
+      hblogRunCmd shouldFail autoTest dir mainDir "diff" ["-r", (mainDir </> dir </> "wanted"), (mainDir </> dir </> "_site")]
+  else
+    return ()
 
 pathKids :: Bool -> FilePath -> IO [FilePath]
 pathKids full dir = do
@@ -112,7 +124,7 @@ genTest prog autoTest dir = it (description autoTest) $ do
   else
     do
       runCmd autoTest prog [indir, outdir] "" False
-      runCmd autoTest "diff" ["-r", outdir, wanteddir] "" False
+      runCmd autoTest "diff" ["-r", wanteddir, outdir] "" False
 
 genDirTests :: String -> FilePath -> Spec
 genDirTests prog dir = do
@@ -120,9 +132,12 @@ genDirTests prog dir = do
   case eitherAutoTest of
     Left parseBad -> error $ "\n\nYAML parse fail on config.yaml in " ++ dir ++ " with error " ++ (show parseBad) ++ "\n\n"
     Right autoTest -> if (ttype autoTest) == "hblog" then
-                        hblogTest autoTest dir
+                        hblogTest False autoTest dir
                       else
-                        genTest prog autoTest dir
+                        if (ttype autoTest) == "hblog-fail" then 
+                          hblogTest True autoTest dir
+                        else
+                          genTest prog autoTest dir
 
 genProgDirTests :: FilePath -> Spec
 genProgDirTests prog = do
