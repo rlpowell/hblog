@@ -1,7 +1,5 @@
 ---
 title: My Views On The Future
-origdate: 2222-08-25
-published: 2222-08-25
 tags: transhumanism, psychology, futurism
 ---
 

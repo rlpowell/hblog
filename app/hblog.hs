@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TupleSections #-}
 module Main where
 import           Data.List
 import           Hakyll
@@ -16,6 +17,20 @@ import           Data.Maybe                      (isJust, fromJust)
 import           Debug.Trace
 import           Network.URI                     (unEscapeString)
 import           Hakyll.Core.Identifier          (toFilePath)
+import           Data.Time.Clock                 (UTCTime)
+import           System.Process                  (readProcessWithExitCode)
+import           System.Exit                     (ExitCode(..))
+import qualified Data.Map                        as M
+import           Data.Either                     (either)
+import           Control.Monad.IO.Class          (liftIO)
+import Control.Monad.Trans.Class (lift)
+import Data.Time.Format (TimeLocale, formatTime, parseTimeM, defaultTimeLocale)
+import Control.Monad (liftM, msum)
+import Data.Ord (comparing)
+import System.Directory (getCurrentDirectory, setCurrentDirectory)
+import           Data.Time.Locale.Compat       (TimeLocale, defaultTimeLocale) 
+import Text.Read (readMaybe)
+import Data.Maybe (isJust, isNothing, fromJust)
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -40,23 +55,25 @@ main = hakyll $ do
 
     ids <- getMatches "posts/**"
 
-    titles <- trace "wibble" $ fmap mconcat $ mapM getTitlePair ids
+    titles <- fmap mconcat $ mapM getTitlePair ids
+
+    gitTimes <- fmap mconcat $ preprocess $ mapM getGitTimes ids
 
     match "posts/**" $ do
     -- match ("posts/**" .&&. complement "**/index.html") $ do
         route $ setExtension "html"
         compile $ do
             pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions (titleFixer titles)
-            >>= loadAndApplyTemplate "templates/post.html"    (postCtx tags categories)
-            >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories)
+            >>= loadAndApplyTemplate "templates/post.html"    (postCtx tags categories gitTimes)
+            >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories gitTimes)
             >>= relativizeUrls
 
 --     create ["categories.html"] $ do
 --         route idRoute
 --         compile $ do
---             posts <- recentFirst =<< loadAll "categories/*"
+--             posts <- (myRecentFirst gitTimes) =<< loadAll "categories/*"
 --             let archiveCtx =
---                     listField "posts" (postCtx tags categories) (return posts) `mappend`
+--                     listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
 --                     constField "title" "Archives"            `mappend`
 --                     defaultContext
 -- 
@@ -69,9 +86,9 @@ main = hakyll $ do
     create ["archive.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/**"
+            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
             let archiveCtx =
-                    listField "posts" (postCtx tags categories) (return posts) `mappend`
+                    listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
                     constField "title" "Archives"            `mappend`
                     defaultContext
 
@@ -84,9 +101,9 @@ main = hakyll $ do
     match "index.html" $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/**"
+            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
             let indexCtx = mconcat [
-                    listField "posts" (postCtx tags categories) (return posts)
+                    listField "posts" (postCtx tags categories gitTimes) (return posts)
                     , tagCloudField "tags" 120 200 tags
                     , tagCloudField "categories" 120 200 categories
                     , constField "title" "Home"
@@ -107,9 +124,9 @@ main = hakyll $ do
         -- Copied from posts, need to refactor
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll pattern
+            posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
-                        listField "posts" (postCtx tags categories) (return posts) `mappend`
+                        listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
                         defaultContext
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
@@ -123,9 +140,9 @@ main = hakyll $ do
         -- Copied from posts, need to refactor
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll pattern
+            posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
-                        listField "posts" (postCtx tags categories) (return posts) `mappend`
+                        listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
                         defaultContext
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
@@ -136,18 +153,11 @@ main = hakyll $ do
         -- version "rss" $ do
         --     route   $ setExtension "xml"
         --     compile $ loadAllSnapshots pattern "content"
-        --         >>= fmap (take 10) . recentFirst
+        --         >>= fmap (take 10) . (myRecentFirst gitTimes)
         --         >>= renderRss (feedConfiguration title) feedCtx
 
 
 --------------------------------------------------------------------------------
-postCtx :: Tags -> Tags -> Context String
-postCtx tags categories = mconcat [
-    dateField "date" "%B %e, %Y"
-    , myCategoryField "category" categories
-    , tagsField "tags" tags
-    , defaultContext
-    ]        
 
 -- Pulls the title metadata out for an item
 getTitlePair :: MonadMetadata m => Identifier -> m [(String, FilePath)]
@@ -174,6 +184,9 @@ simpleRenderLink tag (Just filePath) =
 
 -- | Obtain tags from a page in the default way: parse them from the @tags@
 -- metadata field.
+--
+--does stuff with categories and : and stuff; maybe explain in
+--DESIGN-CODE
 --
 -- FIXME: exmaple
 myGetTags :: MonadMetadata m => Identifier -> m [String]
@@ -220,3 +233,154 @@ titleFixerInternal titles headers link@(Link x text (rawURL, z)) =
       else
         link
 titleFixerInternal _ _ x = x
+
+--------------------------- Date Handling ------------------------------
+
+data GitTimes = GitTimes { gtid :: Identifier, gtlatest :: UTCTime, gtinitial :: UTCTime } deriving (Ord, Eq, Show)
+
+getGitTimes :: Identifier -> IO [GitTimes]
+getGitTimes identifier = do
+    let path = toFilePath identifier
+    -- Strip off the "posts/" part
+    let gitFilePath = joinPath $ drop 1 $ splitPath path
+    let gitRepoPath = joinPath $ take 1 $ splitPath path
+
+    (exit1, stdout1, stderr1) <- readProcessWithExitCode "git" ["-C", gitRepoPath, "log", "--diff-filter=A", "--follow", "--format=%ai", "-n", "1", "--", gitFilePath] ""
+    if exit1 /= ExitSuccess then
+      do fail $ "getGitTimes: Couldn't get the date of the first commit for " ++ path ++ ", error: " ++ stderr1
+    else
+      return ()
+    let origtimeMaybe = readMaybe stdout1 :: Maybe UTCTime
+    -- let origtime = read (trace ("std: " ++ stdout1 ++ ", " ++ stderr1) stdout1) :: ZonedTime
+    if isNothing origtimeMaybe then
+      do fail $ "getGitTimes: couldn't parse " ++ stdout1 ++ " as a date, which was supposed to be the orig date for " ++ path ++ ".  This error message might help: " ++ stderr1
+    else
+      return ()
+
+    (exit2, stdout2, stderr2) <- readProcessWithExitCode "git" ["-C", gitRepoPath, "log", "--format=%ai", "-n", "1", gitFilePath] ""
+    if exit2 /= ExitSuccess then
+      do fail $ "getGitTimes: Couldn't get the date of the latest/last commit for " ++ path
+    else
+      return ()
+    let curtimeMaybe = readMaybe stdout2 :: Maybe UTCTime
+    -- let curtime = read (trace ("std: " ++ stdout2 ++ ", " ++ stderr2) stdout2) :: ZonedTime
+    if isNothing curtimeMaybe then
+      do fail $ "getGitTimes: couldn't parse " ++ stdout2 ++ " as a date, which was supposed to be the orig date for " ++ path ++ ".  This error message might help: " ++ stderr2
+    else
+      return ()
+
+    return [GitTimes identifier (fromJust curtimeMaybe) (fromJust origtimeMaybe)]
+
+gitTimeToField :: [GitTimes] -> (GitTimes -> UTCTime) -> (Item String -> Compiler String)
+gitTimeToField times typeF = \ident -> return $ getGitTime (itemIdentifier ident) times typeF
+
+getGitTime :: Identifier -> [GitTimes] -> (GitTimes -> UTCTime) -> String
+getGitTime ident times typeF = formatTime defaultTimeLocale "%B %e, %Y" $ getGitTimeUTC ident times typeF
+
+myRecentFirst gtimes = recentFirstWith $ (\x -> getGitTimeUTC x gtimes gtlatest)
+
+getGitTimeUTC :: Identifier -> [GitTimes] -> (GitTimes -> UTCTime) -> UTCTime
+getGitTimeUTC ident times typeF =
+  let timeList = filter (\x -> ident == (gtid x)) times in
+    if length timeList /= 1 then
+      -- It's not obvious to me how this could occur even in theory; I'd expect it to error out during getGitTimes
+      error $ "getGitTime: Couldn't find the time for " ++ (show ident) ++ " in GitTimes list " ++ (show times)
+    else
+      typeF $ head $ trace ("timelist: "++(show timeList)) timeList
+
+getGitTimeUTCCompiler :: [GitTimes] -> (GitTimes -> UTCTime) -> Identifier -> Compiler UTCTime
+getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes typeF
+
+postCtx :: Tags -> Tags -> [GitTimes] -> Context String
+postCtx tags categories gtimes = mconcat [
+    -- We always use the last_mod_date from git; if you want to
+    -- override that, make a new git commit and use --date
+    field  "last_mod_date" (gitTimeToField gtimes gtlatest)
+    , dateFieldWithFallback defaultTimeLocale ((flip getMetadataField) "orig_date") (getGitTimeUTCCompiler gtimes gtinitial) "orig_date" "%B %e, %Y"
+    , constField "gitTimes" $ show gtimes
+    , myCategoryField "category" categories
+    , tagsField "tags" tags
+    , defaultContext
+    ]
+
+--------------------------- Extra Date Handling ------------------------------
+-- "With" versions of stuff from
+-- hakyll-4.9.0.0/src/Hakyll/Web/Template/List.hs (chronological /
+-- recentFirst) and
+-- hakyll-4.9.0.0/src/Hakyll/Web/Template/Context.hs (getItemUTC,
+-- dateField)
+
+--------------------------------------------------------------------------------
+-- | Defines a date field by parsing the given string, if it exists;
+-- if not, uses the UTCTime given instead.
+--
+-- The use case here was "use the metadata field if it exists,
+-- otherwise get UTCTime values from git".
+dateFieldWithFallback :: TimeLocale                               --  ^ Output time locale
+                      -> (Identifier -> Compiler (Maybe String))  --  ^ Function that returns a string to turn into a date;
+                                                                  --    if Just, then we use this value, even if it doesn't parse as a date
+                      -> (Identifier -> Compiler UTCTime)         --  ^ Function that returns a date to use if the string is a Nothing
+                      -> String                                   --  ^ Destination key
+                      -> String                                   --  ^ Format to use on the date
+                      -> Context a                                --  ^ Resulting context
+dateFieldWithFallback locale getDateString getDateUTC key format = field key $ \i -> do
+    let ident = itemIdentifier i
+    maybeDateString <- getDateString ident
+    dateUTC <- getDateUTC ident
+    if isJust maybeDateString then
+      do
+        time <- stringToUTC (fromJust maybeDateString) defaultTimeLocale ident
+        return $ formatTime locale format time
+    else
+      do return $ formatTime locale format dateUTC
+
+
+--------------------------------------------------------------------------------
+-- | Does the actual parsing for dateFieldWithFallback; in
+-- hakyll-4.9.0.0/src/Hakyll/Web/Template/Context.hs this was called
+-- getItemUTC, but I moved the actual Item part outwards.
+stringToUTC :: MonadMetadata m
+                => String                    -- ^ The string to try to parse as a date
+                -> TimeLocale                -- ^ Output time locale
+                -> Identifier                -- ^ Used to generate an error message
+                -> m UTCTime                 -- ^ Parsed UTCTime
+stringToUTC dateString locale ident = do
+    let tryFmt fmt = parseTime' fmt dateString
+
+    maybe empty' return $ msum [tryFmt fmt | fmt <- formats]
+  where
+    empty'     = fail $ "Hakyll.Web.Template.Context.getItemUTC: " ++
+                        "could not parse time for " ++ show ident
+    parseTime' = parseTimeM True locale
+    formats    =
+        [ "%a, %d %b %Y %H:%M:%S %Z"
+        , "%Y-%m-%dT%H:%M:%S%Z"
+        , "%Y-%m-%d %H:%M:%S%Z"
+        , "%Y-%m-%d"
+        , "%B %e, %Y %l:%M %p"
+        , "%B %e, %Y"
+        , "%b %d, %Y"
+        ]
+
+--------------------------------------------------------------------------------
+-- | Sort pages chronologically, using whatever function you pass to
+-- generate the dates.
+chronologicalWith :: MonadMetadata m
+                  => (Identifier -> UTCTime)  -- ^ Function that returns the date value for an identifier
+                  -> [Item a]                 -- ^ The items to sort
+                  -> m [Item a]
+chronologicalWith getDate =
+    sortByM $ (\x -> return $ getDate $ itemIdentifier x)
+  where
+    sortByM :: (Monad m, Ord k) => (a -> m k) -> [a] -> m [a]
+    sortByM f xs = liftM (map fst . sortBy (comparing snd)) $
+                   mapM (\x -> liftM (x,) (f x)) xs
+
+
+--------------------------------------------------------------------------------
+-- | The reverse of 'chronological'
+recentFirstWith :: MonadMetadata m
+                => (Identifier -> UTCTime)  -- ^ Function that returns the date value for an identifier
+                -> [Item a]                 -- ^ The items to sort
+                -> m [Item a]
+recentFirstWith getDate items = fmap reverse $ chronologicalWith getDate items
