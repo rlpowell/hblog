@@ -1,0 +1,3 @@
+description: uses date metadata that we don't allow
+type: hblog-fail
+stderr: aoeu
