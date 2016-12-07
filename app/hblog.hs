@@ -238,6 +238,8 @@ titleFixerInternal _ _ x = x
 
 data GitTimes = GitTimes { gtid :: Identifier, gtlatest :: UTCTime, gtinitial :: UTCTime } deriving (Ord, Eq, Show)
 
+-- Pull the most and least recent git times for a file out of git
+-- using the git command line tool
 getGitTimes :: Identifier -> IO [GitTimes]
 getGitTimes identifier = do
     let path = toFilePath identifier
@@ -271,31 +273,55 @@ getGitTimes identifier = do
 
     return [GitTimes identifier (fromJust curtimeMaybe) (fromJust origtimeMaybe)]
 
+-- Returns a function that turns an identifier into a string
+-- representing a time pullud out of GitTimes
 gitTimeToField :: [GitTimes] -> (GitTimes -> UTCTime) -> (Item String -> Compiler String)
-gitTimeToField times typeF = \ident -> return $ getGitTime (itemIdentifier ident) times typeF
+gitTimeToField times typeF = \ident -> return $ formatTime defaultTimeLocale "%B %e, %Y" $ getGitTimeUTC (itemIdentifier ident) times typeF
 
-getGitTime :: Identifier -> [GitTimes] -> (GitTimes -> UTCTime) -> String
-getGitTime ident times typeF = formatTime defaultTimeLocale "%B %e, %Y" $ getGitTimeUTC ident times typeF
-
-myRecentFirst gtimes = recentFirstWith $ (\x -> getGitTimeUTC x gtimes gtlatest)
-
+-- Pull a file's time out of the list
 getGitTimeUTC :: Identifier -> [GitTimes] -> (GitTimes -> UTCTime) -> UTCTime
 getGitTimeUTC ident times typeF =
   let timeList = filter (\x -> ident == (gtid x)) times in
     if length timeList /= 1 then
       -- It's not obvious to me how this could occur even in theory; I'd expect it to error out during getGitTimes
-      error $ "getGitTime: Couldn't find the time for " ++ (show ident) ++ " in GitTimes list " ++ (show times)
+      error $ "getGitTimeUTC: Couldn't find the time for " ++ (show ident) ++ " in GitTimes list " ++ (show times)
     else
-      typeF $ head $ trace ("timelist: "++(show timeList)) timeList
+      typeF $ head timeList
 
+-- Returns a function that sorts a list of items using getGitTimeUTC
+myRecentFirst gtimes = recentFirstWith $ (\x -> getGitTimeUTC x gtimes gtlatest)
+
+-- Check for header metadata with the given names, and fail if
+-- found.  In particular, the only date field we allow is orig_date;
+-- the rest come from git
+failIfMetadatas :: Show a => [String] -> Context a
+failIfMetadatas mds = field "check_bad_fields" $ \ident -> do
+  imd <- getMetadata $ itemIdentifier ident 
+  return $ mconcat $ map (checkMD ident imd) mds
+  where
+    checkMD ident imd md = do
+      let mmdf = lookupString md imd in
+        if isJust mmdf then
+          error $ "While generating post context, we found you using the field \"" ++ md ++ "\", which we don't support, in file " ++ (show $ itemIdentifier ident)
+        else
+          ""
+
+-- This only exists because dateFieldWithFallback needs a monadic
+-- UTCTime generator
 getGitTimeUTCCompiler :: [GitTimes] -> (GitTimes -> UTCTime) -> Identifier -> Compiler UTCTime
 getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes typeF
 
+-- Construct our $ replacement tags
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
 postCtx tags categories gtimes = mconcat [
     -- We always use the last_mod_date from git; if you want to
     -- override that, make a new git commit and use --date
     field  "last_mod_date" (gitTimeToField gtimes gtlatest)
+    -- In fact, we explicitely fail if you try to use it from header
+    -- metadata
+    , failIfMetadatas ["last_mod_date", "date", "published"]
+    -- For orig_date, though, if you specify it in the metadata we
+    -- take that, whether it parses or not, otherwise we use git
     , dateFieldWithFallback defaultTimeLocale ((flip getMetadataField) "orig_date") (getGitTimeUTCCompiler gtimes gtinitial) "orig_date" "%B %e, %Y"
     , constField "gitTimes" $ show gtimes
     , myCategoryField "category" categories

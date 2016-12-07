@@ -1,7 +1,6 @@
 ---
 title: My Views On The Future
 orig_date: Nov 1997 (or earlier)
-last_mod_date: 1999-01-23
 tags: transhumanism, psychology, futurism
 ---
 
