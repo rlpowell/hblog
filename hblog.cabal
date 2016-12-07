@@ -31,6 +31,7 @@ library
                      , tagsoup
                      , mtl
                      , data-default
+  ghc-options:      -Wall
   default-language:    Haskell2010
 
 executable hblog
@@ -48,6 +49,10 @@ executable hblog
                   , network-uri
                   , pandoc
                   , directory
+                  , time
+                  , process
+                  , transformers
+                  , time-locale-compat
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
