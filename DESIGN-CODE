@@ -113,6 +113,34 @@ in the following order:
     http://pandoc.org/MANUAL.html#extension-auto_identifiers and
     http://pandoc.org/MANUAL.html#extension-ascii_identifiers
 
+Dates
+=====
+
+File dates are handled using the author timestamp of the git commits on the
+files.  This is important because git commits have two timestamps, the commit
+timestamp and the author timestamp, the latter being entirely up to the
+committer, much like the name and email.
+
+We track two dates for each file: initial/original commit and most recent
+commit; these are presented to the user in the obvious way.  We get them like
+so:
+
+    # Original:
+    $ git log --diff-filter=A --follow --format=%ai -n 1 -- app/hblog.hs
+    2015-10-20 00:45:28 -0700
+
+    # Most recent:
+    $ git log --format=%ai -n 1 -- app/hblog.hs
+    2016-11-28 23:50:34 -0800
+
+The user can also override the initial date value using orig_date. This is
+particularly useful when we don't actually know the original date.
+
+Overriding last_mod_date is not supported, as it's too easy for that to stop
+matching reality; make a git commit with the date you want if you need to lie
+about the last_mod_date, that way any future changes will work correctly (as
+long as they are checked in, which the scripting shuold force).
+
 TikiWiki Conversion
 ===================
 
