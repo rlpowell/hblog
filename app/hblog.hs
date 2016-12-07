@@ -326,7 +326,14 @@ postCtx tags categories gtimes = mconcat [
     , constField "gitTimes" $ show gtimes
     , myCategoryField "category" categories
     , tagsField "tags" tags
-    , defaultContext
+    -- Below is the contents of defaultContext, except for
+    -- titleField; titleField is a default in case metadata has no
+    -- title, and we want to error out in that case.
+    , bodyField     "body"
+    , metadataField
+    , urlField      "url"
+    , pathField     "path"
+    , missingField
     ]
 
 --------------------------- Extra Date Handling ------------------------------
