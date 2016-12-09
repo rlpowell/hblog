@@ -35,20 +35,9 @@ import Data.Maybe (isJust, isNothing, fromJust)
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
-    match "images/*" $ do
-        route   idRoute
-        compile copyFileCompiler
-
-    match "css/*" $ do
-        route   idRoute
-        compile compressCssCompiler
-
-    match (Hakyll.fromList ["about.rst", "contact.markdown"]) $ do
-        route   $ setExtension "html"
-        compile $ pandocCompiler
-            >>= loadAndApplyTemplate "templates/default.html" defaultContext
-            >>= relativizeUrls
-
+    -- ************
+    -- Build up various chunks of data we'll need later
+    -- ************
     tags <- buildTagsWith myGetTags "posts/**" (fromCapture "tags/*.html")
 
     categories <- buildTagsWith myGetCategory "posts/**" (fromCapture "categories/*.html")
@@ -59,8 +48,25 @@ main = hakyll $ do
 
     gitTimes <- fmap mconcat $ preprocess $ mapM getGitTimes ids
 
+    -- ************
+    -- Build the actual destination files
+    -- ************
+    match "images/*" $ do
+        route   idRoute
+        compile copyFileCompiler
+
+    match "css/*" $ do
+        route   idRoute
+        compile compressCssCompiler
+
+    -- FIXME: I don't think we want both of these
+    match (Hakyll.fromList ["about.rst", "contact.markdown"]) $ do
+        route   $ setExtension "html"
+        compile $ pandocCompiler
+            >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories gitTimes)
+            >>= relativizeUrls
+
     match "posts/**" $ do
-    -- match ("posts/**" .&&. complement "**/index.html") $ do
         route $ setExtension "html"
         compile $ do
             pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions (titleFixer titles)
@@ -68,6 +74,10 @@ main = hakyll $ do
             >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories gitTimes)
             >>= relativizeUrls
 
+-- FIXME: Do we want a list of categories anywhere?  Probably; we'd
+-- talked about having a "default" site that takes extra work to get
+-- to, that would use something like this
+--
 --     create ["categories.html"] $ do
 --         route idRoute
 --         compile $ do
@@ -75,7 +85,7 @@ main = hakyll $ do
 --             let archiveCtx =
 --                     listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
 --                     constField "title" "Archives"            `mappend`
---                     defaultContext
+--                     (postCtx tags categories gitTimes)
 -- 
 --             makeItem ""
 --                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -90,7 +100,7 @@ main = hakyll $ do
             let archiveCtx =
                     listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
                     constField "title" "Archives"            `mappend`
-                    defaultContext
+                    (postCtx tags categories gitTimes)
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -104,10 +114,8 @@ main = hakyll $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
             let indexCtx = mconcat [
                     listField "posts" (postCtx tags categories gitTimes) (return posts)
-                    , tagCloudField "tags" 120 200 tags
-                    , tagCloudField "categories" 120 200 categories
                     , constField "title" "Home"
-                    , defaultContext
+                    , (postCtx tags categories gitTimes)
                     ]
 
             getResourceBody
@@ -127,7 +135,7 @@ main = hakyll $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
                         listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
-                        defaultContext
+                        (postCtx tags categories gitTimes)
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -143,7 +151,7 @@ main = hakyll $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
                         listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
-                        defaultContext
+                        (postCtx tags categories gitTimes)
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -313,10 +321,14 @@ getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes t
 
 -- Construct our $ replacement tags
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
-postCtx tags categories gtimes = mconcat [
+postCtx tags categories gtimes = mconcat
+    [ tagCloudField "tags" 120 200 tags
+    -- We don't actually want to expose the categories normally
+    -- , tagCloudField "categories" 120 200 categories
+
     -- We always use the last_mod_date from git; if you want to
     -- override that, make a new git commit and use --date
-    field  "last_mod_date" (gitTimeToField gtimes gtlatest)
+    , field  "last_mod_date" (gitTimeToField gtimes gtlatest)
     -- In fact, we explicitely fail if you try to use it from header
     -- metadata
     , failIfMetadatas ["last_mod_date", "date", "published"]
