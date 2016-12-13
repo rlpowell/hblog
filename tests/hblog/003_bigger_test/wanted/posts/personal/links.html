@@ -1,34 +1,113 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>My Hakyll Blog - personal index</title>
-        <link rel="stylesheet" type="text/css" href="../../css/default.css" />
-    </head>
-    <body>
-        <div id="header">
-            <div id="logo">
-                <a href="../../">My Hakyll Blog</a>
-            </div>
-            <div id="navigation">
-                <a href="../../">Home</a>
-                <a href="../../about.html">About</a>
-                <a href="../../contact.html">Contact</a>
-                <a href="../../archive.html">Archive</a>
-            </div>
-        </div>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8">
+    <!-- FIXME: per-category ? -->
+    <title>RLP's Hakyll Blog - personal index</title>
 
-        <div id="content">
+    <!-- bootstrap stuff -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="css/default.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css">
+          body { background-color: #ffc0c0;}
+    </style>
+  </head>
+  <body>
+    <!-- ==== HEADER ==== -->
+    <header>
+      <!-- ==== FEATURE SECTION ==== -->
+      <div class="container-fluid">
+        <div class="row feature">
+          <!-- FIXME: per-category -->
+          <!-- <a href="/"><img src="images/logo-960x240.jpg" alt="RLP's Hakyll Blog"></a> -->
+          <!--
+          <div class="feature-text col-xs-12 col-md-8 col-lg-6 col-md-offset-2 col-lg-offset-3">
+          -->
+          <div class="feature-text col-sm-12 col-md-12">
             <h1>personal index</h1>
+          </div><!-- /feature text -->
+        </div><!-- /row -->
+      </div><!-- /container fluid -->
 
-            <div class="info">
+      <!--
+          This makes a horizontal bar just below the logo.
+      !-- ==== NAVBAR ==== --
+      <nav class="navbar">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">My Site</a>
+          </div>
+
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="index.html">Home</a></li>
+              <li><a href="1-col.html">1-col</a></li>
+              <li><a href="2-col-left.html">2-col-left sidebar</a></li>
+              <li><a href="2-col-right.html">2-col-right sidebar</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#"><span class="glyphicon glyphicon-envelope"></span>  Contact Us</a></li>
+            </ul>
+
+          </div>
+        </div>
+      </nav> !-- /navbar --
+      -->
+    </header> <!-- /header -->
+
+    <div class="container">
+      <div class="row">
+
+        <!-- LEFT COLUMN
+=============================================================== -->
+        <div id="leftbar" class="col-sm-2 col-md-2">
+          <!-- editable conent below this line 
+================================================================-->
+
+          <h3 id>Articles</h3>
+          <ul class="list-unstyled">
+            <li><a href>That One</a></li>
+            <li><a href>The Other One</a></li>
+            <li><a href>People Like This Too</a></li>
+          </ul>
+          <h3 id>Recent</h3>
+          <ul class="list-unstyled">
+            <li><a href>Change 1</a></li>
+            <li><a href>Change 2</a>
+          </ul>
+          <h3 id="about">About</h3>
+          <ul class="list-unstyled">
+            <li><a href="../../">Home</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../contact.html">Contact</a></li>
+            <li><a href="../../archive.html">Archive</a></li>
+          </ul>
+
+        </div> <!-- /LEFT COLUMN -->
+
+        <!-- CENTER COLUMN
+=============================================================== -->
+        <div id="content" class="col-sm-8 col-md-8">
+          <!-- editable conent below this line 
+================================================================-->
+          <h2>personal index</h2>
+          <div class="info">
   <p>Originally Posted On November 29, 2016</p>
   <p>Last Updated On December  7, 2016</p>
   
 <div class="soft">
 Cat in: <a href="../../categories/personal.html">personal</a>.
-Posted in: .
+Posted in: <a style="font-size: 160%" href="../../tags/computing%3Aprogramming.html">computing:programming</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bpsychology.html">computing:programming+psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bsysadminning.html">computing:programming+sysadminning</a> <a style="font-size: 120%" href="../../tags/computing%3Apsychology.html">computing:psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Asysadminning.html">computing:sysadminning</a> <a style="font-size: 160%" href="../../tags/fiction.html">fiction</a> <a style="font-size: 120%" href="../../tags/fiction%2Btranshumanism.html">fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism.html">futurism</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology.html">futurism+psychology</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology%2Btranshumanism.html">futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism%2Btranshumanism.html">futurism+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Afiction.html">personal:fiction</a> <a style="font-size: 120%" href="../../tags/personal%3Afiction%2Btranshumanism.html">personal:fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism.html">personal:futurism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology.html">personal:futurism+psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology%2Btranshumanism.html">personal:futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Btranshumanism.html">personal:futurism+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology.html">personal:psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology%2Btranshumanism.html">personal:psychology+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Atranshumanism.html">personal:transhumanism</a> <a style="font-size: 160%" href="../../tags/programming.html">programming</a> <a style="font-size: 120%" href="../../tags/programming%2Bpsychology.html">programming+psychology</a> <a style="font-size: 120%" href="../../tags/programming%2Bsysadminning.html">programming+sysadminning</a> <a style="font-size: 160%" href="../../tags/psychology.html">psychology</a> <a style="font-size: 120%" href="../../tags/psychology%2Btranshumanism.html">psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/sysadminning.html">sysadminning</a> <a style="font-size: 160%" href="../../tags/transhumanism.html">transhumanism</a>.
 </div>
 </div>
 
@@ -38,13 +117,35 @@ Posted in: .
 </ul>
 
 <p>
-Browse: 
+Browse: <a style="font-size: 160%" href="../../tags/computing%3Aprogramming.html">computing:programming</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bpsychology.html">computing:programming+psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bsysadminning.html">computing:programming+sysadminning</a> <a style="font-size: 120%" href="../../tags/computing%3Apsychology.html">computing:psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Asysadminning.html">computing:sysadminning</a> <a style="font-size: 160%" href="../../tags/fiction.html">fiction</a> <a style="font-size: 120%" href="../../tags/fiction%2Btranshumanism.html">fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism.html">futurism</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology.html">futurism+psychology</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology%2Btranshumanism.html">futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism%2Btranshumanism.html">futurism+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Afiction.html">personal:fiction</a> <a style="font-size: 120%" href="../../tags/personal%3Afiction%2Btranshumanism.html">personal:fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism.html">personal:futurism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology.html">personal:futurism+psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology%2Btranshumanism.html">personal:futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Btranshumanism.html">personal:futurism+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology.html">personal:psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology%2Btranshumanism.html">personal:psychology+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Atranshumanism.html">personal:transhumanism</a> <a style="font-size: 160%" href="../../tags/programming.html">programming</a> <a style="font-size: 120%" href="../../tags/programming%2Bpsychology.html">programming+psychology</a> <a style="font-size: 120%" href="../../tags/programming%2Bsysadminning.html">programming+sysadminning</a> <a style="font-size: 160%" href="../../tags/psychology.html">psychology</a> <a style="font-size: 120%" href="../../tags/psychology%2Btranshumanism.html">psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/sysadminning.html">sysadminning</a> <a style="font-size: 160%" href="../../tags/transhumanism.html">transhumanism</a>
 </p>
 
-        </div>
-        <div id="footer">
-            Site proudly generated by
-            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
-        </div>
-    </body>
+        </div> <!-- /CENTER COLUMN -->
+
+        <!-- RIGHT COLUMN
+=============================================================== -->
+        <div id="rightbar" class="col-sm-2 col-md-2">
+          <!-- editable conent below this line 
+================================================================-->
+          <p><a style="font-size: 160%" href="../../tags/computing%3Aprogramming.html">computing:programming</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bpsychology.html">computing:programming+psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Aprogramming%2Bsysadminning.html">computing:programming+sysadminning</a> <a style="font-size: 120%" href="../../tags/computing%3Apsychology.html">computing:psychology</a> <a style="font-size: 120%" href="../../tags/computing%3Asysadminning.html">computing:sysadminning</a> <a style="font-size: 160%" href="../../tags/fiction.html">fiction</a> <a style="font-size: 120%" href="../../tags/fiction%2Btranshumanism.html">fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism.html">futurism</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology.html">futurism+psychology</a> <a style="font-size: 120%" href="../../tags/futurism%2Bpsychology%2Btranshumanism.html">futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/futurism%2Btranshumanism.html">futurism+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Afiction.html">personal:fiction</a> <a style="font-size: 120%" href="../../tags/personal%3Afiction%2Btranshumanism.html">personal:fiction+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism.html">personal:futurism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology.html">personal:futurism+psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Bpsychology%2Btranshumanism.html">personal:futurism+psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Afuturism%2Btranshumanism.html">personal:futurism+transhumanism</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology.html">personal:psychology</a> <a style="font-size: 120%" href="../../tags/personal%3Apsychology%2Btranshumanism.html">personal:psychology+transhumanism</a> <a style="font-size: 160%" href="../../tags/personal%3Atranshumanism.html">personal:transhumanism</a> <a style="font-size: 160%" href="../../tags/programming.html">programming</a> <a style="font-size: 120%" href="../../tags/programming%2Bpsychology.html">programming+psychology</a> <a style="font-size: 120%" href="../../tags/programming%2Bsysadminning.html">programming+sysadminning</a> <a style="font-size: 160%" href="../../tags/psychology.html">psychology</a> <a style="font-size: 120%" href="../../tags/psychology%2Btranshumanism.html">psychology+transhumanism</a> <a style="font-size: 120%" href="../../tags/sysadminning.html">sysadminning</a> <a style="font-size: 160%" href="../../tags/transhumanism.html">transhumanism</a></p> 
+        </div> <!-- END RIGHT COLUMN  -->
+      </div>
+    </div>
+
+      <!-- ==== FOOTER SECTION ==== -->
+    <footer>
+      <div class="container-fluid" id="copy">
+          <div class="col-sm-12">
+              <p>Copyright &copy; Robin Lee Powell 2016</p>
+              <p>Site proudly generated by
+              <a href="http://jaspervdj.be/hakyll">Hakyll</a></p>
+          </div><!-- /col-sm-12 -->
+      </div><!-- /container-fluid -->
+    </footer>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>    
+  </body>
 </html>
