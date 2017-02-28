@@ -56,9 +56,9 @@ unPhone oldBody =
     -- The list of gsubs starts at the bottom and works its way up
     newBody = 
       -- Sub: qwl x qw                [x](x)
-      PCRE.gsub [caselessre|(\s+)qwl\s+(.*?)\s+qw(\s+)|] sub_link_no_desc $
+      PCRE.gsub [caselessre|(\s+)qwl\s+(.*?)\s+qw(\s+|[.,;]|$)|] sub_link_no_desc $
       -- Sub: qwl x qwu y qw          [x](y)
-      PCRE.gsub [caselessre|(\s+)qwl\s+(.*?)\s+qwu\s+(.*?)\s+qw(\s+)|] sub_link_with_desc $
+      PCRE.gsub [caselessre|(\s+)qwl\s+(.*?)\s+qwu\s+(.*?)\s+qw(\s+|[.,;]|$)|] sub_link_with_desc $
       oldBody
     sub_link_no_desc :: [String] -> String
     sub_link_no_desc (ls:url:ts:_) = mconcat [ ls, "[", url, "]", "(", url, ")", ts ] :: String
