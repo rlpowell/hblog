@@ -15,7 +15,7 @@ See "Phone Shortcuts" in DESIGN-CODE for full details.
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
-import          System.Directory (createDirectoryIfMissing)
+import          System.Directory (createDirectoryIfMissing, doesFileExist)
 import          System.FilePath
 -- import          System.Posix.Files
 import          System.Environment
@@ -28,22 +28,34 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    indir:outdir:[] -> walkTree indir outdir
+    indir:outdir:[] -> maybeTree indir outdir
     _             -> putStrLn "Need exactly two arguments, input directory and output directory."
+
+maybeTree :: String -> String -> IO ()
+maybeTree inthing outthing = do
+  isInFile <- doesFileExist inthing
+  if isInFile then
+    handleFile inthing outthing
+  else
+    walkTree inthing outthing
 
 walkTree :: String -> String -> IO ()
 walkTree indir outdir = do
   files <- find always (extension ==? ".md") indir 
-  _ <- mapM (handleFile indir outdir) files
+  _ <- mapM (handleFileAndDir indir outdir) files
   return ()
 
-handleFile :: FilePath -> FilePath -> FilePath -> IO ()
-handleFile indir outdir fname = do
+handleFileAndDir :: FilePath -> FilePath -> FilePath -> IO ()
+handleFileAndDir indir outdir fname = do
   let shortname = makeRelative indir fname
-  body <- readFile $ indir </> shortname
+  _ <- createDirectoryIfMissing True (takeDirectory $ (outdir </> shortname))
+  handleFile (indir </> shortname) (outdir </> shortname)
+
+handleFile :: FilePath -> FilePath -> IO ()
+handleFile infile outfile = do
+  body <- readFile $ infile
   let newBody = unPhone body in do
-    _ <- createDirectoryIfMissing True (takeDirectory $ (outdir </> shortname))
-    _ <- writeFile (outdir </> shortname) newBody
+    _ <- writeFile outfile newBody
     return ()
 
 unPhone :: String -> String
