@@ -1,19 +1,5 @@
+ln -sf /home/rlpowell/src/hblog/munge_files.sh ~/.local/bin/munge_files
+echo need to write the bit that expands and removes the git zips
+exit 1
+
 stack test --test-arguments "$*"
-#stack test --trace --test-arguments "$*"
-
-
-
-# stack runghc --trace test/Spec.hs -- "$*"
-
-
-
-
-# set -e
-# rm -rf .stack-work
-# ln -s /tmp/hbsw  .stack-work
-# if [ "$1" ]
-# then
-#   echo "$*" | stack --no-keep-going ghci --no-keep-going :hblog-test
-# else
-#   stack ghci :hblog-test
-# fi

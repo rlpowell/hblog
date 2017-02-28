@@ -1,8 +1,8 @@
-[1:NOTES][2:DESIGN-CODE][3:DESIGN-SITE][4:hblog.hs]*![5:post-list.html][6:post.html][7:Spec.hs] 
+    vim NOTES DESIGN-CODE DESIGN-SITE README.md app/hblog.hs templates/default.html css/default.css
 
-'<,'>EasyAlign 1/\(::\|=>\|->\)/
+    '<,'>EasyAlign 1/\(::\|=>\|->\)/
 
-./run_tests.sh -m unphone
+    ./run_tests.sh -m unphone
 
 
 custom pandoc options:
@@ -25,8 +25,10 @@ globally, and use that for all markdown.
 TODO
 ----
 
-- make a test that fails when title: is unset
+- give TikiWiki to Pandoc
 - make a script that walks the files, and for each file:
+  - (Side note: for this script, it might be helpful to teach
+  unphone-and-friends how to operate on individual files)
   - records the last mod time
   - runs pandoc to/from markdown
   - checks the file in (with the recorded mod time) if any diffs
@@ -34,30 +36,50 @@ TODO
   - checks the file in (with the recorded mod time (+ a bit?)) if any diffs
   - runs rectifier
   - checks the file in (with the recorded mod time (+ a bit?)) if any diffs
-- ? can you think of a test to exercise:       fail $ "getGitTime: Couldn't find the time for " ++ (show ident) ++ " in GitTimes list " ++ (show times) 
-- We have both
-  _site/categories/computing.html
-  _site/posts/computing/index.html
-  , do we want both?  How would a user end up on one or the other?
+- check that the sub-bullets in the_great_transformation actually
+work
+  - similarly for -_-
+- issues found in the_great_transformation:
+  - "posted in" is terrible; it should only list the tags defined on
+  the post individually
+  - "Browse: " at the bottom; what even is that?
+  - the metadata at the top doesn't stand out from the body at all
+  ; needs bolding of things like "Last Updated On", spacing from the
+  body, maybe even a line
+- Drawing Butterflies With K - last modified on December 15, 2016 - originally posted on December 15, 2016
+  ^^ that ain't right
+- How Wi-Fi Actually Works - last modified on December 15, 2016 - originally posted on December 15, 2016
+  ^^ also wrong
+- include the pictures in Drawing Butterflies With K
+- the footer text isn't centered
+- The list of "posted in" in Drawing Butterflies With K is totally wrong
+- make at least two categories + main site
 - move css/ , index.html , etc into assets/ ?
   - Not sure about that, but index.html seems silly; have
-  posts/[site]/index.md with whatever verbiage ; left sidebar
-  favorites is posts/[site]/faves.md
+    posts/[site]/index.md with whatever verbiage ; left sidebar
+    favorites is posts/[site]/faves.md
+- At least some header bits need to be category specific; <title>
+maybe?, or should that just be the article name?
+- Make the category banner work via posts/[category]/header.html (or
+  .md, but .html seems maybe better for this purpose)
+- make per-category CSS that adds like a background color or
+  something to everything on that site; presumably this can be
+  loaded via posts/[category]/header.html
+- put the number of posts per item in the tag cloud in parens, like
+  "programming+psychology (6)"
+- make the cat:tag pseudo-tags show up when on the main site
+- if any tags have more than 1 entry, stop showing the tags that
+  have only 1
 - make "Posted in: " not show up in the rendering if there's no
-tags; also maybe rename that to "Tags: " or something
-- Make the category banner work
+  tags; also maybe rename that to "Tags: " or something
 - make script to run the generation, send upset email if it doesn't
-work, and push the results into our webspace
-- Nice-to-have: generate a history page for each page that does colored diff
-markup
+  work, and push the results into our webspace
+- Nice-to-have: generate a history page for each page that does
+  colored diff markup
 
 
 
 Note to self:
-
-  Git file create time:
-
-    git log --diff-filter=A --follow --format=%aD -1 -- README.md
 
   tiki export: 
 

@@ -21,6 +21,7 @@ ln -s /dropbox/Docs/Public/hblog_posts posts
 rm -rf _site
 rm -rf _cache
 
+stack build hblog
 stack install
 hblog build
 
