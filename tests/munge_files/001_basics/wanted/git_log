@@ -1,0 +1,101 @@
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Automated Checkin: rectifier differences found at [date]
+
+diff --git a/foo/001.md b/foo/001.md
+index [hash]..[hash]
+--- a/foo/001.md
++++ b/foo/001.md
+@@ -1,4 +1,4 @@
+ Header
+ ======
+ 
+-test before [look a link!](wifi works) after
++test before [look a link!](How WiFi Actually Works) after
+
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Automated Checkin: unphone differences found at [date]
+
+diff --git a/foo/001.md b/foo/001.md
+index [hash]..[hash]
+--- a/foo/001.md
++++ b/foo/001.md
+@@ -1,4 +1,4 @@
+ Header
+ ======
+ 
+-test before qwl look a link! qwu wifi works qw after
++test before [look a link!](wifi works) after
+
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Automated Checkin: pandoc to-and-from markdown differences found at [date]
+
+diff --git a/bar/how_wifi_actually_works.md b/bar/how_wifi_actually_works.md
+index [hash]..[hash]
+--- a/bar/how_wifi_actually_works.md
++++ b/bar/how_wifi_actually_works.md
+@@ -1,7 +1,8 @@
+ ---
++origdate: '2015-08-25'
++published: '2015-08-25'
+ title: How WiFi Actually Works
+-origdate: 2015-08-25
+-published: 2015-08-25
+ ---
++
+     25-15:31 <       treed> In the ideal situation for wifi, you have one station per AP, on non-overlapping channels
+     25-15:31 <       treed> which in the best possible 2.4Ghz case gets you 3 stations
+
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Automated Checkin: pandoc to-and-from markdown differences found at [date]
+
+diff --git a/foo/001.md b/foo/001.md
+index [hash]..[hash]
+--- a/foo/001.md
++++ b/foo/001.md
+@@ -1,3 +1,4 @@
+-# Header
++Header
++======
+ 
+ test before qwl look a link! qwu wifi works qw after
+
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Initial checkin
+
+diff --git a/bar/how_wifi_actually_works.md b/bar/how_wifi_actually_works.md
+new file mode 100644
+index [hash]..[hash]
+--- /dev/null
++++ b/bar/how_wifi_actually_works.md
+@@ -0,0 +1,7 @@
++---
++title: How WiFi Actually Works
++origdate: 2015-08-25
++published: 2015-08-25
++---
++    25-15:31 <       treed> In the ideal situation for wifi, you have one station per AP, on non-overlapping channels
++    25-15:31 <       treed> which in the best possible 2.4Ghz case gets you 3 stations
+diff --git a/foo/001.md b/foo/001.md
+new file mode 100644
+index [hash]..[hash]
+--- /dev/null
++++ b/foo/001.md
+@@ -0,0 +1,3 @@
++# Header
++
++test before qwl look a link! qwu wifi works qw after
