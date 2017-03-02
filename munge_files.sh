@@ -48,6 +48,19 @@ find $indir -type f -name '*.md' | while read fname
 do
   short=$(snipdir "$fname" "$indir")
   mkdir -p $(dirname "$tempdir/$short")
+
+  # Make sure everything is checked in
+  origdate="$(date --iso-8601=seconds -r "$fname")"
+  cd "$(dirname $fname)"
+  if ! git diff --quiet "$(basename $fname)"
+  then
+    git commit -m "Automated checkin of external changes at $(date)" \
+      --date="$origdate" \
+      "$(basename $fname)"
+  fi
+  cd "$origpwd"
+
+  # Normalize the syntax
   stack exec pandoc -- -s -f markdown -t markdown -o $tempdir/$short $fname
 done
 
@@ -72,7 +85,7 @@ checkin () {
     git commit -m "Automated Checkin: $type differences found at $(date)" \
       --date="$origdate" \
       "$(basename $outfile)"
-    cd $origpwd
+    cd "$origpwd"
 
     # When it's all done, we want the apparent file date to have not changed.
     touch -d "$origdate" "$outfile"
