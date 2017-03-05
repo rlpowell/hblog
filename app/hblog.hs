@@ -8,12 +8,13 @@ import           Data.List
 import           Hakyll
 import           System.FilePath
 import           Text.Blaze.Html                 (toHtml, toValue, (!))
+import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
 import           Text.Pandoc                     (writePlain, def, nullMeta)
 import           Text.Pandoc.Definition          (Pandoc(..), Inline(..), Block(..))
 import           Text.Pandoc.Walk                (walk, query)
-import           Data.Maybe                      (isJust, fromJust)
+import           Data.Maybe                      (isJust, fromJust, catMaybes)
 import           Debug.Trace
 import           Network.URI                     (unEscapeString)
 import           Hakyll.Core.Identifier          (toFilePath)
@@ -38,9 +39,9 @@ main = hakyll $ do
     -- ************
     -- Build up various chunks of data we'll need later
     -- ************
-    tags <- buildTagsWith myGetTags "posts/**" (fromCapture "tags/*.html")
+    allTags <- buildTagsWith myGetTags "posts/**" (fromCapture "tags/*.html")
 
-    categories <- buildTagsWith myGetCategory "posts/**" (fromCapture "categories/*.html")
+    allCategories <- buildTagsWith myGetCategory "posts/**" (fromCapture "categories/*.html")
 
     ids <- getMatches "posts/**"
 
@@ -63,15 +64,15 @@ main = hakyll $ do
     match (Hakyll.fromList ["about.rst", "contact.markdown"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
-            >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories gitTimes)
+            >>= loadAndApplyTemplate "templates/default.html" (postCtx allTags allCategories gitTimes)
             >>= relativizeUrls
 
     match "posts/**" $ do
-        route $ setExtension "html"
+        route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
         compile $ do
             pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions (titleFixer titles)
-            >>= loadAndApplyTemplate "templates/post.html"    (postCtx tags categories gitTimes)
-            >>= loadAndApplyTemplate "templates/default.html" (postCtx tags categories gitTimes)
+            >>= loadAndApplyTemplate "templates/post.html"    (postCtx allTags allCategories gitTimes)
+            >>= loadAndApplyTemplate "templates/default.html" (postCtx allTags allCategories gitTimes)
             >>= relativizeUrls
 
 -- FIXME: Do we want a list of categories anywhere?  Probably; we'd
@@ -83,9 +84,9 @@ main = hakyll $ do
 --         compile $ do
 --             posts <- (myRecentFirst gitTimes) =<< loadAll "categories/*"
 --             let archiveCtx =
---                     listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
+--                     listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
 --                     constField "title" "Archives"            `mappend`
---                     (postCtx tags categories gitTimes)
+--                     (postCtx allTags allCategories gitTimes)
 -- 
 --             makeItem ""
 --                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -98,9 +99,9 @@ main = hakyll $ do
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
             let archiveCtx =
-                    listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
+                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
                     constField "title" "Archives"            `mappend`
-                    (postCtx tags categories gitTimes)
+                    (postCtx allTags allCategories gitTimes)
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -113,9 +114,9 @@ main = hakyll $ do
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
             let indexCtx = mconcat [
-                    listField "posts" (postCtx tags categories gitTimes) (return posts)
+                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts)
                     , constField "title" "Home"
-                    , (postCtx tags categories gitTimes)
+                    , (postCtx allTags allCategories gitTimes)
                     ]
 
             getResourceBody
@@ -126,7 +127,7 @@ main = hakyll $ do
     match "templates/*" $ compile templateCompiler
 
     -- Post categories
-    tagsRules categories $ \category pattern -> do
+    tagsRules allCategories $ \category pattern -> do
         let title = "Posts in category " ++ category
 
         -- Copied from posts, need to refactor
@@ -134,15 +135,15 @@ main = hakyll $ do
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
-                        listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
-                        (postCtx tags categories gitTimes)
+                        listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
+                        (postCtx allTags allCategories gitTimes)
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
                 >>= relativizeUrls
 
     -- Post tags
-    tagsRules tags $ \tag pattern -> do
+    tagsRules allTags $ \tag pattern -> do
         let title = "Posts tagged " ++ tag
 
         -- Copied from posts, need to refactor
@@ -150,8 +151,8 @@ main = hakyll $ do
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
             let ctx = constField "title" title `mappend`
-                        listField "posts" (postCtx tags categories gitTimes) (return posts) `mappend`
-                        (postCtx tags categories gitTimes)
+                        listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
+                        (postCtx allTags allCategories gitTimes)
             makeItem ""
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -181,8 +182,19 @@ myGetCategory :: MonadMetadata m => Identifier -> m [String]
 myGetCategory x = return $ take 1 $ drop 1 $ dropWhile (/= "posts") $ splitDirectories $ toFilePath x
 
 -- | Render the category in a link; mostly copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
-myCategoryField :: String -> Tags -> Context a
-myCategoryField = tagsFieldWith myGetCategory simpleRenderLink (mconcat)
+-- |
+-- | Gets the category from the current item.
+-- | The argument is the name of the field to generate.
+myCategoryField :: String -> Context a
+myCategoryField key = field key $ \item -> do
+    tag <- myGetCategory $ itemIdentifier item
+    return $ renderHtml $ myCatLink $ mconcat tag
+
+
+-- | Render the category as a link to its section (i.e. emits
+-- "/computing", for example).
+myCatLink :: String -> H.Html
+myCatLink cat = H.a ! A.href (toValue $ toUrl ("/" ++ cat)) $ toHtml cat
 
 -- | Render one tag link ; copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
 simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
@@ -202,7 +214,7 @@ myGetTags identifier = do
     tags <- getTags identifier
     let maintags = map (intercalate "+") $ drop 1 $ subsequences $ sort tags
     cat <- myGetCategory identifier
-    return $ maintags ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
+    return $ maintags ++ cat ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
 
 getHeaders :: Block -> [(String, String)]
 getHeaders (Header _ (slug, _, _) xs) = [(writePlain def $ Pandoc nullMeta $ [Plain xs], slug)]
@@ -260,6 +272,12 @@ getGitTimes identifier = do
       do fail $ "getGitTimes: Couldn't get the date of the first commit for " ++ path ++ ", error: " ++ stderr1
     else
       return ()
+
+    if stdout1 == "" then
+      do fail $ "getGitTimes: The last commit date for " ++ path ++ " was blank, which means it needs to be checked in.\n\n\nA run of munge_files.sh should clear this right up.\n\n"
+    else
+      return ()
+
     let origtimeMaybe = readMaybe stdout1 :: Maybe UTCTime
     -- let origtime = read (trace ("std: " ++ stdout1 ++ ", " ++ stderr1) stdout1) :: ZonedTime
     if isNothing origtimeMaybe then
@@ -319,10 +337,10 @@ failIfMetadatas mds = field "check_bad_fields" $ \ident -> do
 getGitTimeUTCCompiler :: [GitTimes] -> (GitTimes -> UTCTime) -> Identifier -> Compiler UTCTime
 getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes typeF
 
--- Construct our $ replacement tags
+-- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
-postCtx tags categories gtimes = mconcat
-    [ tagCloudField "tags" 120 200 tags
+postCtx allTags allCategories gtimes = mconcat
+    [ tagCloudField "allTags" 80 200 allTags
     -- We don't actually want to expose the categories normally
     -- , tagCloudField "categories" 120 200 categories
 
@@ -336,8 +354,13 @@ postCtx tags categories gtimes = mconcat
     -- take that, whether it parses or not, otherwise we use git
     , dateFieldWithFallback defaultTimeLocale ((flip getMetadataField) "orig_date") (getGitTimeUTCCompiler gtimes gtinitial) "orig_date" "%B %e, %Y"
     , constField "gitTimes" $ show gtimes
-    , myCategoryField "category" categories
-    , tagsField "tags" tags
+    -- This one is weird: the allTags we pass are *not* the tags it
+    -- renders; it gets the tags from the file with getTags, the
+    -- tags we pass are how it knows what the (textual) tags on the
+    -- item point at.
+    , tagsField "tags" allTags
+    -- , field "category" $ (fmap . fmap) (myCatLink . mconcat) $ myGetCategory . itemIdentifier
+    , myCategoryField "category"
     -- Below is the contents of defaultContext, except for
     -- titleField; titleField is a default in case metadata has no
     -- title, and we want to error out in that case.
