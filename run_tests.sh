@@ -10,6 +10,8 @@ do
   cd "$oldpwd"
 done
 
+stack build hblog
+stack install hblog
 stack test --test-arguments "$*"
 
 echo "Deleting .git directories."
