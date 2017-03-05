@@ -52,9 +52,20 @@ do
   # Make sure everything is checked in
   origdate="$(date --iso-8601=seconds -r "$fname")"
   cd "$(dirname $fname)"
+
+  # Needs changes checked in
   if ! git diff --quiet "$(basename $fname)"
   then
     git commit -m "Automated checkin of external changes at $(date)" \
+      --date="$origdate" \
+      "$(basename $fname)"
+  fi
+
+  # Never been checked in before
+  if [ ! "$(git ls-files "$(basename $fname)")" ]
+  then
+    git add "$(basename $fname)"
+    git commit -m "Automated initial checkin at $(date)" \
       --date="$origdate" \
       "$(basename $fname)"
   fi
