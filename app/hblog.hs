@@ -337,10 +337,22 @@ failIfMetadatas mds = field "check_bad_fields" $ \ident -> do
 getGitTimeUTCCompiler :: [GitTimes] -> (GitTimes -> UTCTime) -> Identifier -> Compiler UTCTime
 getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes typeF
 
+-- Most of this is from makeLink in renderTagCloud in hakyll-4.9.0.0/src/Hakyll/Web/Tags.hs
+makeNumberedTagLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
+makeNumberedTagLink minSize maxSize tag url count min' max' =
+        -- Show the relative size of one 'count' in percent
+        let diff     = 1 + fromIntegral max' - fromIntegral min'
+            relative = (fromIntegral count - fromIntegral min') / diff
+            size     = floor $ minSize + relative * (maxSize - minSize) :: Int
+        in renderHtml $
+            H.a ! A.style (toValue $ "font-size: " ++ show size ++ "%")
+                ! A.href (toValue url)
+                $ toHtml $ tag ++ " (" ++ (show count) ++ ") "
+
 -- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
 postCtx allTags allCategories gtimes = mconcat
-    [ tagCloudField "allTags" 80 200 allTags
+    [ tagCloudFieldWith "tagCloud" makeNumberedTagLink (intercalate " ") 80 200 allTags
     -- We don't actually want to expose the categories normally
     -- , tagCloudField "categories" 120 200 categories
 
