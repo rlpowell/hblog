@@ -14,26 +14,33 @@ import qualified Text.Blaze.Html5.Attributes     as A
 import           Text.Pandoc                     (writePlain, def, nullMeta)
 import           Text.Pandoc.Definition          (Pandoc(..), Inline(..), Block(..))
 import           Text.Pandoc.Walk                (walk, query)
-import           Data.Maybe                      (isJust, fromJust, catMaybes)
-import           Debug.Trace
+-- import           Debug.Trace
 import           Network.URI                     (unEscapeString)
 import           Hakyll.Core.Identifier          (toFilePath)
 import           Data.Time.Clock                 (UTCTime)
 import           System.Process                  (readProcessWithExitCode)
 import           System.Exit                     (ExitCode(..))
-import qualified Data.Map                        as M
-import           Data.Either                     (either)
-import           Control.Monad.IO.Class          (liftIO)
-import Control.Monad.Trans.Class (lift)
 import Data.Time.Format (TimeLocale, formatTime, parseTimeM, defaultTimeLocale)
-import Control.Monad (liftM, msum)
+import Control.Monad (liftM, msum, forM_)
 import Data.Ord (comparing)
-import System.Directory (getCurrentDirectory, setCurrentDirectory)
-import           Data.Time.Locale.Compat       (TimeLocale, defaultTimeLocale) 
 import Text.Read (readMaybe)
 import Data.Maybe (isJust, isNothing, fromJust)
+import qualified Control.Applicative             as CA (Alternative (..))
+
+type MyCategory = String
+type RedirectPattern = String
+
+data Redirect = Redirect
+    { redirIdent     :: Identifier
+    , redirCategory  :: MyCategory
+    , redirPath      :: FilePath
+    , redirPattern   :: RedirectPattern
+    }
 
 --------------------------------------------------------------------------------
+baseURL :: String
+baseURL = "http://rlpowell.digitalkingdom.org/"
+
 main :: IO ()
 main = hakyll $ do
     -- ************
@@ -59,13 +66,6 @@ main = hakyll $ do
     match "css/*" $ do
         route   idRoute
         compile compressCssCompiler
-
-    -- FIXME: I don't think we want both of these
-    match (Hakyll.fromList ["about.rst", "contact.markdown"]) $ do
-        route   $ setExtension "html"
-        compile $ pandocCompiler
-            >>= loadAndApplyTemplate "templates/default.html" (postCtx allTags allCategories gitTimes)
-            >>= relativizeUrls
 
     match "posts/**" $ do
         route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
@@ -126,11 +126,31 @@ main = hakyll $ do
 
     match "templates/*" $ compile templateCompiler
 
+    redirects <- fmap mconcat $ mapM getRedirects ids
+
+    -- Build redirect rule files; partially copied from tagsRules in
+    -- Hakyll/Web/Tags.hs
+    forM_ (tagsMap allCategories) $ \(categ, _) ->
+      create [fromFilePath $ "redirects/" ++ categ] $ do
+        route idRoute
+        compile $ do
+            -- The second argument of listField is the thing we can
+            -- render inside the for loop; i.e. if we define a field
+            -- named "redirect" as the second argument, then
+            -- $redirect$ will work in the for loop in the template.
+            let redirectCtx = listField "redirects" insideRedirectCtx $
+                                        sequence $ map makeItem $ filter (\redirect -> (redirCategory redirect) == categ) redirects
+
+            makeItem ""
+                >>= applyAsTemplate redirectCtx
+                >>= loadAndApplyTemplate "templates/redirects" redirectCtx
+                >>= relativizeUrls
+
     -- Post categories
     tagsRules allCategories $ \category pattern -> do
         let title = "Posts in category " ++ category
 
-        -- Copied from posts, need to refactor
+        -- FIXME: Copied from posts, need to refactor
         route idRoute
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
@@ -146,7 +166,7 @@ main = hakyll $ do
     tagsRules allTags $ \tag pattern -> do
         let title = "Posts tagged " ++ tag
 
-        -- Copied from posts, need to refactor
+        -- FIXME: Copied from posts, need to refactor
         route idRoute
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll pattern
@@ -177,19 +197,46 @@ getTitlePair identifier = do
     else
       return []
 
+dropPosts :: FilePath -> [FilePath]
+dropPosts fp = drop 1 $ dropWhile (/= "posts") $ splitDirectories fp
+
+-- Pulls the redirect metadata out for an item; pair is
+-- (Category, Redirect)
+getRedirects :: MonadMetadata m => Identifier -> m [Redirect]
+getRedirects identifier = do
+    categ <- myGetCategory identifier
+    let path = joinPath $ dropPosts $ toFilePath identifier
+    redirect <- getMetadataField identifier "redirect"
+    if isJust redirect then
+      return $ [Redirect identifier (head categ) path (fromJust redirect)]
+    else
+      return []
+
 -- Get the first directory name after posts/ , call that the category
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
-myGetCategory x = return $ take 1 $ drop 1 $ dropWhile (/= "posts") $ splitDirectories $ toFilePath x
+myGetCategory x = return $ take 1 $ dropPosts $ toFilePath x
 
 -- | Render the category in a link; mostly copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
 -- |
 -- | Gets the category from the current item.
 -- | The argument is the name of the field to generate.
-myCategoryField :: String -> Context a
-myCategoryField key = field key $ \item -> do
-    tag <- myGetCategory $ itemIdentifier item
-    return $ renderHtml $ myCatLink $ mconcat tag
-
+-- |
+-- | We're not using field because we want it to fail if the field
+-- | doesn't match.
+myCategoryField :: String -> Bool -> Context a
+myCategoryField key linkify = Context $ \k _ item -> do
+    if key == k then do
+      tagBits <- myGetCategory $ itemIdentifier item
+      let tag = mconcat tagBits
+      if tag == "" then
+        CA.empty
+      else
+        if linkify then
+          return $ StringField $ renderHtml $ myCatLink tag
+        else
+          return $ StringField tag
+    else
+      CA.empty
 
 -- | Render the category as a link to its section (i.e. emits
 -- "/computing", for example).
@@ -263,9 +310,9 @@ data GitTimes = GitTimes { gtid :: Identifier, gtlatest :: UTCTime, gtinitial ::
 getGitTimes :: Identifier -> IO [GitTimes]
 getGitTimes identifier = do
     let path = toFilePath identifier
+    let gitRepoPath = "posts/"
     -- Strip off the "posts/" part
-    let gitFilePath = joinPath $ drop 1 $ splitPath path
-    let gitRepoPath = joinPath $ take 1 $ splitPath path
+    let gitFilePath = joinPath $ dropPosts path
 
     (exit1, stdout1, stderr1) <- readProcessWithExitCode "git" ["-C", gitRepoPath, "log", "--diff-filter=A", "--follow", "--format=%ai", "-n", "1", "--", gitFilePath] ""
     if exit1 /= ExitSuccess then
@@ -315,6 +362,7 @@ getGitTimeUTC ident times typeF =
       typeF $ head timeList
 
 -- Returns a function that sorts a list of items using getGitTimeUTC
+myRecentFirst :: MonadMetadata m =>[GitTimes] -> [Item a] -> m [Item a]
 myRecentFirst gtimes = recentFirstWith $ (\x -> getGitTimeUTC x gtimes gtlatest)
 
 -- Check for header metadata with the given names, and fail if
@@ -349,12 +397,36 @@ makeNumberedTagLink minSize maxSize tag url count min' max' =
                 ! A.href (toValue url)
                 $ toHtml $ tag ++ " (" ++ (show count) ++ ") "
 
+-- What we're trying to do is produce a field that *doesn't* match
+-- key in the case where the metadata "header" is not set to "no" or
+-- "false"; matching it and returning false or whatever
+-- (makeHeaderField above) isn't working, so any call to "field" is
+-- guaranteed to not work
+makeHeaderField :: String -> Context a
+makeHeaderField key = Context $ \k _ i -> do
+    if key == k then do
+      value <- getMetadataField (itemIdentifier i) "header"
+      if isJust value then
+        if elem (fromJust value) [ "no", "No", "false", "False" ] then
+          -- Compiler is an instance of Alternative from
+          -- Control.Applicative ; see Hakyll/Core/Compiler/Internal.hs
+          CA.empty
+        else
+          return $ StringField $ fromJust value
+      else
+        return $ StringField "yes makeheader"
+    else
+      CA.empty
+
 -- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
 postCtx allTags allCategories gtimes = mconcat
     [ tagCloudFieldWith "tagCloud" makeNumberedTagLink (intercalate " ") 80 200 allTags
     -- We don't actually want to expose the categories normally
     -- , tagCloudField "categories" 120 200 categories
+
+    -- Give a way to link absolutely back to the main site
+    , constField "homeURL" baseURL
 
     -- We always use the last_mod_date from git; if you want to
     -- override that, make a new git commit and use --date
@@ -372,7 +444,8 @@ postCtx allTags allCategories gtimes = mconcat
     -- item point at.
     , tagsField "tags" allTags
     -- , field "category" $ (fmap . fmap) (myCatLink . mconcat) $ myGetCategory . itemIdentifier
-    , myCategoryField "category"
+    , myCategoryField "category" True
+    , myCategoryField "categoryText" False
     -- Below is the contents of defaultContext, except for
     -- titleField; titleField is a default in case metadata has no
     -- title, and we want to error out in that case.
@@ -380,9 +453,24 @@ postCtx allTags allCategories gtimes = mconcat
     , metadataField
     , urlField      "url"
     , pathField     "path"
+
+    -- An artificial field that only exists if "header: no" is not
+    -- set.
+    , makeHeaderField "makeheader"
+
     , missingField
     ]
 
+-- Construct our $ replacement stuff for the special case of the
+-- redirects file
+insideRedirectCtx :: Context Redirect
+insideRedirectCtx = mconcat
+    [ field "path" $ return . redirPath . itemBody
+    , field "category" $ return . redirCategory . itemBody
+    , field "redirect" $ return . redirPattern . itemBody
+    , constField "homeURL" baseURL
+    , missingField
+    ]
 --------------------------- Extra Date Handling ------------------------------
 -- "With" versions of stuff from
 -- hakyll-4.9.0.0/src/Hakyll/Web/Template/List.hs (chronological /

@@ -1,15 +1,14 @@
+$if(makeheader)$
 <div class="info">
   <p>Originally Posted On $orig_date$</p>
   <p>Last Updated On $last_mod_date$</p>
   $check_bad_fields$
 <div class="soft">
-Cat in: $category$.
 Posted in: $tags$.
 </div>
 </div>
 
-$body$
+<hr/>
+$endif$
 
-<p>
-Browse: $tags$
-</p>
+$body$
