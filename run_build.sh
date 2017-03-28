@@ -9,14 +9,17 @@ then
   exit 1
 fi
 
-rm -f posts
-if [ -e posts ]
+if [ ! -d posts/. ]
 then
-  echo "Couldn't remove the posts link"
-  exit 1
-fi
+  rm -f posts
+  if [ -e posts ]
+  then
+    echo "Couldn't remove the posts link"
+    exit 1
+  fi
 
-ln -s /dropbox/Docs/Public/hblog_posts posts
+  ln -s /dropbox/Docs/Public/hblog_posts posts
+fi
 
 rm -rf _site
 rm -rf _cache
