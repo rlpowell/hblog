@@ -14,7 +14,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="/css/default.css" rel="stylesheet">
-    $if(categoryText)$ <link href="/css/$categoryText$.css" rel="stylesheet"> $endif$
+    <link href="/css/$categoryText$.css" rel="stylesheet">
   </head>
   <body>
     <!-- ==== HEADER ==== -->
@@ -28,7 +28,7 @@
           <div class="feature-text col-xs-12 col-md-8 col-lg-6 col-md-offset-2 col-lg-offset-3">
           -->
           <div class="feature-text col-sm-12 col-md-12">
-    $if(categoryText)$ <a href="/$categoryText$">RLP's $categoryText$ Blog</a> $endif$
+            <a href="/$categoryText$">RLP's $categoryTextCap$ Blog</a>
             <h1>$title$</h1>
           </div><!-- /feature text -->
         </div><!-- /row -->
@@ -88,8 +88,8 @@
           <h3 id="about">About</h3>
           <ul class="list-unstyled">
             <li><a href="/">RLP's Other Blogs</a></li>
-            <li><a href="$if(categoryText)$/$categoryText$$endif$/contact.html">About & Contact</a></li>
-            <li><a href="$if(categoryText)$/$categoryText$$endif$/archive.html">Archive</a></li>
+            <li><a href="/$categoryText$/contact.html">About & Contact</a></li>
+            <li><a href="/$categoryText$/archive.html">Archive</a></li>
           </ul>
 
         </div> <!-- /LEFT COLUMN -->
