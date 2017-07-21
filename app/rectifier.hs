@@ -169,8 +169,10 @@ isFileHeader file target = isHeader target && tFile target == file
 replaceLink :: FilePath -> [Target] -> Inline -> Inline
 replaceLink file targets linky@(Link x y (ickyLinkStr, z)) =
   let linkStr = unEscapeString ickyLinkStr in
-    -- Step 1 from "Rectification" in DESIGN-CODE
-    if isURI linkStr then
+    -- Step 1 from "Rectification" in DESIGN-CODE : check if it
+    -- looks like a URL or an absolute path within our blog, and
+    -- ignore it in those cases
+    if isURI linkStr || head linkStr == '/' then
       linky
     else
       if (length $ filter (== '#') linkStr) == 1 then
@@ -267,7 +269,7 @@ applyToBothAndFind _ _ _ _ [] = Nothing
 applyToBothAndFind mungeLeft mungeRight comp linkStr xs =
   let findings = applyToBothAndFindInner mungeLeft mungeRight comp linkStr xs in
     if length findings > 1 then
-      error $ "Found more than one match for \"" ++ linkStr ++ "\""
+      error $ "Found more than one match for \"" ++ linkStr ++ "\": " ++ (intercalate " " $ map tFile findings)
     else
     if length findings < 1 then
       Nothing
