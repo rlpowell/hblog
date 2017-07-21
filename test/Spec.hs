@@ -77,19 +77,13 @@ hblogTest shouldFail autoTest dir = it (description autoTest) $ do
   mainDir <- getCurrentDirectory
   rm_rf $ dir </> "_site"
   rm_rf $ dir </> "_cache"
-  dfe <- fileExist (dir </> "templates")
-  if dfe then
-    do
-      isl <- isSymbolicLink (dir </> "templates")
-      if isl then
-        return ()
-      else
-        createSymbolicLink (mainDir </> "templates") (dir </> "templates")
-  else
-    createSymbolicLink (mainDir </> "templates") (dir </> "templates")
+  rm_rf $ dir </> "templates"
+  callProcess "cp" ["-pr", (mainDir </> "templates"), (dir </> "templates")]
 
   hblogRunCmd shouldFail autoTest dir mainDir "hblog" ["build"]
+
   rm_rf $ dir </> "_cache"
+  rm_rf $ dir </> "templates"
 
   if (ttype autoTest) == "hblog" then
     do
