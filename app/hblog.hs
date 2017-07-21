@@ -5,13 +5,13 @@
 {-# LANGUAGE TupleSections #-}
 module Main where
 import           Data.List
-import           Hakyll
+import           Hakyll                         hiding (Redirect(..))
 import           System.FilePath
 import           Text.Blaze.Html                 (toHtml, toValue, (!))
 import           Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
-import           Text.Pandoc                     (writePlain, def, nullMeta)
+import           Text.Pandoc                     (writePlain, def, nullMeta, PandocError(..), runPure)
 import           Text.Pandoc.Definition          (Pandoc(..), Inline(..), Block(..))
 import           Text.Pandoc.Walk                (walk, query)
 -- import           Debug.Trace
@@ -26,6 +26,8 @@ import Data.Ord (comparing)
 import Text.Read (readMaybe)
 import Data.Maybe (isJust, isNothing, fromJust)
 import qualified Control.Applicative             as CA (Alternative (..))
+import qualified Data.Text as T
+import qualified Data.Char as Char
 
 type MyCategory = String
 type RedirectPattern = String
@@ -264,7 +266,13 @@ myGetTags identifier = do
     return $ maintags ++ cat ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
 
 getHeaders :: Block -> [(String, String)]
-getHeaders (Header _ (slug, _, _) xs) = [(writePlain def $ Pandoc nullMeta $ [Plain xs], slug)]
+getHeaders (Header _ (slug, _, _) xs) =
+    [(str, slug)]
+    where
+      str = case runPure $ writePlain def $ Pandoc nullMeta $ [Plain xs] of
+                   Left (PandocSomeError err)  -> "hblog getHeaders: unknown error: " ++ err
+                   Left _ -> "hblog getHeaders: unknown error!"
+                   Right item'              -> T.unpack item'
 getHeaders _ = []
 
 titleFixer :: [(String, FilePath)] -> Pandoc -> Pandoc
