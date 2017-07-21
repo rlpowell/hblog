@@ -27,11 +27,10 @@ import System.Environment (getArgs)
 import qualified System.FilePath.Find as F (find, always, extension)
 import System.FilePath.Find ((==?))
 import Control.Monad (mapM)
-import Text.Pandoc (readMarkdown, Inline(..), docTitle, readerStandalone, def, writePlain, writeMarkdown, writerStandalone, writerTemplate)
+import Text.Pandoc (readMarkdown, Inline(..), docTitle, readerStandalone, writePlain, writeMarkdown, writerTemplate, runPure, PandocError(..))
 import Text.Pandoc.Templates (getDefaultTemplate)
 import Text.Pandoc.Walk (query, walk)
 import Text.Pandoc.Definition (Pandoc(..), Block(..), nullMeta)
-import Text.Pandoc.Error (PandocError)
 import Network.URI (unEscapeString, isURI)
 import Data.List (find, intercalate, sortBy)
 import Data.Maybe (isJust)
@@ -43,6 +42,7 @@ import Data.ByteString.Char8 (pack)
 import Text.EditDistance (defaultEditCosts, levenshteinDistance)
 import Data.Function (on)
 import qualified Data.Text as T
+import HBlog.Lib
 
 --------------------------------------------------------------------------------
 
@@ -100,12 +100,18 @@ targetPrep indir = do
 readTargets :: FilePath -> IO [Target]
 readTargets file = do
   body <- readFile file
-  let pandocEither = readMarkdown def { readerStandalone = True } body
+  let pandocEither = runPure $ readMarkdown hblogPandocReaderOptions $ T.pack body
   return $ concat [titleQuery pandocEither file, headersQuery pandocEither file]
 
 -- Turn titles into Targets
 titleQuery :: Either PandocError Pandoc -> FilePath -> [Target]
-titleQuery (Right (Pandoc meta _)) file = [TTitle { tFile = file, tTarget = writePlain def $ Pandoc nullMeta $ [Plain $ docTitle meta] }]
+titleQuery (Right (Pandoc meta _)) file =
+  [TTitle { tFile = file, tTarget = target }]
+  where
+    target = case runPure $ writePlain hblogPandocWriterOptions $ Pandoc nullMeta $ [Plain $ docTitle meta] of
+                  Left (PandocSomeError err)  -> "rectifier titleQuery: unknown error: " ++ err
+                  Left _ -> "rectifier titleQuery: unknown error!"
+                  Right item'              -> T.unpack item'
 titleQuery (Left e) file = error $ "Pandoc error! on file " ++ file ++ ": " ++ (show e)
 
 -- Turn headers into Targets
@@ -115,7 +121,13 @@ headersQuery (Left e) file = error $ "Pandoc error! on file " ++ file ++ ": " ++
 
 -- Pull headers out as strings
 getHeaders :: Block -> [String]
-getHeaders (Header _ _ xs) = [writePlain def $ Pandoc nullMeta $ [Plain xs]]
+getHeaders (Header _ _ xs) =
+  [headers]
+  where
+    headers = case runPure $ writePlain hblogPandocWriterOptions $ Pandoc nullMeta $ [Plain xs] of
+                  Left (PandocSomeError err)  -> "rectifier getHeaders: unknown error: " ++ err
+                  Left _ -> "rectifier getHeaders: unknown error!"
+                  Right item'              -> T.unpack item'
 getHeaders _ = []
 
 -- Basically a wrapper for rectifie that does the IO bits; the code
@@ -134,10 +146,13 @@ handleFile indir outdir targets file = do
 -- Read, munge, and rebuild the markdown file we're working on
 rectify :: String -> FilePath -> [Target] -> String -> String
 rectify body file targets mdTemplate =
-  let pandocEither = readMarkdown def { readerStandalone = True } body
+  let pandocEither = runPure $ readMarkdown hblogPandocReaderOptions $ T.pack body
       newPandoc = linksWalk pandocEither file targets
       in
-        writeMarkdown def { writerStandalone = True , writerTemplate = mdTemplate } newPandoc
+        case runPure $ writeMarkdown hblogPandocWriterOptions { writerTemplate = Just mdTemplate } newPandoc of
+                  Left (PandocSomeError err)  -> "rectifier rectify: unknown error: " ++ err
+                  Left _ -> "rectifier rectify: unknown error!"
+                  Right item'              -> T.unpack item'
 
 -- Walk the Pandoc
 linksWalk :: Either PandocError Pandoc -> FilePath -> [Target] -> Pandoc
