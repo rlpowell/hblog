@@ -8,12 +8,12 @@ import System.Environment (getArgs)
 import qualified System.FilePath.Find as F (find, always, extension)
 import System.FilePath.Find ((==?))
 import System.Directory (createDirectoryIfMissing, doesFileExist)
-import Text.Pandoc (readerStandalone, def, writeMarkdown, writeHtmlString, writerStandalone, writerTemplate, Pandoc(..))
-import Text.Pandoc.Templates (getDefaultTemplate)
+import Text.Pandoc (writeMarkdown, writeHtml5String, Pandoc(..), runPure, PandocError(..))
 import Text.Pandoc.Readers.TikiWiki (readTikiWiki)
 import Data.List (intercalate)
 import Data.Maybe (fromJust, isJust)
 import qualified Data.Text as T
+import HBlog.Lib
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -55,18 +55,27 @@ handleFile infile outfileMD outfileHTML = do
     error $ "We do not support ~tc~ style comments, in file " ++ infile ++ " , for the reasons I (rlpowell) described at https://github.com/jgm/pandoc/issues/2552 .  Erroring out to stop you from accidentally revealing something secret."
   else
     do
-      Right mdTemplate <- getDefaultTemplate Nothing "markdown"
-      let pandoc = unTiki infile body in do
-        _ <- writeFile outfileMD $ writeMarkdown def { writerStandalone = True , writerTemplate = mdTemplate } pandoc
-        if isJust outfileHTML then do
-          _ <- writeFile (fromJust outfileHTML) $ writeHtmlString def { writerStandalone = True , writerTemplate = mdTemplate } pandoc
-          return ()
-        else
-          return ()
+      let pandoc = unTiki infile body
+          pandocString = case runPure $ writeMarkdown hblogPandocWriterOptions pandoc of
+                              Left (PandocSomeError err)  -> "tiki_to_md handleFile: unknown error: " ++ err
+                              Left _ -> "tiki_to_md handleFile: unknown error!"
+                              Right item'              -> T.unpack item'
+        in do
+          _ <- writeFile outfileMD pandocString
+          if isJust outfileHTML then
+            let pandocHTML = case runPure $ writeHtml5String hblogPandocWriterOptions pandoc of
+                                  Left (PandocSomeError err)  -> "tiki_to_md handleFile: HTML: unknown error: " ++ err
+                                  Left _ -> "tiki_to_md handleFile: HTML: unknown error!"
+                                  Right item'              -> T.unpack item'
+            in do
+              _ <- writeFile (fromJust outfileHTML) pandocHTML
+              return ()
+          else
+            return ()
 
 unTiki :: FilePath -> String -> Pandoc
 unTiki filePath body =
-  let pandocEither = readTikiWiki def { readerStandalone = True } body in
+  let pandocEither = runPure $ readTikiWiki hblogPandocReaderOptions $ T.pack body in
     case pandocEither of
       Left e -> error $ "Pandoc error! on file " ++ filePath ++ ": " ++ (show e)
       Right doc -> doc
