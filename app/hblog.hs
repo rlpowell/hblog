@@ -111,20 +111,20 @@ main = hakyll $ do
                 >>= relativizeUrls
 
 
-    match "index.html" $ do
-        route idRoute
-        compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
-            let indexCtx = mconcat [
-                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts)
-                    , constField "title" "Home"
-                    , (postCtx allTags allCategories gitTimes)
-                    ]
-
-            getResourceBody
-                >>= applyAsTemplate indexCtx
-                >>= loadAndApplyTemplate "templates/default.html" indexCtx
-                >>= relativizeUrls
+--    match "index.html" $ do
+--        route idRoute
+--        compile $ do
+--            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
+--            let indexCtx = mconcat [
+--                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts)
+--                    , constField "title" "Home"
+--                    , (postCtx allTags allCategories gitTimes)
+--                    ]
+--
+--            getResourceBody
+--                >>= applyAsTemplate indexCtx
+--                >>= loadAndApplyTemplate "templates/default.html" indexCtx
+--                >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
 
@@ -218,27 +218,31 @@ getRedirects identifier = do
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
 myGetCategory x = return $ take 1 $ dropPosts $ toFilePath x
 
+titleCase :: String -> String
+titleCase (hed:tale) = Char.toUpper hed : map Char.toLower tale
+titleCase [] = []
+
 -- | Render the category in a link; mostly copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
 -- |
 -- | Gets the category from the current item.
 -- | The argument is the name of the field to generate.
--- |
--- | We're not using field because we want it to fail if the field
--- | doesn't match.
-myCategoryField :: String -> Bool -> Context a
-myCategoryField key linkify = Context $ \k _ item -> do
-    if key == k then do
-      tagBits <- myGetCategory $ itemIdentifier item
-      let tag = mconcat tagBits
-      if tag == "" then
-        CA.empty
+myCategoryField :: String -> Bool -> Bool -> Context a
+myCategoryField key linkify toTitleCase = field key $ \item -> do
+    tagBits <- myGetCategory $ itemIdentifier item
+    let tag = mconcat tagBits
+    if tag == "" then
+      if toTitleCase then
+        return $ "Meta"
       else
-        if linkify then
-          return $ StringField $ renderHtml $ myCatLink tag
-        else
-          return $ StringField tag
+        return $ "meta"
     else
-      CA.empty
+      if linkify then
+        return $ renderHtml $ myCatLink tag
+      else
+        if toTitleCase then
+          return $ titleCase tag
+        else
+          return $ tag
 
 -- | Render the category as a link to its section (i.e. emits
 -- "/computing", for example).
@@ -452,8 +456,9 @@ postCtx allTags allCategories gtimes = mconcat
     -- item point at.
     , tagsField "tags" allTags
     -- , field "category" $ (fmap . fmap) (myCatLink . mconcat) $ myGetCategory . itemIdentifier
-    , myCategoryField "category" True
-    , myCategoryField "categoryText" False
+    , myCategoryField "category" True False
+    , myCategoryField "categoryText" False False
+    , myCategoryField "categoryTextCap" False True
     -- Below is the contents of defaultContext, except for
     -- titleField; titleField is a default in case metadata has no
     -- title, and we want to error out in that case.
