@@ -15,9 +15,6 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      lib
   exposed-modules:     HBlog.Lib
-                     , Text.Pandoc.Readers.TikiWiki
-                     , Text.Pandoc.Parsing
-                     , Text.Pandoc.Asciify
   build-depends:       base >= 4.7 && < 5
                      , pcre-light
                      , pcre-heavy
@@ -53,6 +50,8 @@ executable hblog
                   , process
                   , transformers
                   , time-locale-compat
+                  , text
+                  , hblog
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
@@ -67,6 +66,7 @@ executable tiki_to_md
                   , filemanip
                   , directory
                   , text
+                  , hblog
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 
@@ -100,6 +100,7 @@ executable rectifier
                   , bytestring
                   , edit-distance
                   , text
+                  , hblog
   ghc-options:      -threaded -Wall
   default-language: Haskell2010
 

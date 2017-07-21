@@ -1,8 +1,8 @@
 Image display:
 
- NOT SUPPORTED: image without src attribute BEGIN: {img attId="39" imalign="right" link="http://info.tikiwiki.org" alt="Panama Hat"} :END 
+ NOT SUPPORTED: image without src attribute BEGIN: {img attId=\"39\" imalign=\"right\" link=\"http://info.tikiwiki.org\" alt=\"Panama Hat\"} :END 
 
- NOT SUPPORTED: image without src attribute BEGIN: {img attId="37" thumb="mouseover" styleimage="border" desc="150"} :END 
+ NOT SUPPORTED: image without src attribute BEGIN: {img attId=\"37\" thumb=\"mouseover\" styleimage=\"border\" desc=\"150\"} :END 
 
 ![Pretty pears](img/wiki_up/393px-Pears.jpg "Pretty pears"){.thumb
 .button src="img/wiki_up/393px-Pears.jpg" thumb="y" imalign="center"
@@ -57,7 +57,7 @@ non-breaking space:
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa NOT SUPPORTED BEGIN: \~hs\~ (non-breaking space) :END aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 html comments:
- NOT SUPPORTED: \~hc\~ (html comment opener) BEGIN: ... \~/hc\~ :END 
+ NOT SUPPORTED: \~hc\~ (html comment opener) BEGIN: \... \~/hc\~ :END 
 
 Horizontal line:
 
@@ -170,13 +170,13 @@ https://github.com/jgm/pandoc/issues/3232 )
 -   bl1
     1.  nl2\_num1
         -   bl3 CONT\_bl3
-
     2.  nl2\_num2
 
     -   bl2
 
     1.  nl2\_num1
     2.  nl2\_num2
+
 -   bl1
     -   bl2
 
@@ -189,7 +189,6 @@ https://github.com/jgm/pandoc/issues/3232 )
 1.  nl1.1
     -   bl2.1
     -   bl2.2
-
 2.  nl1.2
 
 gap (because just a blank line looks like
@@ -257,4 +256,4 @@ Deleted ~~text~~
 
 Display syntax  \_\_not bold\_\_ 
 \_\_not bold\_\_
-''not italic''
+\'\'not italic\'\'

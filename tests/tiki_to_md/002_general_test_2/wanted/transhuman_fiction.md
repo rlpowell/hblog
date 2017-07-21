@@ -1,50 +1,51 @@
 Everything here has some relation to superintelligence, transhumanism,
-or [the singularity](My Views On The Future). Note that when I say "the
-singularity", I'm referring to the advent of super-human intelligence.
+or [the singularity](My Views On The Future). Note that when I say \"the
+singularity\", I\'m referring to the advent of super-human intelligence.
 
-Everything here is something I've enjoyed. Each story has a synopsis. I
+Everything here is something I\'ve enjoyed. Each story has a synopsis. I
 try, but not very hard, to avoid spoilers.
 
 Much of it is available online.
 
 In approximate order of how much I liked it.
 
-If you'd like to suggest an addition, please [send me an
+If you\'d like to suggest an addition, please [send me an
 email](mailto:rlpowell@digitalkingdom.org).
 
 -   Basically everything by [Neal
     Asher](http://en.wikipedia.org/wiki/Neal_Asher). In terms of raw
-    enjoyment, he's my favorite author right now (Dec 2010). The Polity
+    enjoyment, he\'s my favorite author right now (Dec 2010). The Polity
     series is about the adventures of various, mostly hypercompetent,
     beings (mostly human) in a universe where the godlike AIs have
     decided to let humanity do for themselves in a lot of ways, and all
     the crazy hypertech is mostly deadly dangerous.
--   Everything I've read so far by [Peter F
-    Hamilton](http://www.peterfhamilton.co.uk/). I've read The Night's
-    Dawn and Commonwealth Saga serieses, and they were
-    completely fantastic. In particular, Hamilton is by far the best
-    author I've ever read at spinning out many many separate plot
-    threads, and then weaving them all back together in the end. I just
-    wish he'd include a glossary of people and places; that would
-    increase my enjoyment of his books *considerably*.
+-   Everything I\'ve read so far by [Peter F
+    Hamilton](http://www.peterfhamilton.co.uk/). I\'ve read The Night\'s
+    Dawn and Commonwealth Saga serieses, and they were completely
+    fantastic. In particular, Hamilton is by far the best author I\'ve
+    ever read at spinning out many many separate plot threads, and then
+    weaving them all back together in the end. I just wish he\'d include
+    a glossary of people and places; that would increase my enjoyment of
+    his books *considerably*.
 -   The [Golden Age
     series](http://en.wikipedia.org/wiki/The_Golden_Age_(novel_series))
     by [John C.
     Wright](http://en.wikipedia.org/wiki/John_C._Wright_(author)) is
     special to me becuase of its value as propoganda: it is the only
-    post-singularity fiction I've read that (ignoring the problems the
+    post-singularity fiction I\'ve read that (ignoring the problems the
     main character has) (1) is a [Nice Place To
     Live](http://dotsub.com/view/96f08002-1f65-45d1-ba97-a8cc05784d94)
-    ([here's the written
+    ([here\'s the written
     form](http://lesswrong.com/lw/xy/the_fun_theory_sequence/)) and (2)
     the immortal people with no real problems are doing interesting and
-    (to them) meaningful things, not just lying around blissed out. I've
-    found at least one case in which someone I had extensively explained
-    singularity related stuff and how awesome the future might be didn't
-    really get it until he read these books, at which point it all made
-    sense to him. [Generalizing from fictional evidence may be
+    (to them) meaningful things, not just lying around blissed out.
+    I\'ve found at least one case in which someone I had extensively
+    explained singularity related stuff and how awesome the future might
+    be didn\'t really get it until he read these books, at which point
+    it all made sense to him. [Generalizing from fictional evidence may
+    be
     bad](http://lesswrong.com/lw/k9/the_logical_fallacy_of_generalization_from/),
-    but it's a pretty handy way to paint a clear picture in the mind of
+    but it\'s a pretty handy way to paint a clear picture in the mind of
     your listener.
 -   [After Life](http://sifter.org/~simon/AfterLife/) by [Simon
     Funk](http://sifter.org/~simon/) follows the story of the first
@@ -52,12 +53,12 @@ email](mailto:rlpowell@digitalkingdom.org).
     and the society that results from it.
 -   [The Passages Series](http://localroger.com/) by [Roger
     Williams](http://localroger.com/) (yes, those are the same link) is
-    something I've not actually read the entirety of. In fact, I've only
-    read "Passages In The Void" and "The Passage Home". It's fantastic.
-    It's about AI spaceships that save humanity by placing them around
-    interstellar brown dwarfs, stars being too unpredictable, and a
-    group that really wants to see earth anyway, no matter how dangerous
-    it is.
+    something I\'ve not actually read the entirety of. In fact, I\'ve
+    only read \"Passages In The Void\" and \"The Passage Home\". It\'s
+    fantastic. It\'s about AI spaceships that save humanity by placing
+    them around interstellar brown dwarfs, stars being too
+    unpredictable, and a group that really wants to see earth anyway, no
+    matter how dangerous it is.
 -   [The Metamorphosis of Prime
     Intellect](http://localroger.com/prime-intellect/index.html), also
     by [Roger Williams](http://localroger.com/). Note that besides the
@@ -65,8 +66,8 @@ email](mailto:rlpowell@digitalkingdom.org).
     incest with someone who is (by American standards, anyways) a minor.
     It is largely consensual (the adult protests somewhat). That sort of
     thing seems to really upset some people, so you might want to skip
-    most or all of the final chapter; people seem to think it's fine
-    without it anyways. This is about an AI that is based on [Asimov's
+    most or all of the final chapter; people seem to think it\'s fine
+    without it anyways. This is about an AI that is based on [Asimov\'s
     Three Laws](http://www.asimovlaws.com/) and discovers a hole in
     physics that gives it basically unlimited powers to stop humanity
     from ever doing anything that might hurt them.
@@ -91,20 +92,20 @@ email](mailto:rlpowell@digitalkingdom.org).
         this concept, when Aineko talks about exploiting the halting
         states in the human mind. On a related note, I once heard Stross
         talk about how to write superintelligences, and he gave an
-        illustrative example, paraphrased: "When I need to take my cat
+        illustrative example, paraphrased: \"When I need to take my cat
         to the vet, I bring out the cat carrier. The cat knows what this
         means, and then runs for the cat door. He is then *very*
-        surprised to discover that it's closed and locked. To him, these
-        two events are totally coincedental. I think that it's easy to
-        write a story about a superintelligence: just have any humans
-        that try to act against it constantly surprised by apparent
-        coincidences that turn out to all have been the
-        superintelligence's fault in the end."
+        surprised to discover that it\'s closed and locked. To him,
+        these two events are totally coincedental. I think that it\'s
+        easy to write a story about a superintelligence: just have any
+        humans that try to act against it constantly surprised by
+        apparent coincidences that turn out to all have been the
+        superintelligence\'s fault in the end.\"
 -   [The Shaper/Mechanist
     Stories](http://en.wikipedia.org/wiki/Shaper/Mechanist_universe) by
     [Bruce Sterling](http://en.wikipedia.org/wiki/Bruce_Sterling) is,
-    for me, basically technologically heavy teenage male power
-    fantasy porn. That's probably just me, though; there's a lot of very
+    for me, basically technologically heavy teenage male power fantasy
+    porn. That\'s probably just me, though; there\'s a lot of very
     thoughtful stuff in here, like discussions about the necessity of
     intelligence for a technologically advance species. It also does a
     really fantastic job of showing how relatively normal people could
@@ -119,7 +120,7 @@ email](mailto:rlpowell@digitalkingdom.org).
     the singularity. Or so he hopes.
 -   [Fossil
     Games](http://www.fictionwise.com/servlet/mw?a=v&t=book.htm&bi=86)
-    by [Tom Purdom](http://www.philart.net/tompurdom/); there's a [bit
+    by [Tom Purdom](http://www.philart.net/tompurdom/); there\'s a [bit
     of the intro online](http://www.philart.net/tompurdom/fossil.htm).
     Basically two threads: what happens when humanity gets heavily into
     mental enhancement?, and what happens when a spaceship managed by
@@ -131,17 +132,18 @@ email](mailto:rlpowell@digitalkingdom.org).
     Spain](http://en.wikipedia.org/wiki/Beggars_in_Spain) well enough,
     but it describes a very light progression in
     intelligence/capability, and I found the political aspects just kind
-    of weird. I simply had trouble seeing what her (the author's)
-    point was.
--   I'm going to partially ''dis''reccomend the Revelation Space series
-    by [Alistair Reynolds](http://voxish.tripod.com/); I like heroism,
-    and I like the good guys to win in the end. In those rare cases
-    where I enjoy really dark fiction, it's in short story form; I can't
-    take very much of it. This series felt to me like a constant slog
-    through awful things happening to people, and I kept expecting it to
-    resolve positively, and it never did, which upset me quite a bit.
-    Having said that, if you like that sort of thing you'll like this.
-    It's full of *fantastically* creative SF ideas, no doubt about it.
+    of weird. I simply had trouble seeing what her (the author\'s) point
+    was.
+-   I\'m going to partially \'\'dis\'\'reccomend the Revelation Space
+    series by [Alistair Reynolds](http://voxish.tripod.com/); I like
+    heroism, and I like the good guys to win in the end. In those rare
+    cases where I enjoy really dark fiction, it\'s in short story form;
+    I can\'t take very much of it. This series felt to me like a
+    constant slog through awful things happening to people, and I kept
+    expecting it to resolve positively, and it never did, which upset me
+    quite a bit. Having said that, if you like that sort of thing
+    you\'ll like this. It\'s full of *fantastically* creative SF ideas,
+    no doubt about it.
 
  NOT SUPPORTED: \~hc\~ (html comment opener) BEGIN: 
 html comment
@@ -150,31 +152,31 @@ html comment
 
 Notes on things I need to find/add:
 
--   three worlds --
+-   three worlds \--
     http://lesswrong.com/lw/y4/three\_worlds\_collide\_08/
--   permanence -- http://en.wikipedia.org/wiki/Permanence\_(novel)
--   the infinitely nested simulations story --
+-   permanence \-- http://en.wikipedia.org/wiki/Permanence\_(novel)
+-   the infinitely nested simulations story \--
     http://qntm.org/responsibility
--   the Vinge researchers that don't know they're uploads story:
+-   the Vinge researchers that don\'t know they\'re uploads story:
     http://en.wikipedia.org/wiki/The\_Cookie\_Monster\_%28novella%29
 -   http://qntm.org/transit
--   brin's uplift series
+-   brin\'s uplift series
 -   WWW series; need to read more of it first;
     http://www.wakewatchwonder.com/
 -   lots of Egan
--   orion's arm
+-   orion\'s arm
 
 Stuff I Should Read:
 
 -   The rest of [The Passages Series](http://localroger.com/)
 -   [People have now
     asserted](http://lesswrong.com/r/discussion/lw/3ju/looking_for_some_pieces_of_transhumanist_fiction/)
-    that Banks' "The Player Of Games" and "Excession" are safe (the
+    that Banks\' \"The Player Of Games\" and \"Excession\" are safe (the
     latter was re-affirmed by someone who emailed me privately).
--   From a random emailer: You omitted Richard Morgan ("Altered Carbon",
-    etc), Wil McCarthy (invention of faster than light replicators - a
-    long series) and especially, Alaister Reynold (all novels incredibly
-    good - space opera at its best).
+-   From a random emailer: You omitted Richard Morgan (\"Altered
+    Carbon\", etc), Wil McCarthy (invention of faster than light
+    replicators - a long series) and especially, Alaister Reynold (all
+    novels incredibly good - space opera at its best).
 
 A long aside:
 
@@ -188,27 +190,27 @@ the few books I genuinely regret having read. He seemed to have a love
 affair with trying to gross me out, and he succeeded admirably. There
 was nothing sufficiently excellent in there to make up for the horror of
 The Eaters. In fact, I can remember almost nothing else about the book.
-Apparently this is just me, because the WP article doesn't even mention
+Apparently this is just me, because the WP article doesn\'t even mention
 that section at all. I keep asking people to reccomend Banks that they
 are sure *does not* include such deliberate attempts to disgust the
 reader, but so for no-one has been willing to make such an assertion.
 
-I've gotten a lot of comments about the above, so let me expand a bit.
+I\'ve gotten a lot of comments about the above, so let me expand a bit.
 The issue there may be totally idiosyncratic. It may be specifically
-about ''food''; I made the *utter* error of reading [The Jeweller Of
+about \'\'food\'\'; I made the *utter* error of reading [The Jeweller Of
 Second Hand Roe](http://www.isfdb.org/cgi-bin/title.cgi?1004045)
 recently, which is the only thing that I have ever read, that I can
 recall, that actually caused me nausea. It was all about food.
 
-I am normally quite difficult to gross out; torture doesn't bother me in
-the slightest (I enjoy
+I am normally quite difficult to gross out; torture doesn\'t bother me
+in the slightest (I enjoy
 [Goodkind](http://en.wikipedia.org/wiki/The_Sword_of_Truth), for
 example), nor does any form of explicit sex. Since I had been grossed
 out so thoroughly be the bits in question, I therefore concluded that
 Banks must have gone far out of his way to be really disgusting.
 Feedback I have since received leads me to belivee that, rather, I was
 unusually sensitive to it; so far no-one else has mentioned it as having
-stood out as particularily gross to them. So I'm trying to own this as
+stood out as particularily gross to them. So I\'m trying to own this as
 my own issue at this point.
 
 Having said all that, I would have been OK with it had the segments in
