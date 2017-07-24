@@ -1,8 +1,13 @@
-    vim NOTES DESIGN-CODE DESIGN-SITE README.md app/hblog.hs templates/default.html css/default.css
+
+    vim NOTES DESIGN-CODE DESIGN-SITE README.md app/hblog.hs
+    templates/default.html css/default.css templates/post.html
+    templates/redirects templates/post.html posts/hobbies/gaming/Galactic_Empires.md
 
     '<,'>EasyAlign 1/\(::\|=>\|->\)/
 
     ./run_tests.sh -m unphone
+
+    /dropbox/src/git-reset-perms
 
 
 custom pandoc options:
@@ -25,35 +30,16 @@ globally, and use that for all markdown.
 TODO
 ----
 
-- give TikiWiki to Pandoc
-- make a script that walks the files, and for each file:
-  - (Side note: for this script, it might be helpful to teach
-  unphone-and-friends how to operate on individual files)
-  - records the last mod time
-  - runs pandoc to/from markdown
-  - checks the file in (with the recorded mod time) if any diffs
-  - runs unphone
-  - checks the file in (with the recorded mod time (+ a bit?)) if any diffs
-  - runs rectifier
-  - checks the file in (with the recorded mod time (+ a bit?)) if any diffs
-- check that the sub-bullets in the_great_transformation actually
-work
-  - similarly for -_-
-- issues found in the_great_transformation:
-  - "posted in" is terrible; it should only list the tags defined on
-  the post individually
-  - "Browse: " at the bottom; what even is that?
-  - the metadata at the top doesn't stand out from the body at all
-  ; needs bolding of things like "Last Updated On", spacing from the
-  body, maybe even a line
-- Drawing Butterflies With K - last modified on December 15, 2016 - originally posted on December 15, 2016
-  ^^ that ain't right
-- How Wi-Fi Actually Works - last modified on December 15, 2016 - originally posted on December 15, 2016
-  ^^ also wrong
-- include the pictures in Drawing Butterflies With K
-- the footer text isn't centered
-- The list of "posted in" in Drawing Butterflies With K is totally wrong
 - make at least two categories + main site
+  - categories don't currently have anything like an index page
+  - main site is now called "meta"; make its index suck less
+- add redirects to all the tiki imports
+- tag pages are not sub-blogged; for example, /tags/computing.html
+  shows up with the main site's color bar
+- support both per-category and global archives, which may mean
+  pushing the archive's URL to default.html, as I'm not sure what
+  /$categoryText$/archive.html will do on the global site
+- include the pictures in Drawing Butterflies With K
 - move css/ , index.html , etc into assets/ ?
   - Not sure about that, but index.html seems silly; have
     posts/[site]/index.md with whatever verbiage ; left sidebar
@@ -76,6 +62,13 @@ maybe?, or should that just be the article name?
   work, and push the results into our webspace
 - Nice-to-have: generate a history page for each page that does
   colored diff markup
+- issues found in the_great_transformation:
+  - "posted in" is terrible; it should only list the tags defined on
+  the post individually
+  - the metadata at the top doesn't stand out from the body at all
+  ; needs bolding of things like "Last Updated On", spacing from the
+  body, maybe even a line
+- give TikiWiki to Pandoc
 
 
 
