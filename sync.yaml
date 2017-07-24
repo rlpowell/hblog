@@ -1,0 +1,25 @@
+---
+- normal: /home/rlpowell/src/hblog/
+  db: /dropbox/src/hblog/
+  user: rlpowell
+  group: rlpowell
+  excludes:
+    - .stack-work
+- normal: /home/rlpowell/src/pandoc/
+  db: /dropbox/src/pandoc/
+  user: rlpowell
+  group: rlpowell
+  excludes:
+    - .stack-work
+- normal: /home/rlpowell/src/pandoc-citeproc/
+  db: /dropbox/src/pandoc-citeproc/
+  user: rlpowell
+  group: rlpowell
+  excludes:
+    - .stack-work
+- normal: /home/rlpowell/src/hakyll/
+  db: /dropbox/src/hakyll/
+  user: rlpowell
+  group: rlpowell
+  excludes:
+    - .stack-work
