@@ -18,6 +18,9 @@ then
   echo "First argument must be the source directory."
 fi
 
+stack build hblog
+stack install
+
 outdir="$indir"
 tempdir="/tmp/munge_files.$$"
 origpwd=$(pwd)
