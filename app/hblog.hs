@@ -28,6 +28,7 @@ import Data.Maybe (isJust, isNothing, fromJust)
 import qualified Control.Applicative             as CA (Alternative (..))
 import qualified Data.Text as T
 import qualified Data.Char as Char
+import HBlog.Lib
 
 type MyCategory = String
 type RedirectPattern = String
@@ -72,7 +73,7 @@ main = hakyll $ do
     match "posts/**" $ do
         route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
         compile $ do
-            pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions (titleFixer titles)
+            pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
             >>= loadAndApplyTemplate "templates/post.html"    (postCtx allTags allCategories gitTimes)
             >>= loadAndApplyTemplate "templates/default.html" (postCtx allTags allCategories gitTimes)
             >>= relativizeUrls
