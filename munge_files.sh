@@ -16,6 +16,7 @@ indir="$1"
 if [ ! -d "$indir" ]
 then
   echo "First argument must be the source directory."
+  exit 1
 fi
 
 stack build hblog
