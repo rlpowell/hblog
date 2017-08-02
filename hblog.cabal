@@ -29,6 +29,7 @@ library
                      , mtl
                      , data-default
   ghc-options:      -Wall
+  -- cov: ghc-options:      -Wall -fhpc -hpcdir hpc/lib/
   default-language:    Haskell2010
 
 executable hblog
@@ -53,6 +54,7 @@ executable hblog
                   , text
                   , hblog
   ghc-options:      -threaded -Wall
+  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/hblog/
   default-language: Haskell2010
 
 executable tiki_to_md
@@ -68,6 +70,7 @@ executable tiki_to_md
                   , text
                   , hblog
   ghc-options:      -threaded -Wall
+  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/tiki_to_md/
   default-language: Haskell2010
 
 executable unphone
@@ -82,6 +85,7 @@ executable unphone
                   , filemanip
                   , hblog
   ghc-options:      -threaded -Wall
+  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/unphone/
   default-language: Haskell2010
 
 executable rectifier
@@ -102,6 +106,7 @@ executable rectifier
                   , text
                   , hblog
   ghc-options:      -threaded -Wall
+  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/rectifier/
   default-language: Haskell2010
 
 test-suite hblog-test
@@ -118,6 +123,7 @@ test-suite hblog-test
                      , filepath
                      , unix
   ghc-options:         -threaded -Wall
+  -- cov: ghc-options:         -threaded -Wall -fhpc -hpcdir hpc/test/
   default-language:    Haskell2010
 
 source-repository head
