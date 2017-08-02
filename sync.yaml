@@ -5,6 +5,10 @@
   group: rlpowell
   excludes:
     - .stack-work
+    - pandoc-2.0
+    - hakyll-4.9.8.0
+    - pandoc-citeproc-0.10.5.1
+    - posts
 - normal: /home/rlpowell/src/pandoc/
   db: /dropbox/src/pandoc/
   user: rlpowell
