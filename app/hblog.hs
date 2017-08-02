@@ -4,38 +4,38 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TupleSections #-}
 module Main where
+import           HBlog.Lib
 import           Data.List
-import           Hakyll                         hiding (Redirect(..))
+import           Hakyll                          hiding (Redirect(..))
 import           System.FilePath
-import           Text.Blaze.Html                 (toHtml, toValue, (!))
-import           Text.Blaze.Html.Renderer.String (renderHtml)
+import           Text.Blaze.Html                        (toHtml, toValue, (!))
+import           Text.Blaze.Html.Renderer.String        (renderHtml)
 import qualified Text.Blaze.Html5                as H
 import qualified Text.Blaze.Html5.Attributes     as A
-import           Text.Pandoc                     (writePlain, def, nullMeta, PandocError(..), runPure)
-import           Text.Pandoc.Definition          (Pandoc(..), Inline(..), Block(..))
-import           Text.Pandoc.Walk                (walk, query)
--- import           Debug.Trace
-import           Network.URI                     (unEscapeString)
-import           Hakyll.Core.Identifier          (toFilePath)
-import           Data.Time.Clock                 (UTCTime)
-import           System.Process                  (readProcessWithExitCode)
-import           System.Exit                     (ExitCode(..))
-import Data.Time.Format (TimeLocale, formatTime, parseTimeM, defaultTimeLocale)
-import Control.Monad (liftM, msum, forM_)
-import Data.Ord (comparing)
-import Text.Read (readMaybe)
-import Data.Maybe (isJust, isNothing, fromJust)
-import qualified Control.Applicative             as CA (Alternative (..))
-import qualified Data.Text as T
-import qualified Data.Char as Char
-import HBlog.Lib
+import           Text.Pandoc                            (writePlain, def, nullMeta, PandocError(..), runPure)
+import           Text.Pandoc.Definition                 (Pandoc(..), Inline(..), Block(..))
+import           Text.Pandoc.Walk                       (walk, query)
+import           Network.URI                            (unEscapeString)
+import           Hakyll.Core.Identifier                 (toFilePath)
+import           Data.Time.Clock                        (UTCTime)
+import           System.Process                         (readProcessWithExitCode)
+import           System.Exit                            (ExitCode(..))
+import           Data.Time.Format                       (TimeLocale, formatTime, parseTimeM, defaultTimeLocale)
+import           Control.Monad                          (liftM, msum, forM_)
+import           Data.Ord                               (comparing)
+import           Text.Read                              (readMaybe)
+import           Data.Maybe                             (isJust, isNothing, fromJust)
+import qualified Control.Applicative             as CA  (Alternative (..))
+import qualified Data.Text                       as T
+import qualified Data.Char                       as Char
 
-type MyCategory = String
+
+-- Types used for our redirect generation
+type RedirectCategory = String
 type RedirectPattern = String
-
 data Redirect = Redirect
     { redirIdent     :: Identifier
-    , redirCategory  :: MyCategory
+    , redirCategory  :: RedirectCategory
     , redirPath      :: FilePath
     , redirPattern   :: RedirectPattern
     }
