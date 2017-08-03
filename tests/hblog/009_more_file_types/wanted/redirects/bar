@@ -1,0 +1,3 @@
+
+RedirectMatch permanent "/.*foo.*" "http://rlpowell.digitalkingdom.org/bar/001.md"
+
