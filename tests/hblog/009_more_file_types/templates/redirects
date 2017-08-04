@@ -1,3 +1,0 @@
-$for(redirects)$
-RedirectMatch permanent "$redirect$" "$homeURL$$path$"
-$endfor$
