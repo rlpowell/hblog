@@ -1,5 +1,9 @@
 #!/bin/bash
 
+dir="$(dirname $0)"
+cd "$dir"
+./setup_links.sh
+
 set -x
 set -e
 
@@ -9,15 +13,6 @@ then
   exit 1
 fi
 
-rm -f posts
-if [ -e posts ]
-then
-  echo "Couldn't remove the posts link"
-  exit 1
-fi
-
-ln -s /dropbox/Docs/Public/hblog_posts posts
-
 rm -rf _site
 rm -rf _cache
 
@@ -26,3 +21,5 @@ stack install
 hblog build
 
 rm -rf _cache
+
+./teardown_links.sh
