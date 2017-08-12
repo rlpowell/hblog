@@ -17,6 +17,6 @@ cabal.sandbox.config
 *.hp
 _cache
 _site
-build/
 out/
 .stack-work
+coverage
