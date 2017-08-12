@@ -1,5 +1,6 @@
-# Make sure our non-stack script is in a place stack can find it
-ln -sf /home/rlpowell/src/hblog/munge_files.sh ~/.local/bin/munge_files
+dir="$(dirname $0)"
+cd "$dir"
+./setup_links.sh
 
 find /home/rlpowell/src/hblog/tests/ /dropbox/src/hblog/tests/   -type f | xargs chmod a-x
 
@@ -13,58 +14,42 @@ do
   cd "$oldpwd"
 done
 
-rm -rf cov/ hpc/
-for name in hblog rectifier unphone tiki_to_md test lib test
-do
-  mkdir -p hpc/$name
-done
+rm -rf coverage/
+mkdir coverage/
 
-if [ ! -f hblog.cabal.orig ]
-then
-  mv hblog.cabal hblog.cabal.orig
-fi
-sed -e '/^\s*ghc-options:/d' -e 's/-- cov: //g' hblog.cabal.orig >hblog.cabal
-
-for file in app/* test/Spec.hs lib/HBlog/Lib.hs
+# Force a rebuild ; --force-dirty doesn't (as of 2017-08-07) do the
+# right thing, at least by itself; see
+# https://github.com/commercialhaskell/stack/issues/3306 and
+# https://github.com/commercialhaskell/stack/issues/1940
+for file in $(find app/ lib/ test/ -type f | grep -v '^\.')
 do
   sed -i '$s/$/ /' $file
 done
 
-stack build hblog
-stack install hblog
-stack test --test-arguments "$*"
+stack build --coverage --force-dirty hblog
+stack install --coverage --force-dirty hblog
+stack test --coverage --force-dirty --test-arguments "$*"
 rsync -a --delete tests/ /dropbox/src/hblog/tests/
 
-for name in $(find . -name hblog-test.tix)
-do
-  mv $name $(echo $name | sed 's/hblog-test/test/g')
-done
+# Here we find the .tix files, sum *all* of them, put them where we
+# want them, and clean up the originals.
+tixes=$(find . "$(stack path --local-hpc-root)/"hblog*/ -name hpc -prune -o -type f -name '*.tix' -print | tr '\n' ' ')
+if [ "$tixes" ]
+then
+  echo stack exec hpc -- sum --exclude=Main --union $tixes
+  stack exec hpc -- sum --exclude=Main --union $tixes >coverage/all.tix
 
-for name in hblog rectifier unphone tiki_to_md test
-do
-  mkdir -p cov/$name
-  tixes=$(find . -name hpc -prune -o -type f -name $name.tix -print | tr '\n' ' ')
-  if [ "$tixes" ]
-  then
-    rm hpc/$name.tix
-    ln -s ../lib/$(cd hpc/lib ; \ls)  hpc/$name/
+  /bin/rm -f $tixes
+else
+  echo "No tix files found at all; bailing."
+  exit 1
+fi
 
-    stack exec hpc sum $tixes >hpc/$name.tix
+# Here we generate the markup.
+echo stack exec hpc -- markup --hpcdir=$(stack path --dist-dir)/hpc/ --destdir=coverage/ --verbosity=2 coverage/all.tix
+stack exec hpc -- markup --hpcdir=$(stack path --dist-dir)/hpc/ --destdir=coverage/ --verbosity=2 coverage/all.tix
 
-    /bin/rm -f ./.stack-work/dist/x86_64-linux/*/hpc/*
-    /bin/rm -f ./.hpc/*
-    /bin/rm -f $tixes
-  fi
-  if [ -f hpc/$name.tix ]
-  then
-    echo stack exec hpc -- markup --hpcdir=hpc/$name/ --destdir=cov/$name/ --verbosity=2 hpc/$name.tix
-    stack exec hpc -- markup --hpcdir=hpc/$name/ --destdir=cov/$name/ --verbosity=2 hpc/$name.tix
-  fi
-done
-
-find hpc -type l | xargs rm
-rsync -a --delete cov/ /dropbox/src/hblog/cov/ >/dev/null 2>&1
-rsync -a --delete hpc/ /dropbox/src/hblog/hpc/ >/dev/null 2>&1
+rsync -a --delete coverage/ /dropbox/src/hblog/coverage/ >/dev/null 2>&1
 
 # Cleanup
 if [ -f hblog.cabal.orig ]
@@ -72,10 +57,15 @@ then
   mv hblog.cabal.orig hblog.cabal
 fi
 
-for file in app/* test/Spec.hs lib/HBlog/Lib.hs
+# Undo what we did to force a rebuild
+for file in $(find app/ lib/ test/ -type f | grep -v '^\.')
 do
   sed -i '$s/ *$//' $file
 done
 
 echo "Deleting .git directories."
 find tests/ -name .git | xargs rm -rf
+
+rsync -a --delete tests/ /dropbox/src/hblog/tests/ >/dev/null 2>&1
+
+./teardown_links.sh

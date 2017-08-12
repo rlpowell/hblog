@@ -15,7 +15,13 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      lib
   exposed-modules:     HBlog.Lib
+                     , HBlog.HBlog
+                     , HBlog.Rectifier
+                     , HBlog.Spec
+                     , HBlog.TikiToMD
+                     , HBlog.UnPhone
   build-depends:       base >= 4.7 && < 5
+                     -- HBlog.Lib
                      , pcre-light
                      , pcre-heavy
                      , template-haskell
@@ -28,92 +34,28 @@ library
                      , tagsoup
                      , mtl
                      , data-default
-  ghc-options:      -Wall
-  -- cov: ghc-options:      -Wall -fhpc -hpcdir hpc/lib/
-  default-language:    Haskell2010
-
-executable hblog
-  main-is:          hblog.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , hakyll == 4.9.*
-                  , pcre-heavy
-                  , filepath
-                  , unix
-                  , blaze-html
-                  , containers
-                  , string-conversions
-                  , pandoc-types
-                  , network-uri
-                  , pandoc
-                  , directory
-                  , time
-                  , process
-                  , transformers
-                  , time-locale-compat
-                  , text
-                  , hblog
-  ghc-options:      -threaded -Wall
-  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/hblog/
-  default-language: Haskell2010
-
-executable tiki_to_md
-  main-is:          tiki_to_md.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , filepath
-                  , pandoc
-                  , pandoc-types
-                  , hblog
-                  , filemanip
-                  , directory
-                  , text
-                  , hblog
-  ghc-options:      -threaded -Wall
-  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/tiki_to_md/
-  default-language: Haskell2010
-
-executable unphone
-  main-is:          unphone.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , directory
-                  , filepath
-                  , unix
-                  , pcre-heavy
-                  , pcre-light
-                  , filemanip
-                  , hblog
-  ghc-options:      -threaded -Wall
-  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/unphone/
-  default-language: Haskell2010
-
-executable rectifier
-  main-is:          rectifier.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , directory
-                  , filepath
-                  , unix
-                  , filemanip
-                  , pandoc
-                  , pandoc-types
-                  , network-uri
-                  , pcre-heavy
-                  , pcre-light
-                  , bytestring
-                  , edit-distance
-                  , text
-                  , hblog
-  ghc-options:      -threaded -Wall
-  -- cov: ghc-options:      -threaded -Wall -fhpc -hpcdir hpc/rectifier/
-  default-language: Haskell2010
-
-test-suite hblog-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
+                     -- HBlog.HBlog
+                     , hakyll == 4.9.*
+                     , pcre-heavy
+                     , filepath
+                     , unix
+                     , blaze-html
+                     , containers
+                     , string-conversions
+                     , pandoc-types
+                     , network-uri
+                     , pandoc
+                     , directory
+                     , time
+                     , process
+                     , transformers
+                     , time-locale-compat
+                     , text
+                     -- HBlog.Rectifier
+                     , filemanip
+                     , bytestring
+                     , edit-distance
+                     -- lib/HBLog/Spec.hs
                      , hspec
                      , QuickCheck
                      , process
@@ -122,8 +64,62 @@ test-suite hblog-test
                      , yaml
                      , filepath
                      , unix
-  ghc-options:         -threaded -Wall
-  -- cov: ghc-options:         -threaded -Wall -fhpc -hpcdir hpc/test/
+                     -- HBlog.TikiToMD
+                     , filepath
+                     , pandoc
+                     , pandoc-types
+                     , filemanip
+                     , directory
+                     , text
+                     -- HBlog.UnPhone
+                     , directory
+                     , filepath
+                     , unix
+                     , pcre-heavy
+                     , pcre-light
+                     , filemanip
+  ghc-options:      -Wall
+  default-language:    Haskell2010
+
+executable hblog
+  main-is:          hblog.hs
+  hs-source-dirs:   app
+  build-depends:    base == 4.*
+                  , hblog
+  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+
+executable tiki_to_md
+  main-is:          tiki_to_md.hs
+  hs-source-dirs:   app
+  build-depends:    base == 4.*
+                  , hblog
+  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+
+executable unphone
+  main-is:          unphone.hs
+  hs-source-dirs:   app
+  build-depends:    base == 4.*
+                  , hblog
+  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+
+executable rectifier
+  main-is:          rectifier.hs
+  hs-source-dirs:   app
+  build-depends:    base == 4.*
+                  , hblog
+  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+
+test-suite hblog-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , hblog
+  ghc-options:         -threaded -Wall -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head

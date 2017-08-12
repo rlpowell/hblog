@@ -1,5 +1,6 @@
-# Make sure our non-stack script is in a place stack can find it
-ln -sf /home/rlpowell/src/hblog/munge_files.sh ~/.local/bin/munge_files
+dir="$(dirname $0)"
+cd "$dir"
+./setup_links.sh
 
 find /home/rlpowell/src/hblog/tests/ /dropbox/src/hblog/tests/   -type f | xargs chmod a-x
 
@@ -19,3 +20,7 @@ stack test --test-arguments "$*"
 
 echo "Deleting .git directories."
 find tests/ -name .git | xargs rm -rf
+
+rsync -a --delete tests/ /dropbox/src/hblog/tests/ >/dev/null 2>&1
+
+./teardown_links.sh
