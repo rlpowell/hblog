@@ -11,12 +11,11 @@ import Test.Hspec
 -- import Test.QuickCheck
 import System.Process
 import System.Exit
-import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, removeDirectoryRecursive, createDirectoryIfMissing, isSymbolicLink)
+import System.Directory (getCurrentDirectory, setCurrentDirectory, getDirectoryContents, doesDirectoryExist, removeDirectoryRecursive, createDirectoryIfMissing)
 import Control.Monad
 import GHC.Generics
 import Data.Yaml
 import System.FilePath
-import System.Posix.Files (createSymbolicLink, fileExist)
 
 data AutoTest = AutoTest { description :: String, ttype :: String, tstderr :: String } deriving (Ord, Eq, Show, Generic)
 

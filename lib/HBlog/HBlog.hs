@@ -229,8 +229,8 @@ titleCase [] = []
 -- |
 -- | Gets the category from the current item.
 -- | The argument is the name of the field to generate.
-myCategoryField :: String -> Bool -> Bool -> Context a
-myCategoryField key linkify toTitleCase = field key $ \item -> do
+myCategoryField :: String -> Bool -> Context a
+myCategoryField key toTitleCase = field key $ \item -> do
     tagBits <- myGetCategory $ itemIdentifier item
     let tag = mconcat tagBits
     if tag == "" then
@@ -239,18 +239,10 @@ myCategoryField key linkify toTitleCase = field key $ \item -> do
       else
         return $ "meta"
     else
-      if linkify then
-        return $ renderHtml $ myCatLink tag
+      if toTitleCase then
+        return $ titleCase tag
       else
-        if toTitleCase then
-          return $ titleCase tag
-        else
-          return $ tag
-
--- | Render the category as a link to its section (i.e. emits
--- "/computing", for example).
-myCatLink :: String -> H.Html
-myCatLink cat = H.a ! A.href (toValue $ toUrl ("/" ++ cat)) $ toHtml cat
+        return $ tag
 
 -- | Render one tag link ; copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
 simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
@@ -286,13 +278,6 @@ titleFixer :: [(String, FilePath)] -> Pandoc -> Pandoc
 titleFixer titles doc = 
   let headers = query getHeaders doc in
     walk (titleFixerInternal titles headers) doc
-
-fixPath :: FilePath -> FilePath
-fixPath path =
-  if takeExtension path == ".md" then
-    "/" </> replaceExtension path ".html"
-  else
-    "/" </> path
 
 titleFixerInternal :: [(String, FilePath)] -> [(String, String)] -> Inline -> Inline
 -- titleFixerInternal titles link@(Link _ _ (url, _)) | trace ("url: " ++ (show url) ++ ", titles: " ++ (show titles)) False = undefined
@@ -458,10 +443,8 @@ postCtx allTags allCategories gtimes = mconcat
     -- tags we pass are how it knows what the (textual) tags on the
     -- item point at.
     , tagsField "tags" allTags
-    -- , field "category" $ (fmap . fmap) (myCatLink . mconcat) $ myGetCategory . itemIdentifier
-    , myCategoryField "category" True False
-    , myCategoryField "categoryText" False False
-    , myCategoryField "categoryTextCap" False True
+    , myCategoryField "categoryText" False
+    , myCategoryField "categoryTextCap" True
     -- Below is the contents of defaultContext, except for
     -- titleField; titleField is a default in case metadata has no
     -- title, and we want to error out in that case.
