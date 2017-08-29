@@ -138,23 +138,7 @@ hblogMain = hakyll $ do
                 >>= loadAndApplyTemplate "templates/redirects" redirectCtx
                 >>= relativizeUrls
 
-    -- Post categories
-    tagsRules allCategories $ \category pattern -> do
-        let title = "Posts in category " ++ category
-
-        -- FIXME: Copied from posts, need to refactor
-        route idRoute
-        compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll pattern
-            let ctx = constField "title" title `mappend`
-                        listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
-                        (postCtx allTags allCategories gitTimes)
-            makeItem ""
-                >>= loadAndApplyTemplate "templates/post-list.html" ctx
-                >>= loadAndApplyTemplate "templates/default.html" ctx
-                >>= relativizeUrls
-
-    -- Post tags
+    -- Post tags; generates pages like _site/tags/futurism+psychology.html listing all the relevant articles.
     tagsRules allTags $ \tag pattern -> do
         let title = "Posts tagged " ++ tag
 
