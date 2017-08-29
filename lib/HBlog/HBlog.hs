@@ -201,18 +201,47 @@ getRedirects identifier = do
     else
       return []
 
--- Get the first directory name after posts/ , call that the category
+-- | Find the category of the current item.
+--
+-- What we actually do is get the first directory name after posts/
+-- , and call that the category; if there's no posts/ we return
+-- nothing.
+--
+-- Returns an array of strings because that is what buildTagsWith
+-- expects, not because this actually makes sense here.
+--
+-- Examples of file paths that this function has to handle:
+--
+-- posts/hobbies/contact.md
+-- posts/index.md
+-- posts/meta/index.md
+-- posts/personal/misc/comparables.md
+-- tags/philosophy.html
+-- categories/computing.html
+-- archive.html
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
-myGetCategory x = return $ take 1 $ dropPosts $ toFilePath x
+myGetCategory x =
+    -- let filePath = trace ("fp1: " ++ (head $ splitDirectories $ toFilePath x) ++ ", " ++ (show $ (head $ splitDirectories $ toFilePath x) == "posts")) $ toFilePath x
+    let filePath = toFilePath x
+        filePathParts = dropWhile (\foo -> foo == "/") $ splitDirectories filePath
+    in
+        if length filePathParts > 2 &&
+           (head filePathParts) == "posts" then
+             return $ take 1 $ dropPosts $ filePath
+        else
+             return []
 
 titleCase :: String -> String
 titleCase (hed:tale) = Char.toUpper hed : map Char.toLower tale
 titleCase [] = []
 
--- | Render the category in a link; mostly copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
--- |
--- | Gets the category from the current item.
--- | The argument is the name of the field to generate.
+-- | Return a field containing the category of the current item, as
+-- simple text, or "meta" if the current item doesn't have one.
+--
+-- Arguments:
+--
+-- 1.  The name of the field to generate.
+-- 2.  Whether or not to TitleCase the result.
 myCategoryField :: String -> Bool -> Context a
 myCategoryField key toTitleCase = field key $ \item -> do
     tagBits <- myGetCategory $ itemIdentifier item
