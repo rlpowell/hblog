@@ -34,6 +34,7 @@ library
                      , tagsoup
                      , mtl
                      , data-default
+                     , system-fileio
                      -- HBlog.HBlog
                      , hakyll == 4.9.*
                      , pcre-heavy
