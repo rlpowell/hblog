@@ -14,12 +14,17 @@ then
 fi
 
 rm -rf _site
+rm -rf /dropbox/src/hblog/_site
 rm -rf _cache
+rm -rf /dropbox/src/hblog/_cache
 
 stack build hblog
 stack install
 hblog build
 
 rm -rf _cache
+rm -rf /dropbox/src/hblog/_cache
+
+rsync -a --delete _site/ /dropbox/src/hblog/_site/
 
 ./teardown_links.sh
