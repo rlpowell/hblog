@@ -201,6 +201,33 @@ getRedirects identifier = do
     else
       return []
 
+-- | Causes the field matching the category name (or "meta") to be
+-- set to "true"; this means you can do things like:
+--
+-- $if(meta)$
+-- <p>META!</p>
+-- $endif$
+--
+-- $if(computing)$
+-- <p>COMPUTING!</p>
+-- $endif$
+--
+-- in a template.
+myCategoryCheckFields :: Context a
+myCategoryCheckFields = Context $ \k _ i -> do
+  -- k is the key that user is checking (i.e. "computing")
+  categBits <- myGetCategory $ itemIdentifier i
+  let categ = mconcat categBits
+  if categ == k then
+    return $ StringField "true"
+  else
+    if categ == "" && k == "meta" then
+      return $ StringField "true"
+    else
+      -- Compiler is an instance of Alternative from
+      -- Control.Applicative ; see Hakyll/Core/Compiler/Internal.hs
+      CA.empty
+
 -- | Find the category of the current item.
 --
 -- What we actually do is get the first directory name after posts/
@@ -226,7 +253,8 @@ myGetCategory x =
         filePathParts = dropWhile (\foo -> foo == "/") $ splitDirectories filePath
     in
         if length filePathParts > 2 &&
-           (head filePathParts) == "posts" then
+           (head filePathParts) == "posts" &&
+           (take 1 $ dropPosts $ filePath) /= ["meta"] then
              return $ take 1 $ dropPosts $ filePath
         else
              return []
@@ -256,6 +284,18 @@ myCategoryField key toTitleCase = field key $ \item -> do
         return $ titleCase tag
       else
         return $ tag
+
+-- Helper for myCategoriesField
+myCategoriesFieldLink :: String -> H.Html
+myCategoriesFieldLink category =
+    H.li $ H.a ! A.href (toValue $ toUrl $ "/" ++ category) $ toHtml category
+
+-- | Generate a list of links to the pages for each given category;
+-- just simple links, nothing fancy.
+myCategoriesField :: String -> Tags -> Context a
+myCategoriesField key categories = field key $ \item -> do
+    let categLinks = fmap myCategoriesFieldLink (sort $ filter (\x -> x /= "meta") $ map fst $ tagsMap categories) in
+        return $ renderHtml $ H.ul $ toHtml categLinks
 
 -- | Render one tag link ; copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
 simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
@@ -431,12 +471,22 @@ makeHeaderField key = Context $ \k _ i -> do
     else
       CA.empty
 
+--------------------------------------------------------------------------------
+-- Context Configuration
+--------------------------------------------------------------------------------
+-- A "Context" in Hakyll is basically a list of fields that can be
+-- replaced in a template with the $stuff$ syntax.  We have many
+-- custom fields, and at least one (myCategoryCheckFields)
+-- meta-field (that is, it might match any field name, depending on
+-- the details).
+--
+-- Basically, this list is walked with the name of the field being
+-- asked for, and the first item that answers to the name gets it.
+
 -- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
 postCtx allTags allCategories gtimes = mconcat
     [ tagCloudFieldWith "tagCloud" makeNumberedTagLink (intercalate " ") 80 200 allTags
-    -- We don't actually want to expose the categories normally
-    -- , tagCloudField "categories" 120 200 categories
 
     -- Give a way to link absolutely back to the main site
     , constField "homeURL" baseURL
@@ -456,6 +506,14 @@ postCtx allTags allCategories gtimes = mconcat
     -- tags we pass are how it knows what the (textual) tags on the
     -- item point at.
     , tagsField "tags" allTags
+    -- Anwers the field named for the current item's category (i.e.
+    -- if the current item's category is "computing", $computing$
+    -- will work in the template).
+    , myCategoryCheckFields
+    -- All categories, as links; used very rarely as we don't want
+    -- people bouncing around categories most of the time.
+    , myCategoriesField "categories" allCategories
+    -- The name of the current category.
     , myCategoryField "categoryText" False
     , myCategoryField "categoryTextCap" True
     -- Below is the contents of defaultContext, except for
@@ -466,8 +524,8 @@ postCtx allTags allCategories gtimes = mconcat
     , urlField      "url"
     , pathField     "path"
 
-    -- An artificial field that only exists if "header: no" is not
-    -- set.
+    -- An artificial field that only exists if "header: False" is not
+    -- present in the file header; see posts/index.md for an example.
     , makeHeaderField "makeheader"
 
     , missingField
@@ -483,6 +541,7 @@ insideRedirectCtx = mconcat
     , constField "homeURL" baseURL
     , missingField
     ]
+
 --------------------------- Extra Date Handling ------------------------------
 -- "With" versions of stuff from
 -- hakyll-4.9.0.0/src/Hakyll/Web/Template/List.hs (chronological /

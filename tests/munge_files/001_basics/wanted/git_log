@@ -38,6 +38,23 @@ Date:   [date]
 
     Automated Checkin: pandoc to-and-from markdown differences found at [date]
 
+diff --git a/foo/001.md b/foo/001.md
+index [hash]..[hash]
+--- a/foo/001.md
++++ b/foo/001.md
+@@ -1,3 +1,4 @@
+-# Header
++Header
++======
+ 
+ test before qwl look a link! qwu wifi works qw after
+
+commit [hash]
+Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Date:   [date]
+
+    Automated Checkin: pandoc to-and-from markdown differences found at [date]
+
 diff --git a/bar/how_wifi_actually_works.md b/bar/how_wifi_actually_works.md
 index [hash]..[hash]
 --- a/bar/how_wifi_actually_works.md
@@ -53,23 +70,6 @@ index [hash]..[hash]
 +
      25-15:31 <       treed> In the ideal situation for wifi, you have one station per AP, on non-overlapping channels
      25-15:31 <       treed> which in the best possible 2.4Ghz case gets you 3 stations
-
-commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
-Date:   [date]
-
-    Automated Checkin: pandoc to-and-from markdown differences found at [date]
-
-diff --git a/foo/001.md b/foo/001.md
-index [hash]..[hash]
---- a/foo/001.md
-+++ b/foo/001.md
-@@ -1,3 +1,4 @@
--# Header
-+Header
-+======
- 
- test before qwl look a link! qwu wifi works qw after
 
 commit [hash]
 Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
