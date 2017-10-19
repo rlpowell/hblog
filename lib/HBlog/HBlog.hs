@@ -332,8 +332,15 @@ titleFixer titles doc =
   let headers = query getHeaders doc in
     walk (titleFixerInternal titles headers) doc
 
+-- | Works on Pandoc Link elements to fix minor problems with the
+-- Pandoc generated from our markdown.
+--
+-- In particular, makes URLs for posts absolute, and makes URLs for
+-- anchors have the # they need.
+--
 titleFixerInternal :: [(String, FilePath)] -> [(String, String)] -> Inline -> Inline
--- titleFixerInternal titles link@(Link _ _ (url, _)) | trace ("url: " ++ (show url) ++ ", titles: " ++ (show titles)) False = undefined
+-- titleFixerInternal titles headers link@(Link _ _ (url, _)) | trace ("url: " ++ (show url) ++ ", titles: " ++ (show titles)) False = undefined
+-- titleFixerInternal titles headers link@(Link _ _ (url, _)) | trace ("url: " ++ (show url)) False = undefined
 titleFixerInternal titles headers link@(Link x text (rawURL, z)) =
   let fixedURL = unEscapeString rawURL
       maybePath = lookup fixedURL titles
@@ -345,11 +352,16 @@ titleFixerInternal titles headers link@(Link x text (rawURL, z)) =
           text
   in
     if isJust maybePath then
-      let newURL = "/" </> replaceExtension (fromJust maybePath) ".html" in
+      -- Turn posts/computing/general/ched.md into /computing/general/ched.html
+      let newURL = "/" </> (joinPath $ dropPosts $ replaceExtension (fromJust maybePath) ".html") in
         Link x fixedText (newURL, z)
+        -- trace ("added slash: " ++ fixedURL ++ ", " ++ (fromJust maybePath) ++ ", " ++ newURL) $ Link x fixedText (newURL, z)
     else
       if isJust maybeHeader then
-        Link x fixedText ("#" ++ (fromJust maybeHeader), z)
+        -- Turns "about" (as a URL, which is not gonna work) into "#about" (an anchor URL)
+        let newURL = "#" ++ (fromJust maybeHeader) in
+          -- trace ("added hash: " ++ fixedURL ++ ", " ++ (fromJust maybeHeader) ++ ", " ++ newURL) $ Link x fixedText (newURL, z)
+          Link x fixedText (newURL, z)
       else
         link
 titleFixerInternal _ _ x = x
