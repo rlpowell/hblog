@@ -141,6 +141,21 @@ matching reality; make a git commit with the date you want if you need to lie
 about the last_mod_date, that way any future changes will work correctly (as
 long as they are checked in, which the scripting shuold force).
 
+Redirects
+=========
+
+I want to redirect items from the old wikis and such, but I don't
+want to have to maintain a master list.  Therefore, header tags like
+this:
+
+      redirect: '/.*foo.*'
+
+become entries in a file named _site/redirects/[category], like so:
+
+      RedirectMatch permanent "/.*foo.*" "http://rlpowell.digitalkingdom.org/bar/001.md"
+
+Those redirects/ files can then be pointed at by Apache.
+
 TikiWiki Conversion
 ===================
 
