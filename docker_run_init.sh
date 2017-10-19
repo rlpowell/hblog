@@ -35,4 +35,4 @@ cd /dropbox/src
 
 sudo /usr/sbin/sshd
 
-exec /dropbox/src/docker_dropbox_sync.rb "$(basename "$DIR")"/sync.yaml
+exec /dropbox/src/docker_dropbox_sync.rb "$(basename "$DIR")"/sync.yaml | tee /tmp/docker_sync.log
