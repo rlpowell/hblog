@@ -303,19 +303,13 @@ simpleRenderLink _   Nothing         = Nothing
 simpleRenderLink tag (Just filePath) =
   Just $ H.a ! A.href (toValue $ toUrl filePath) $ toHtml tag
 
--- | Obtain tags from a page in the default way: parse them from the @tags@
--- metadata field.
---
---does stuff with categories and : and stuff; maybe explain in
---DESIGN-CODE
---
--- FIXME: exmaple
+-- | See the Tags & Categories section of DESIGN-CODE.
 myGetTags :: MonadMetadata m => Identifier -> m [String]
 myGetTags identifier = do
     tags <- getTags identifier
     let maintags = map (intercalate "+") $ drop 1 $ subsequences $ sort tags
     cat <- myGetCategory identifier
-    return $ maintags ++ cat ++ (map (\x -> (head cat) ++ ":" ++ x) maintags)
+    return $ map (\x -> (head cat) ++ ":" ++ x) maintags
 
 getHeaders :: Block -> [(String, String)]
 getHeaders (Header _ (slug, _, _) xs) =
@@ -450,6 +444,22 @@ failIfMetadatas mds = field "check_bad_fields" $ \ident -> do
 getGitTimeUTCCompiler :: [GitTimes] -> (GitTimes -> UTCTime) -> Identifier -> Compiler UTCTime
 getGitTimeUTCCompiler gtimes typeF ident = return $ getGitTimeUTC ident gtimes typeF
 
+-- This is a wrapper for makeNumberedTagLink; it takes an extra
+-- argument, which is the current category.  Based on that, it
+-- either outputs everything (if we're in the meta category), or it
+-- only outputs tags that match current category, and it strips the
+-- category from the front.
+categBasedTagLink :: String -> Double -> Double -> String -> String -> Int -> Int -> Int -> String
+categBasedTagLink categ minSize maxSize tag url count min' max' =
+    if categ == "" || categ == "meta" then
+        makeNumberedTagLink minSize maxSize tag url count min' max'
+    else
+        let maybeTag = stripPrefix (categ ++ ":") tag in
+          if isNothing maybeTag then
+              ""
+          else
+              makeNumberedTagLink minSize maxSize (fromJust maybeTag) url count min' max' 
+
 -- Most of this is from makeLink in renderTagCloud in hakyll-4.9.0.0/src/Hakyll/Web/Tags.hs
 makeNumberedTagLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
 makeNumberedTagLink minSize maxSize tag url count min' max' =
@@ -483,6 +493,30 @@ makeHeaderField key = Context $ \k _ i -> do
     else
       CA.empty
 
+-- Generates a tag cloud using only the things in the category of
+-- the current item (or everything if we're in meta).
+--
+-- For argument info, see tagCloudFieldWith in hakyll/lib/Hakyll/Web/Tags.hs
+--
+-- The "makeLink" argumet has an extra string argument; that's the
+-- category, which ends up being the first argument of
+-- categBasedTagLink.
+myTagCloudField :: String
+                  -> (String -> Double -> Double -> String -> String -> Int -> Int -> Int -> String)
+                  -> ([String] -> String)
+                  -> Double
+                  -> Double
+                  -> Tags
+                  -> Context a
+myTagCloudField key makeLink cat minSize maxSize tags = Context $ \k _ i ->
+  if k == key then do
+    categBits <- myGetCategory $ itemIdentifier i
+    let categ = mconcat categBits
+    str <- renderTagCloudWith (makeLink categ) cat minSize maxSize tags
+    return $ StringField str
+  else
+    CA.empty
+
 --------------------------------------------------------------------------------
 -- Context Configuration
 --------------------------------------------------------------------------------
@@ -498,7 +532,7 @@ makeHeaderField key = Context $ \k _ i -> do
 -- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
 postCtx allTags allCategories gtimes = mconcat
-    [ tagCloudFieldWith "tagCloud" makeNumberedTagLink (intercalate " ") 80 200 allTags
+    [ myTagCloudField "tagCloud" categBasedTagLink (intercalate " ") 80 200 allTags
 
     -- Give a way to link absolutely back to the main site
     , constField "homeURL" baseURL
