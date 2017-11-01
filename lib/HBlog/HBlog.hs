@@ -313,10 +313,13 @@ myCategoriesField key categories = field key $ \item -> do
         return $ renderHtml $ H.ul $ toHtml categLinks
 
 -- | Render one tag link ; copied from https://github.com/jaspervdj/hakyll/blob/ea7d97498275a23fbda06e168904ee261f29594e/src/Hakyll/Web/Tags.hs
-simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
-simpleRenderLink _   Nothing         = Nothing
-simpleRenderLink tag (Just filePath) =
-  Just $ H.a ! A.href (toValue $ toUrl filePath) $ toHtml tag
+renderShortTagLink :: String -> (Maybe FilePath) -> Maybe H.Html
+renderShortTagLink _   Nothing         = Nothing
+renderShortTagLink tag (Just filePath) =
+  if elem '+' tag then
+    Nothing
+  else
+    Just $ H.a ! A.href (toValue $ toUrl filePath) $ toHtml (head $ drop 1 $ split ":" tag)
 
 -- | Take a tag like foo:bar+baz and return a file identifier like
 -- foo/tags/bar_plus_baz.hml
@@ -579,7 +582,7 @@ postCtx allTags allCategories gtimes = mconcat
     -- renders; it gets the tags from the file with getTags, the
     -- tags we pass are how it knows what the (textual) tags on the
     -- item point at.
-    , tagsField "tags" allTags
+    , tagsFieldWith myGetTags renderShortTagLink (mconcat . intersperse ",\n ") "tags" allTags
     -- Anwers the field named for the current item's category (i.e.
     -- if the current item's category is "computing", $computing$
     -- will work in the template).
