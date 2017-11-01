@@ -141,12 +141,40 @@ matching reality; make a git commit with the date you want if you need to lie
 about the last_mod_date, that way any future changes will work correctly (as
 long as they are checked in, which the scripting shuold force).
 
+Tags & Categories
+=================
+
+Everything, except the top-level index.md file, has a category; the
+category is the directory name the thing is under, so like
+posts/computing/index.md is in the "computing" category.
+
+Each category tries to act more-or-less like its own site; they have
+their own CSS, they mostly don't refer to each other's stuff, etc.
+
+FIXME: Per-category sidebar??
+
+One category is special; that's the "meta" category, which is the
+sub-site that points to all the other sub-sites.  We don't want to
+link into meta by accident, so in a few places it's wiped from the
+category list.  [FIXME: We might be changing that.]
+
+Each markdown file has tags.  We then generate all combinations of
+those tags, using + as a separator; so if the header has:
+
+    tags: music, lyrics
+
+then we generate the tags "music", "lyrics", and "lyrics+music".  We
+then prepend the category with : to all of them.  The tag cloud is
+build by grepping for all the tags in the current category, and
+supressing the prefix.  Unless were in the "meta" category, in which
+case we show everything.
+
 Redirects
 =========
 
 I want to redirect items from the old wikis and such, but I don't
-want to have to maintain a master list.  Therefore, header tags like
-this:
+want to have to maintain a master list.  Therefore, header entries
+like this:
 
       redirect: '/.*foo.*'
 
