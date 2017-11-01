@@ -28,6 +28,7 @@ import           Control.Monad                          (liftM, msum, forM_)
 import           Data.Ord                               (comparing)
 import           Text.Read                              (readMaybe)
 import           Data.Maybe                             (isJust, isNothing, fromJust)
+import           Data.List.Utils                        (replace, split)
 import qualified Control.Applicative             as CA  (Alternative (..))
 import qualified Data.Text                       as T
 import qualified Data.Char                       as Char
@@ -38,7 +39,7 @@ hblogMain = hakyll $ do
     -- ************
     -- Build up various chunks of data we'll need later
     -- ************
-    allTags <- buildTagsWith myGetTags "posts/**" (fromCapture "tags/*.html")
+    allTags <- buildTagsWith myGetTags "posts/**" myCategBasedTagsToIdentifier
 
     allCategories <- buildTagsWith myGetCategory "posts/**" (fromCapture "categories/*.html")
 
@@ -138,9 +139,11 @@ hblogMain = hakyll $ do
                 >>= loadAndApplyTemplate "templates/redirects" redirectCtx
                 >>= relativizeUrls
 
-    -- Post tags; generates pages like _site/tags/futurism+psychology.html listing all the relevant articles.
+    -- Post tags; generates pages like
+    --          _site/computing/tags/psychology_plus_sysadminning.html
+    -- listing all the relevant articles.
     tagsRules allTags $ \tag pattern -> do
-        let title = "Posts tagged " ++ tag
+        let title = "Posts Tagged " ++ (head $ drop 1 $ split ":" tag)
 
         -- FIXME: Copied from posts, need to refactor
         route idRoute
@@ -153,13 +156,6 @@ hblogMain = hakyll $ do
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
                 >>= relativizeUrls
-
-        -- -- Create RSS feed as well
-        -- version "rss" $ do
-        --     route   $ setExtension "xml"
-        --     compile $ loadAllSnapshots pattern "content"
-        --         >>= fmap (take 10) . (myRecentFirst gitTimes)
-        --         >>= renderRss (feedConfiguration title) feedCtx
 
 
 --------------------------------------------------------------------------------
@@ -239,25 +235,44 @@ myCategoryCheckFields = Context $ \k _ i -> do
 --
 -- Examples of file paths that this function has to handle:
 --
--- posts/hobbies/contact.md
+-- posts/computing/general/ched.md
+-- posts/computing/index.md
 -- posts/index.md
 -- posts/meta/index.md
--- posts/personal/misc/comparables.md
--- tags/philosophy.html
--- categories/computing.html
+-- posts/personal/contact.md
 -- archive.html
+--
+-- Tags files are a special case; because we create them directly
+-- the source file name is not in posts/, but we want it to be in
+-- the correct category.  Examples:
+--
+-- computing/tags/linux.html
+-- computing/tags/linux_plus_psychology.html
 myGetCategory :: MonadMetadata m => Identifier -> m [String]
 myGetCategory x =
     -- let filePath = trace ("fp1: " ++ (head $ splitDirectories $ toFilePath x) ++ ", " ++ (show $ (head $ splitDirectories $ toFilePath x) == "posts")) $ toFilePath x
+    -- let filePath = trace ("myGetCategory: " ++ (toFilePath x) ++ ", " ++ (show $ splitDirectories $ toFilePath x)) $ toFilePath x
     let filePath = toFilePath x
         filePathParts = dropWhile (\foo -> foo == "/") $ splitDirectories filePath
     in
-        if length filePathParts > 2 &&
-           (head filePathParts) == "posts" &&
-           (take 1 $ dropPosts $ filePath) /= ["meta"] then
-             return $ take 1 $ dropPosts $ filePath
+        if length filePathParts > 2 then
+            if (head filePathParts) == "posts" then
+                if (take 1 $ dropPosts filePath) /= ["meta"] then
+                    -- This is the normal posts/computing/general/ched.md case
+                    return $ take 1 $ dropPosts filePath
+                else
+                    -- This is posts/meta/*
+                    return []
+            else
+                -- This is the computing/tags/psychology_plus_sysadminning.html case
+                if (filePathParts !! 1) == "tags" then
+                    return $ take 1 $ splitDirectories filePath
+                else
+                    -- This shouldn't ever happen
+                    return $ [fail "In myGetCategory, something with more than 2 path elements is neither a post nor a tags file; " ++ (show filePath)]
         else
-             return []
+            -- The archive.html case
+            return []
 
 titleCase :: String -> String
 titleCase (hed:tale) = Char.toUpper hed : map Char.toLower tale
@@ -302,6 +317,18 @@ simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
 simpleRenderLink _   Nothing         = Nothing
 simpleRenderLink tag (Just filePath) =
   Just $ H.a ! A.href (toValue $ toUrl filePath) $ toHtml tag
+
+-- | Take a tag like foo:bar+baz and return a file identifier like
+-- foo/tags/bar_plus_baz.hml
+--
+-- This used to be:
+--
+--      (fromCaptures "tags/*.html")
+--
+-- in case you want to use that to help figure out how it works.
+myCategBasedTagsToIdentifier :: String -> Identifier
+-- myCategBasedTagsToIdentifier string | trace ("myCategBasedTagsToIdentifier: " ++ (show string) ++ "\n") False = undefined
+myCategBasedTagsToIdentifier string = fromFilePath $ (replace "+" "_plus_" (replace ":" "/tags/" string)) ++ ".html"
 
 -- | See the Tags & Categories section of DESIGN-CODE.
 myGetTags :: MonadMetadata m => Identifier -> m [String]
