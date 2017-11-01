@@ -494,10 +494,11 @@ makeNumberedTagLink minSize maxSize tag url count min' max' =
         let diff     = 1 + fromIntegral max' - fromIntegral min'
             relative = (fromIntegral count - fromIntegral min') / diff
             size     = floor $ minSize + relative * (maxSize - minSize) :: Int
-        in renderHtml $
-            H.a ! A.style (toValue $ "font-size: " ++ show size ++ "%")
-                ! A.href (toValue url)
-                $ toHtml $ tag ++ " (" ++ (show count) ++ ") "
+            html     = renderHtml $
+                        H.a ! A.style (toValue $ "font-size: " ++ show size ++ "%")
+                            ! A.href (toValue url)
+                            $ toHtml $ tag ++ " (" ++ (show count) ++ ") "
+        in html ++ "\n"
 
 -- What we're trying to do is produce a field that *doesn't* match
 -- key in the case where the metadata "header" is not set to "no" or
