@@ -60,13 +60,50 @@ hblogMain = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    match "posts/**" $ do
+    -- This bit is all about generating the Recent Changes sidebar.
+    --
+    -- "loadAll", which we need to use for getting a list of posts
+    -- to show in the "Recent Changes" sidebar, causes Hakyll to say
+    -- that X depends on the thing X is loadAll-ing.  We're putting
+    -- the Recents list on the pages themselves, which means the
+    -- most recent page has a dependency on itself (and you can't
+    -- fix it by having it not show itself, because the most recent
+    -- page and the second most recent page will make 2-step
+    -- dependency cycle).
+    --
+    -- This loads all the posts with a version of "recents" and
+    -- *doesn't* load the default.html stuff (the stuff with the
+    -- Recent Changes sidebar); we then load these versions when we
+    -- need the recents list.
+    --
+    -- It would probably also be possible to do this by making
+    -- direct use of the "gitTimes" and "titles" variables, but we'd
+    -- need to manually figure out the correct URL in that case from
+    -- the md file name, so doing it this way.
+    match "posts/**.md" $ version "recents" $ do
         route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
         compile $ do
             pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
-            >>= loadAndApplyTemplate "templates/post.html"    (postCtx allTags allCategories gitTimes)
-            >>= loadAndApplyTemplate "templates/default.html" (postCtx allTags allCategories gitTimes)
-            >>= relativizeUrls
+                >>= loadAndApplyTemplate "templates/post.html"    (postCtx allTags allCategories gitTimes)
+                >>= relativizeUrls
+
+    match "posts/**.md" $ do
+        route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
+        compile $ do
+            myId <- getUnderlying
+            -- Load the posts we need for the Recent Changes list;
+            -- see the 'version "recents"' explanation above.
+            recents <- (selectRecents myId) =<< (myRecentFirst gitTimes) =<< loadAll ("posts/**.md" .&&. hasVersion "recents")
+            let postsContext = postCtx allTags allCategories gitTimes `mappend`
+                               -- Distinguish things like archive.html from regular posts
+                               constField "article" "yes"            `mappend`
+                               -- Show recent posts
+                               listField "recents" (postCtx allTags allCategories gitTimes) (return recents)
+
+            pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
+                >>= loadAndApplyTemplate "templates/post.html"    postsContext
+                >>= loadAndApplyTemplate "templates/default.html" postsContext
+                >>= relativizeUrls
 
 -- FIXME: Do we want a list of categories anywhere?  Probably; we'd
 -- talked about having a "default" site that takes extra work to get
@@ -90,8 +127,10 @@ hblogMain = hakyll $ do
     create ["archive.html"] $ do
         route idRoute
         compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
+            posts <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasNoVersion)
+            recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
             let archiveCtx =
+                    listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                     listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
                     constField "title" "Archives"            `mappend`
                     (postCtx allTags allCategories gitTimes)
@@ -148,8 +187,10 @@ hblogMain = hakyll $ do
         -- FIXME: Copied from posts, need to refactor
         route idRoute
         compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll pattern
+            posts <- (myRecentFirst gitTimes) =<< loadAll (pattern .&&. hasNoVersion)
+            recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
             let ctx = constField "title" title `mappend`
+                        listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                         listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
                         (postCtx allTags allCategories gitTimes)
             makeItem ""
@@ -223,6 +264,12 @@ myCategoryCheckFields = Context $ \k _ i -> do
       -- Compiler is an instance of Alternative from
       -- Control.Applicative ; see Hakyll/Core/Compiler/Internal.hs
       CA.empty
+
+-- Used for the Recent Changes sidebar; just picks 3 and then makes
+-- sure none of them is the current article itself, cuz that looks
+-- kinda dumb.
+selectRecents :: MonadMetadata m => Identifier -> [Item a] -> m [Item a]
+selectRecents myId recents = return $ filter (\x -> ((itemIdentifier x) { identifierVersion = Nothing } ) /= myId) $ take 3 recents
 
 -- | Find the category of the current item.
 --
@@ -443,10 +490,15 @@ gitTimeToField times typeF = \ident -> return $ formatTime defaultTimeLocale "%B
 -- Pull a file's time out of the list
 getGitTimeUTC :: Identifier -> [GitTimes] -> (GitTimes -> UTCTime) -> UTCTime
 getGitTimeUTC ident times typeF =
-  let timeList = filter (\x -> ident == (gtid x)) times in
+  -- The identifier for the things compiled with the "recents"
+  -- version has the identifierVersion "recents", but we don't care
+  -- about that since the only reason that exists is to avoid loops,
+  -- so we strip it here for our lookup.
+  let fixedIdent = ident { identifierVersion = Nothing }
+      timeList = filter (\x -> fixedIdent == (gtid x)) times in
     if length timeList /= 1 then
       -- It's not obvious to me how this could occur even in theory; I'd expect it to error out during getGitTimes
-      error $ "getGitTimeUTC: Couldn't find the time for " ++ (show ident) ++ " in GitTimes list " ++ (show times)
+      error $ "getGitTimeUTC: Couldn't find the time for " ++ (show fixedIdent) ++ " in GitTimes list " ++ (show times)
     else
       typeF $ head timeList
 
@@ -559,6 +611,11 @@ myTagCloudField key makeLink cat minSize maxSize tags = Context $ \k _ i ->
 --
 -- Basically, this list is walked with the name of the field being
 -- asked for, and the first item that answers to the name gets it.
+--
+-- I'm not clear how it works internally, but conceptually, each
+-- entry in this list is given the current Item (this is the "i"
+-- argument that various field functions uses internally) to extract
+-- information from.
 
 -- Construct our $ replacement stuff
 postCtx :: Tags -> Tags -> [GitTimes] -> Context String
