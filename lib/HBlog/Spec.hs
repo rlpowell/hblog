@@ -90,7 +90,7 @@ hblogTest shouldFail autoTest dir = it (description autoTest) $ do
 
   if (ttype autoTest) == "hblog" then
     do
-      hblogRunCmd shouldFail autoTest dir mainDir "diff" ["-r", (mainDir </> dir </> "wanted"), (mainDir </> dir </> "_site")]
+      hblogRunCmd shouldFail autoTest dir mainDir "diff" ["-u", "-r", (mainDir </> dir </> "wanted"), (mainDir </> dir </> "_site")]
   else
     return ()
 
