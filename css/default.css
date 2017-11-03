@@ -1,0 +1,129 @@
+/* My Mods */
+
+em.recent-date {
+  font-size: 70%;
+  line-height: 10%;
+}
+
+p.recent-date {
+  line-height: 80%;
+}
+
+.article-info {
+  font-size: 70%;
+}
+
+/* Can't remember where the below came from; probably bootstrap?, or
+ * one of the Hakyll tutorials?
+ */
+
+/* === NAVBAR (unused) === */
+.navbar 						{ background: #fafafa; margin-bottom: 0; border: 0; }
+
+/* === FEATURE SECTION === */
+
+/*
+.feature 					{ position: relative; }
+*/
+.feature img 				{ width: 100%; }
+/*
+.feature-text 				{ position: absolute; top: 0; bottom: 0; font-size: 0; }
+.feature-text:before 	{ content: ''; display: inline-block; height: 100%; vertical-align: bottom; 	}
+.feature-text h1 			{ position: absolute; top: 0; display: inline-block; text-align: left; vertical-align: bottom; width: 100%;
+		   		 					background: rgba(74, 82, 95, 0.2); border-radius: 10px; color: white;
+    								font-size: 48px; padding: 3%; line-height: 80px; margin: 0 0 0 0; }
+*/
+
+.feature-text {
+  text-align: left; vertical-align: bottom; width: 100%;
+  background: red; border-radius: 10px; color: white;
+  font-size: 48px; padding: 1%; line-height: 35px; margin: 0 0 0 0;
+  text-transform: capitalize;
+}
+
+.feature-text a { 
+  color: white;
+  border: none;
+  font-size: 80%;
+}
+
+.feature-text h1 { 
+  margin: 5px 0 0 0;
+  text-decoration: none;
+  color: white;
+  border: none;
+}
+
+/* === FOOTER === */
+
+footer {
+  padding-top: 1em;
+  font-size: 70%;
+  color: gray;
+  text-align: center;
+}
+
+/* === Elements === */
+
+body {
+    color: black;
+    font-size: 1.7em;
+    background-color: white;
+}
+
+hr {
+    border-color: black;
+}
+
+pre {
+    border: 1px dotted gray;
+    background-color: inherit;
+    color: inherit;
+    padding: 0.5em;
+}
+
+code {
+    font-family: monospace;
+    background-color: inherit;
+    color: inherit;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+    text-decoration: none;
+    color: white;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: verdana;
+  font-weight: bold;
+  border-bottom: 1px dotted black;
+}
+
+h1 {
+        font-size: 130%;
+}
+
+h2 {
+        font-size: 110%;
+}
+
+h3 {
+        font-size: 95%;
+}
+
+h4 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+h5 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+dt code {
+        font-weight: bold;
+}
+dd p {
+        margin-top: 0;
+}
