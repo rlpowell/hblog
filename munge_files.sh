@@ -48,7 +48,7 @@ snipdir () {
   echo "$fname" | sed -r "s|^$dir/?||"
 }
 
-find $indir -type f -name '*.md' | while read fname
+find $indir -type f -name '*.md' | sort | while read fname
 do
   short=$(snipdir "$fname" "$indir")
   mkdir -p $(dirname "$tempdir/$short")
