@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta charset="utf-8">
     <!-- FIXME: per-category ? -->
-    <title>RLP's Blog - My Allergy To Syntax In Programming Languages</title>
+    <title>RLP's Blog - Archives</title>
 
     <!-- bootstrap stuff -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="../css/default.css" rel="stylesheet">
-    <link href="../css/computing.css" rel="stylesheet">
+    <link href="../css/foo.css" rel="stylesheet">
   </head>
   <body>
     <!-- ==== HEADER ==== -->
@@ -27,8 +27,8 @@
           <div class="feature-text col-xs-12 col-md-8 col-lg-6 col-md-offset-2 col-lg-offset-3">
           -->
           <div class="feature-text col-sm-12 col-md-12">
-            <a href="../computing">RLP's Computing Blog</a>
-            <h1>My Allergy To Syntax In Programming Languages</h1>
+            <a href="../foo">RLP's Foo Blog</a>
+            <h1>Archives</h1>
           </div><!-- /feature text -->
         </div><!-- /row -->
       </div><!-- /container fluid -->
@@ -74,38 +74,20 @@
 ================================================================-->
 
           
-          <h3 id="article-info">Article Info</h3>
-          <ul class="list-unstyled article-info">
-            <li>Last Updated On December  3, 2016.</li>
-            <li>Originally Posted On November 29, 2016.</li>
-            <li>Posted in: <a href="../computing/tags/programming.html">programming</a>,
- <a href="../computing/tags/psychology.html">psychology</a>.</li>
-          </ul>
-          
           <h3 id="recent-changes">Recent Changes</h3>
           <ul class="list-unstyled">
             
                 <li>
-                <p class="recent-date"><a href="../personal/links.html">personal index</a><br />
-                   <em class="recent-date">(December  7, 2016)</em></p>
-                </li>
-            
-                <li>
-                <p class="recent-date"><a href="../personal/writing/story_ideas.html">Story Ideas For All</a><br />
-                   <em class="recent-date">(December  3, 2016)</em></p>
-                </li>
-            
-                <li>
-                <p class="recent-date"><a href="../personal/transhuman_fiction.html">Post-Singularity And Transhumanist Fiction I've Enjoyed</a><br />
-                   <em class="recent-date">(December  3, 2016)</em></p>
+                <p class="recent-date"><a href="../foo/my_views_on_the_future.html">My Views On The Future</a><br />
+                   <em class="recent-date">(December  6, 2016)</em></p>
                 </li>
             
           </ul>
           <h3 id="about">About</h3>
           <ul class="list-unstyled">
             <li><a href="../meta/index.html">RLP's Other Blogs</a></li>
-            <li><a href="../computing/contact.html">About & Contact</a></li>
-            <li><a href="../computing/archive.html">Archive</a></li>
+            <li><a href="../foo/contact.html">About & Contact</a></li>
+            <li><a href="../foo/archive.html">Archive</a></li>
           </ul>
 
         </div> <!-- /LEFT COLUMN -->
@@ -116,23 +98,15 @@
           <!-- editable conent below this line 
 ================================================================-->
           <br />
-          
-<div class="info">
-  
-</div>
+          Here you can find all my previous posts:
+<ul>
+    
+        <li>
+            <a href="../foo/my_views_on_the_future.html">My Views On The Future</a> - last modified on December  6, 2016 - originally posted on October 30, 2016
+        </li>
+    
+</ul>
 
-
-
-<p>Since I got back into Lisp again (I had a wonderful flirtation with it in University, but it was presented as a toy language, so I didn’t stick with it), I’ve been telling people how incredibly freeing it is, and how I seem to be allergic to syntax. I’ve had a hard time explaining this to other people, and finally hit on a way to do it. This essay is the result.</p>
-<p>Before I get into this, some general comments on Lisp:</p>
-<p>If you’re saying “Eww, how can you count all those parens?”, You’re Doing It Wrong(external link). See scheme-style(external link) for how it actually works. Note that this objection is different from “I don’t like all those parens”, which is a perfectly legitimate personal choice, but see the rest of this essay. If you’re saying “But Lisp is a toy language”, you’re simply incorrect(external link).</p>
-<p>Unless you want to make one of those two points, please feel free to email me about this essay.</p>
-<p>Moving on. I use an example out of Perl. It doesn’t actually matter what the example means, I don’t think, except that it’s setting a sub-set of a complex data structure hanging off the object “self”.</p>
-<p>Let’s say we have:</p>
-<p>$self-&gt;{‘CONF’}-&gt;{‘outerdatawindow’} = $outerdatawindow;</p>
-<p>I have no idea how this would work in CLOS(external link) off the top of my head, but let’s say it looks like this in CL:</p>
-<p>(setf (outerdatawindow (CONF self)) outerdatawindow)</p>
-<p>In both cases, I need to know:</p>
 
         </div> <!-- /CENTER COLUMN -->
 
@@ -141,12 +115,14 @@
         <div id="rightbar" class="col-sm-3 col-md-3">
           <!-- editable conent below this line 
 ================================================================-->
-          <p><a style="font-size: 140%" href="../computing/tags/programming.html">programming (2) </a>
- <a style="font-size: 80%" href="../computing/tags/programming_plus_psychology.html">programming+psychology (1) </a>
- <a style="font-size: 80%" href="../computing/tags/programming_plus_sysadminning.html">programming+sysadminning (1) </a>
- <a style="font-size: 80%" href="../computing/tags/psychology.html">psychology (1) </a>
- <a style="font-size: 80%" href="../computing/tags/sysadminning.html">sysadminning (1) </a>
-         </p> 
+          <p><a style="font-size: 80%" href="../foo/tags/futurism.html">futurism (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/futurism_plus_psychology.html">futurism+psychology (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/futurism_plus_psychology_plus_transhumanism.html">futurism+psychology+transhumanism (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/futurism_plus_transhumanism.html">futurism+transhumanism (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/psychology.html">psychology (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/psychology_plus_transhumanism.html">psychology+transhumanism (1) </a>
+ <a style="font-size: 80%" href="../foo/tags/transhumanism.html">transhumanism (1) </a>
+</p> 
         </div> <!-- END RIGHT COLUMN  -->
       </div>
     </div>

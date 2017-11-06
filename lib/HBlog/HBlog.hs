@@ -124,21 +124,23 @@ hblogMain = hakyll $ do
 --                 >>= relativizeUrls
 -- 
 -- 
-    create ["archive.html"] $ do
-        route idRoute
-        compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasNoVersion)
-            recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
-            let archiveCtx =
-                    listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
-                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
-                    constField "title" "Archives"            `mappend`
-                    (postCtx allTags allCategories gitTimes)
+    forM_ (tagsMap allCategories) $ \(categ, _) ->
+        create [fromFilePath $ categ ++ "/archive.html" ] $ do
+            route idRoute
+            compile $ do
+                -- Get only the posts in this category
+                posts <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasNoVersion)
+                recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
+                let archiveCtx =
+                        listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
+                        listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
+                        constField "title" "Archives"            `mappend`
+                        (postCtx allTags allCategories gitTimes)
 
-            makeItem ""
-                >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-                >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-                >>= relativizeUrls
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+                    >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                    >>= relativizeUrls
 
 
 --    match "index.html" $ do
@@ -274,8 +276,21 @@ selectRecents myId recents = return $ filter (\x -> ((itemIdentifier x) { identi
 -- | Find the category of the current item.
 --
 -- What we actually do is get the first directory name after posts/
--- , and call that the category; if there's no posts/ we return
--- nothing.
+-- , and call that the category, which we return as a single array
+-- entry because this has to work with the rest of hakyll's tag
+-- system.
+--
+-- For all files where the above doesn't make sense (not under
+-- posts/, in the meta category, etc), we return an empty array.
+--
+-- No category (i.e. returning the empty array) is treated as
+-- equivalent to being in the "meta" category by various other bits
+-- of code.  We could maybe actually return such things as being in
+-- the "meta" category by returning that as such from this function,
+-- but that makes other things harder (I'm afraid I no longer
+-- remember which other things, but feel free to try and see what
+-- happens; searching for "meta" in this code should easily find you
+-- all the relevant bits, change it and run the tests).
 --
 -- Returns an array of strings because that is what buildTagsWith
 -- expects, not because this actually makes sense here.
@@ -308,7 +323,7 @@ myGetCategory x =
                     -- This is the normal posts/computing/general/ched.md case
                     return $ take 1 $ dropPosts filePath
                 else
-                    -- This is posts/meta/*
+                    -- This is posts/meta/* ; no category == meta
                     return []
             else
                 -- This is the computing/tags/psychology_plus_sysadminning.html case
@@ -318,8 +333,17 @@ myGetCategory x =
                     -- This shouldn't ever happen
                     return $ [fail "In myGetCategory, something with more than 2 path elements is neither a post nor a tags file; " ++ (show filePath)]
         else
-            -- The archive.html case
-            return []
+            -- posts/index.md is the *only* file in posts/, so very
+            -- much a special case, and in the blank/meta category.
+            if filePathParts == ["posts","index.md"] then
+                return []
+            else
+                -- This is the computing/archive.html case
+                if (filePathParts !! 1) == "archive.html" then
+                    return $ take 1 $ splitDirectories filePath
+                else
+                    -- This shouldn't ever happen
+                    return $ [fail "In myGetCategory, something with 2 or fewer path elements is not an archive file; " ++ (show filePath)]
 
 titleCase :: String -> String
 titleCase (hed:tale) = Char.toUpper hed : map Char.toLower tale
