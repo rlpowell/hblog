@@ -2,8 +2,6 @@ dir="$(dirname $0)"
 cd "$dir"
 ./setup_links.sh
 
-find /home/rlpowell/src/hblog/tests/ /dropbox/src/hblog/tests/   -type f | xargs chmod a-x
-
 echo "Unpacking git zips."
 oldpwd=$(pwd)
 find tests/ -name git.zip | while read zipname
@@ -29,7 +27,6 @@ done
 stack build --coverage --force-dirty hblog
 stack install --coverage --force-dirty hblog
 stack test --coverage --force-dirty --test-arguments "$*"
-rsync -a --delete tests/ /dropbox/src/hblog/tests/
 
 # Here we find the .tix files, sum *all* of them, put them where we
 # want them, and clean up the originals.
@@ -49,8 +46,6 @@ fi
 echo stack exec hpc -- markup --hpcdir=$(stack path --dist-dir)/hpc/ --destdir=coverage/ --verbosity=2 coverage/all.tix
 stack exec hpc -- markup --hpcdir=$(stack path --dist-dir)/hpc/ --destdir=coverage/ --verbosity=2 coverage/all.tix
 
-rsync -a --delete coverage/ /dropbox/src/hblog/coverage/ >/dev/null 2>&1
-
 # Cleanup
 if [ -f hblog.cabal.orig ]
 then
@@ -65,7 +60,3 @@ done
 
 echo "Deleting .git directories."
 find tests/ -name .git | xargs rm -rf
-
-rsync -a --delete tests/ /dropbox/src/hblog/tests/ >/dev/null 2>&1
-
-./teardown_links.sh

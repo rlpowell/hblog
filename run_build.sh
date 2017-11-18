@@ -14,17 +14,18 @@ then
 fi
 
 rm -rf _site
-rm -rf /dropbox/src/hblog/_site
 rm -rf _cache
-rm -rf /dropbox/src/hblog/_cache
 
-stack build hblog
-stack install
+# munge_files runs a stack build and stack install
+munge_files posts/
+
 hblog build
 
 rm -rf _cache
-rm -rf /dropbox/src/hblog/_cache
 
-rsync -a --delete _site/ /dropbox/src/hblog/_site/
-
-./teardown_links.sh
+if [ -d /web/ ]
+then
+  rsync -a --delete _site/ /web/
+else
+  echo "No /web/ mounted; not copying there."
+fi
