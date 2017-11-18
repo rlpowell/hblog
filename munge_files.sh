@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+# set -x
 
 # rectifier is fundamentally whole-tree based; it needs to know
 # about everybody to know what things are available to link to.
@@ -19,6 +20,7 @@ then
   exit 1
 fi
 
+echo "Building hblog."
 stack build hblog
 stack install
 
@@ -48,6 +50,7 @@ snipdir () {
   echo "$fname" | sed -r "s|^$dir/?||"
 }
 
+echo "Checking and pandoc-ing every file; this may take a while."
 find $indir -type f -name '*.md' | sort | while read fname
 do
   short=$(snipdir "$fname" "$indir")
@@ -75,8 +78,16 @@ do
   fi
   cd "$origpwd"
 
-  # Normalize the syntax
-  stack exec pandoc -- -s -f markdown -t markdown -o $tempdir/$short $fname
+  mkdir -p ~/.hblog-cache/
+  cache_file=~/.hblog-cache/$(echo $fname | sed 's;/;_;g')
+  if [ ! -f $cache_file ] || ! diff -q $fname $cache_file >/dev/null 2>&1
+  then
+    echo "File $fname does not match its cached version; running pandoc on it to normalize its syntax."
+    stack exec pandoc -- -s -f markdown -t markdown -o $tempdir/$short $fname
+    cp $fname $cache_file
+  else
+    echo "File $fname matches its cached version; not updating."
+  fi
 done
 
 checkin () {
