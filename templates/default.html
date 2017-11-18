@@ -75,12 +75,14 @@
 ================================================================-->
 
           $if(article)$
+          $if(makeheader)$
           <h3 id="article-info">Article Info</h3>
           <ul class="list-unstyled article-info">
             <li>Last Updated On $last_mod_date$.</li>
             <li>Originally Posted On $orig_date$.</li>
             <li>Posted in: $tags$.</li>
           </ul>
+          $endif$
           $endif$
           <h3 id="recent-changes">Recent Changes</h3>
           <ul class="list-unstyled">
