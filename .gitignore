@@ -20,3 +20,7 @@ _site
 out/
 .stack-work
 coverage
+hakyll-4.9.8.0
+pandoc-2.0
+pandoc-citeproc-0.10.5.1
+posts
