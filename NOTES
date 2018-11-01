@@ -1,4 +1,6 @@
 
+    vim NOTES DESIGN-CODE DESIGN-SITE lib/HBlog/HBlog.hs templates/post.html templates/default.html css/default.css
+
     vim NOTES DESIGN-CODE DESIGN-SITE README.md app/hblog.hs
     templates/default.html css/default.css templates/post.html
     templates/redirects templates/post.html posts/hobbies/gaming/Galactic_Empires.md
@@ -7,12 +9,7 @@
 
     ./run_tests.sh -m unphone
 
-    /dropbox/src/git-reset-perms
-
-
-custom pandoc options:
-
-https://nickcharlton.net/posts/custom-pandoc-options-hakyll-4.html
+    ~/src/git-reset-perms
 
 
 DESIGN-SITE is what we're aiming for the site to look like.
@@ -24,12 +21,33 @@ symlinks.
 
 Inline docs syntax: https://www.haskell.org/haddock/doc/html/ch03s02.html
 
-Should probably install https://github.com/vim-pandoc/vim-pandoc
-globally, and use that for all markdown.
-
 TODO
 ----
 
+- http://rlpowell.name/ should go somewhere useful to start
+- turn all headers into self-anchor links
+- Sort of a general thing for our haskell projects, but:
+  https://stackoverflow.com/questions/40827011/how-to-apply-trace-everywhere
+- use applyAsTemplate or something to make $categories$ in
+  posts/meta/index.md  expand properly
+- make this not be created:
+  file:///C:/Users/rlpowell/Dropbox/src/hblog/_site/categories/computing.html
+  ; references to it should point to the main category index page instead
+- add support for comments in our markdown by using
+  https://github.com/jgm/pandoc/commit/b1ee747a249e0c1b1840222ef77607218157f099
+  , but only using it when we do the final site generation
+- submit https://github.com/jaspervdj/hakyll/issues/495 as a PR as
+  requested
+- file:///C:/Users/rlpowell/Dropbox/src/hblog/_site/tags/hobbies%EF%80%A2action-rpgs.html
+  -- wth is that character?; maybe use -- instead of : for categ/tag
+  separation?
+  - ^^ doesn't happen on linux, so meh
+- the computing index has
+  file:///C:/Users/rlpowell/Dropbox/src/hblog/_site/posts/computing/general/ched.html
+  , which is invalid; drop the "posts/"; probably in
+  titleFixerInternal
+- the computing index shows up as such in file:///C:/Users/rlpowell/Dropbox/src/hblog/_site/tags/computing.html
+- do we want /archive.html ?  Shouldn't it at least be under meta/ ?
 - make at least two categories + main site
   - categories don't currently have anything like an index page
   - main site is now called "meta"; make its index suck less
