@@ -46,6 +46,7 @@ import Text.EditDistance (defaultEditCosts, levenshteinDistance)
 import Data.Function (on)
 import qualified Data.Text as T
 import HBlog.Lib
+import           Data.String.Utils                        (strip) -- MissingH
 
 --------------------------------------------------------------------------------
 
@@ -182,16 +183,22 @@ replaceLink file targets linky@(Link x y (ickyLinkStr, z)) =
         -- If it's a fragment (a # link), first check the left side
         -- of the # and if that matches a title, look in that file
         -- for header matches
-        let maybeGoodTarget = findTarget (fst $ span (/= '#') linkStr) isTitle targets in
-            case maybeGoodTarget of
-              Nothing -> error $ "Failed to find valid main target (the part before #) for link \"" ++ linkStr ++ "\" in file " ++ file
-              Just goodTarget ->
-                -- Now that we have the file, look for the fragment
-                -- in the headers of that file
-                let maybeGoodFragTarget = findTarget (tail $ snd $ span (/= '#') linkStr) (isFileHeader (tFile goodTarget)) targets in
-                  case maybeGoodFragTarget of
-                    Nothing -> error $ "Failed to find valid fragment target (the part after #) for link \"" ++ linkStr ++ "\" in file " ++ file
-                    Just goodFragTarget -> Link x y ((tTarget goodTarget) ++ "#" ++ (tTarget goodFragTarget), z)
+        let hashFirst = fst $ span (/= '#') linkStr
+            maybeGoodTarget = findTarget hashFirst isTitle targets
+            hashSecond = tail $ snd $ span (/= '#') linkStr
+        in
+            if hashFirst == "" then
+              error $ "Found link \"" ++ linkStr ++ "\" in file " ++ file ++ ", which isn't valid.  If you're trying to link to a heading in the current file, just copy the heading's name as written (i.e. \"This Is My Heading\") as your link target; hblog will handle the rest."
+            else
+              case maybeGoodTarget of
+                Nothing -> error $ "Failed to find valid main target (the part before #) for link \"" ++ linkStr ++ "\" in file " ++ file
+                Just goodTarget ->
+                  -- Now that we have the file, look for the fragment
+                  -- in the headers of that file
+                  let maybeGoodFragTarget = findTarget hashSecond (isFileHeader (tFile goodTarget)) targets in
+                    case maybeGoodFragTarget of
+                      Nothing -> error $ "Failed to find valid fragment target (the part after #) for link \"" ++ linkStr ++ "\" in file " ++ file
+                      Just goodFragTarget -> Link x y ((tTarget goodTarget) ++ "#" ++ (tTarget goodFragTarget), z)
       else
         -- No # ; try all the internal file headers first, and then
         -- all the titles.
