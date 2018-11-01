@@ -92,14 +92,15 @@ hblogMain = hakyll $ do
         route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
         compile $ do
             myId <- getUnderlying
+            categs <- myGetCategory myId
             -- Load the posts we need for the Recent Changes list;
             -- see the 'version "recents"' explanation above.
-            recents <- (selectRecents myId) =<< (myRecentFirst gitTimes) =<< loadAll ("posts/**.md" .&&. hasVersion "recents")
+            recents <- (selectRecents myId) =<< (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ (mconcat categs) ++ "/**") .&&. hasVersion "recents")
             let postsContext = postCtx allTags allCategories gitTimes `mappend`
                                -- Distinguish things like archive.html from regular posts
                                constField "article" "yes"            `mappend`
                                -- Show recent posts
-                               listField "recents" (postCtx allTags allCategories gitTimes) (return recents)
+                               listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents)
 
             pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
                 >>= loadAndApplyTemplate "templates/post.html"    postsContext
@@ -131,7 +132,7 @@ hblogMain = hakyll $ do
             compile $ do
                 -- Get only the posts in this category
                 posts <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasNoVersion)
-                recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
+                recents <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasVersion "recents")
                 let archiveCtx =
                         listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                         listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
@@ -186,12 +187,13 @@ hblogMain = hakyll $ do
     -- listing all the relevant articles.
     tagsRules allTags $ \tag pattern -> do
         let title = "Posts Tagged " ++ (head $ drop 1 $ split ":" tag)
+        let categ = head $ split ":" tag
 
         -- FIXME: Copied from posts, need to refactor
         route idRoute
         compile $ do
             posts <- (myRecentFirst gitTimes) =<< loadAll (pattern .&&. hasNoVersion)
-            recents <- (myRecentFirst gitTimes) =<< loadAll ("posts/**" .&&. hasVersion "recents")
+            recents <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasVersion "recents")
             let ctx = constField "title" title `mappend`
                         listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                         listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
@@ -272,7 +274,7 @@ myCategoryCheckFields = Context $ \k _ i -> do
 -- sure none of them is the current article itself, cuz that looks
 -- kinda dumb.
 selectRecents :: MonadMetadata m => Identifier -> [Item a] -> m [Item a]
-selectRecents myId recents = return $ filter (\x -> ((itemIdentifier x) { identifierVersion = Nothing } ) /= myId) $ take 3 recents
+selectRecents myId recents = return $ filter (\x -> ((itemIdentifier x) { identifierVersion = Nothing } ) /= myId) recents
 
 -- | Find the category of the current item.
 --
