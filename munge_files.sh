@@ -19,6 +19,9 @@ then
   echo "First argument must be the source directory."
   exit 1
 fi
+# Make sure it ends in a / ; the git log "#" based substitution
+# stuff needs it
+indir="${indir%/}/"
 
 echo "Building hblog."
 stack build hblog
@@ -47,7 +50,7 @@ mkdir -p $tempdir
 snipdir () {
   fname="$1"
   dir="$2"
-  echo "$fname" | sed -r "s|^$dir/?||"
+  echo "$fname" | sed -r "s|^$dir/*||"
 }
 
 echo "Checking and pandoc-ing every file; this may take a while."
@@ -64,7 +67,7 @@ do
   mkdir -p $(dirname "$tempdir/$short")
 
   # Make sure everything is checked in
-  origdate="$(date --iso-8601=seconds -r "$fname")"
+  origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
   cd "$(dirname $fname)"
 
   # Needs changes checked in
@@ -87,6 +90,7 @@ do
       "$(basename $fname)"
   fi
   cd "$origpwd"
+  touch -d "$origdate" "$fname"
 
   mkdir -p ~/.hblog-cache/
   cache_file=~/.hblog-cache/$(echo $fname | sed 's;/;_;g')
@@ -101,8 +105,9 @@ do
     # , and screw that.  Also Rectifier puts it back.  Haven't
     # figured out how that even works, but it leads to bullshit
     # checkins, so we fix it.
-    sed -i '/[]](/s/%20/ /g' $tempdir/$short
-    cp $fname $cache_file
+    sed -i '/[]](/s/%20/ /g' "$tempdir/$short"
+    cp "$fname" "$cache_file"
+    touch -d "$origdate" "$fname" "$cache_file" "$tempdir/$short"
   else
     echo "File $fname matches its cached version; not updating."
   fi
@@ -121,17 +126,16 @@ checkin () {
   then
     echo "Found $type changes to $outfile"
     diff -u "$outfile" "$infile" || true
-    origdate="$(date --iso-8601=seconds -r "$outfile")"
+    short=$(snipdir "$outfile" "$indir")
+    origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
     touch -d "$origdate" "$infile"
     cp -p "$infile" "$outfile"
     export TZ=America/Los_Angeles
-    cd "$(dirname "$outfile")"
     export GIT_AUTHOR_DATE="$origdate"
     export GIT_COMMITTER_DATE="$origdate"
-    git commit -m "Automated Checkin: $type differences found in $outfile at $(date)" \
+    git -C "$indir" commit -m "Automated Checkin: $type differences found in $outfile at $(date)" \
       --date="$origdate" \
-      "$(basename $outfile)"
-    cd "$origpwd"
+      "$short"
 
     # When it's all done, we want the apparent file date to have not changed.
     touch -d "$origdate" "$outfile"
@@ -139,14 +143,14 @@ checkin () {
 }
 
 checkin_dir () {
-  indir="$1"
-  outdir="$2"
+  cindir="$1"
+  coutdir="$2"
   type="$3"
 
-  find $indir -type f | while read fname
+  find $cindir -type f | while read fname
   do
-    short=$(snipdir "$fname" "$indir")
-    checkin "$indir/$short" "$outdir/$short" "$type"
+    short=$(snipdir "$fname" "$cindir")
+    checkin "$cindir/$short" "$coutdir/$short" "$type"
   done
 }
 
