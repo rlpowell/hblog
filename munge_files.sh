@@ -93,7 +93,15 @@ do
   if [ ! -f $cache_file ] || ! diff -q $fname $cache_file >/dev/null 2>&1
   then
     echo "File $fname does not match its cached version; running pandoc on it to normalize its syntax."
-    stack exec pandoc -- -s -f markdown -t markdown -o $tempdir/$short $fname
+    stack exec pandoc -- -s -f markdown -t markdown --wrap=preserve -o $tempdir/$short $fname
+    # Pandoc likes to turn
+    #   [test](ched: The Chunk Editor)
+    # into
+    #   [test](ched:%20The%20Chunk%20Editor)
+    # , and screw that.  Also Rectifier puts it back.  Haven't
+    # figured out how that even works, but it leads to bullshit
+    # checkins, so we fix it.
+    sed -i '/[]](/s/%20/ /g' $tempdir/$short
     cp $fname $cache_file
   else
     echo "File $fname matches its cached version; not updating."
