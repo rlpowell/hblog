@@ -68,6 +68,13 @@ do
 
   # Make sure everything is checked in
   origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
+  echo "od: $origdate"
+  if [ -z "$origdate" ]
+  then
+    echo "fixing od"
+    origdate="$(date --iso-8601=seconds -r "$fname")"
+  fi
+  echo "od: $origdate"
   cd "$(dirname $fname)"
 
   # Needs changes checked in
