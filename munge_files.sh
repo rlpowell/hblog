@@ -53,6 +53,13 @@ snipdir () {
 echo "Checking and pandoc-ing every file; this may take a while."
 find $indir -type f -name '*.md' | sort | while read fname
 do
+  if [[ $fname =~ 'conflicted copy' ]]
+  then
+    echo "Dropbox conflicted file: $fname; bailing"
+    echo "Dropbox conflicted file: $fname" | mailx -v -S smtp=mail -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE FOUND' rlpowell@digitalkingdom.org
+    exit 1
+  fi
+
   short=$(snipdir "$fname" "$indir")
   mkdir -p $(dirname "$tempdir/$short")
 
