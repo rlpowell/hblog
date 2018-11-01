@@ -176,3 +176,5 @@ then
   cd "$origpwd"
   rm -rf "$outdir/.git/"
 fi
+
+rm -rf "$tempdir/"
