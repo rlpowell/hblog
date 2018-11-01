@@ -70,7 +70,9 @@ do
   # Needs changes checked in
   if ! git diff --quiet "$(basename $fname)"
   then
-    git commit -m "Automated checkin of external changes at $(date)" \
+    echo "Found changes to $(basename $fname)"
+    git --no-pager diff "$(basename $fname)"
+    git commit -m "Automated checkin of external changes to $fname at $(date)" \
       --date="$origdate" \
       "$(basename $fname)"
   fi
@@ -78,8 +80,9 @@ do
   # Never been checked in before
   if [ ! "$(git ls-files "$(basename $fname)")" ]
   then
+    echo "Found new file $(basename $fname)"
     git add "$(basename $fname)"
-    git commit -m "Automated initial checkin at $(date)" \
+    git commit -m "Automated initial checkin of $fname at $(date)" \
       --date="$origdate" \
       "$(basename $fname)"
   fi
@@ -108,6 +111,8 @@ checkin () {
     exit 1
   elif ! diff -q "$infile" "$outfile" >/dev/null 2>&1
   then
+    echo "Found $type changes to $outfile"
+    diff -u "$outfile" "$infile" || true
     origdate="$(date --iso-8601=seconds -r "$outfile")"
     touch -d "$origdate" "$infile"
     cp -p "$infile" "$outfile"
@@ -115,7 +120,7 @@ checkin () {
     cd "$(dirname "$outfile")"
     export GIT_AUTHOR_DATE="$origdate"
     export GIT_COMMITTER_DATE="$origdate"
-    git commit -m "Automated Checkin: $type differences found at $(date)" \
+    git commit -m "Automated Checkin: $type differences found in $outfile at $(date)" \
       --date="$origdate" \
       "$(basename $outfile)"
     cd "$origpwd"
