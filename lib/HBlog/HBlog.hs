@@ -8,6 +8,7 @@ module HBlog.HBlog
     ) where
 
 import           HBlog.Lib
+import           Debug.Trace                            (trace)
 import           Data.List
 import           Hakyll                          hiding (Redirect(..))
 import           System.FilePath
