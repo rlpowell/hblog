@@ -109,7 +109,7 @@ readTargets file = do
 -- Turn titles into Targets
 titleQuery :: Either PandocError Pandoc -> FilePath -> [Target]
 titleQuery (Right (Pandoc meta _)) file =
-  [TTitle { tFile = file, tTarget = target }]
+  [TTitle { tFile = file, tTarget = (strip target) }]
   where
     target = case runPure $ writePlain hblogPandocWriterOptions $ Pandoc nullMeta $ [Plain $ docTitle meta] of
                   Left (PandocSomeError err)  -> "rectifier titleQuery: unknown error: " ++ err
@@ -119,7 +119,7 @@ titleQuery (Left e) file = error $ "Pandoc error! on file " ++ file ++ ": " ++ (
 
 -- Turn headers into Targets
 headersQuery :: Either PandocError Pandoc -> FilePath -> [Target]
-headersQuery (Right x) file = map (\str -> THeader { tFile = file, tTarget = str}) $ query getHeaders x
+headersQuery (Right x) file = map (\str -> THeader { tFile = file, tTarget = (strip str)}) $ query getHeaders x
 headersQuery (Left e) file = error $ "Pandoc error! on file " ++ file ++ ": " ++ (show e)
 
 -- Pull headers out as strings
