@@ -25,7 +25,9 @@ rm -rf _cache
 
 if [ -d /web/ ]
 then
+  chcon -R -t container_file_t /web/
   rsync -a --delete _site/ /web/
+  chcon -R -t httpd_user_content_t /web/
 else
   echo "No /web/ mounted; not copying there."
 fi
