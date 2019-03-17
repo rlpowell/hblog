@@ -23,10 +23,6 @@ fi
 # stuff needs it
 indir="${indir%/}/"
 
-echo "Building hblog."
-stack build hblog
-stack install
-
 outdir="$indir"
 tempdir="/tmp/munge_files.$$"
 origpwd=$(pwd)
@@ -59,7 +55,14 @@ do
   if [[ $fname =~ 'conflicted copy' ]]
   then
     echo "Dropbox conflicted file: $fname; bailing"
-    echo "Dropbox conflicted file: $fname" | mailx -v -S smtp=mail -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE FOUND' rlpowell@digitalkingdom.org
+    echo "Dropbox conflicted file: $fname" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Dropbox' rlpowell@digitalkingdom.org
+    exit 1
+  fi
+
+  if [[ $fname =~ 'sync-conflict' ]]
+  then
+    echo "SyncThing conflicted file: $fname; bailing"
+    echo "SyncThing conflicted file: $fname" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Syncthing' rlpowell@digitalkingdom.org
     exit 1
   fi
 
@@ -118,47 +121,63 @@ do
 done
 
 checkin () {
-  infile="$1"
-  outfile="$2"
+  new_file="$1"
+  orig_file="$2"
   type="$3"
 
-  if [ ! -f "$outfile" ]
+  if [ ! -f "$orig_file" ]
   then
-    echo "The file $outfile doesn't exist, but I copied everything to that area earlier; bailing."
+    echo "The file $orig_file doesn't exist, but I copied everything to that area earlier; bailing."
     exit 1
-  elif ! diff -q "$infile" "$outfile" >/dev/null 2>&1
+  elif ! diff -q "$new_file" "$orig_file" >/dev/null 2>&1
   then
-    echo "Found $type changes to $outfile"
-    diff -u "$outfile" "$infile" || true
-    short=$(snipdir "$outfile" "$indir")
+    echo "Found $type changes to $orig_file"
+
+    # Divide the old size by the new size; if that number is large,
+    # then the new file is much smaller; freak out.
+    size_ratio=$(($(stat -c %s $orig_file) / $(stat -c %s $new_file)))
+    if [ "$size_ratio" -gt 3 ]
+    then
+      echo "Massive file shrink: $orig_file has gone from $(stat -c %s $orig_file) bytes to $(stat -c %s $new_file) bytes; bailing."
+      echo "Massive file shrink: $orig_file has gone from $(stat -c %s $orig_file) bytes to $(stat -c %s $new_file) bytes." | \
+        mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "hblog: FILE SHRINK FOUND: $orig_file" rlpowell@digitalkingdom.org
+      exit 1
+    fi
+
+    diff -u "$orig_file" "$new_file" || true
+    short=$(snipdir "$orig_file" "$indir")
     origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
-    touch -d "$origdate" "$infile"
-    cp -p "$infile" "$outfile"
+    touch -d "$origdate" "$new_file"
+    cp -p "$new_file" "$orig_file"
     export TZ=America/Los_Angeles
     export GIT_AUTHOR_DATE="$origdate"
     export GIT_COMMITTER_DATE="$origdate"
-    git -C "$indir" commit -m "Automated Checkin: $type differences found in $outfile at $(date)" \
+    git -C "$indir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date)" \
       --date="$origdate" \
       "$short"
 
     # When it's all done, we want the apparent file date to have not changed.
-    touch -d "$origdate" "$outfile"
+    touch -d "$origdate" "$orig_file"
   fi
 }
 
 checkin_dir () {
-  cindir="$1"
-  coutdir="$2"
+  new_file_dir="$1"
+  orig_file_dir="$2"
   type="$3"
 
-  find $cindir -type f | while read fname
+  find $new_file_dir -type f | while read fname
   do
-    short=$(snipdir "$fname" "$cindir")
-    checkin "$cindir/$short" "$coutdir/$short" "$type"
+    short=$(snipdir "$fname" "$new_file_dir")
+    checkin "$new_file_dir/$short" "$orig_file_dir/$short" "$type"
   done
 }
 
 checkin_dir "$tempdir" "$outdir" "pandoc to-and-from markdown"
+
+echo "Building hblog."
+stack build hblog
+stack install
 
 rm -rf "$tempdir/"
 mkdir -p "$tempdir"
