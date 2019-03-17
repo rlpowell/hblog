@@ -7,7 +7,7 @@ cd "$dir"
 set -x
 set -e
 
-if [ ! -f run_docker.sh ]
+if [ ! -f run_container.sh ]
 then
   echo "You seem to be in the wrong place."
   exit 1

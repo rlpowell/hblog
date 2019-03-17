@@ -1,4 +1,4 @@
-# Note that all these link locations assume we're in a Docker that
+# Note that all these link locations assume we're in a container that
 # is using syncthing to have ~/src and ~/Docs be the relevant
 # Dropbox dirs, syncthing-ed from vrici.
 
