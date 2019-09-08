@@ -82,6 +82,7 @@ do
   then
     echo "Found changes to $(basename $fname)"
     git --no-pager diff "$(basename $fname)"
+    git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
     git commit -m "Automated checkin of external changes to $fname at $(date)" \
       --date="$origdate" \
       "$(basename $fname)"
@@ -92,6 +93,7 @@ do
   then
     echo "Found new file $(basename $fname)"
     git add "$(basename $fname)"
+    git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "NEW FILE: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
     git commit -m "Automated initial checkin of $fname at $(date)" \
       --date="$origdate" \
       "$(basename $fname)"
@@ -145,6 +147,7 @@ checkin () {
     fi
 
     diff -u "$orig_file" "$new_file" || true
+    diff -u "$orig_file" "$new_file" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
     short=$(snipdir "$orig_file" "$indir")
     origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
     touch -d "$origdate" "$new_file"
