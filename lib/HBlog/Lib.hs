@@ -5,6 +5,7 @@ module HBlog.Lib
     ( caselessre
     , hblogPandocReaderOptions
     , hblogPandocWriterOptions
+    , hblogPandocFinalWriterOptions
     ) where
 
 import          Text.Regex.PCRE.Heavy as PCRE
@@ -23,9 +24,15 @@ hblogPandocWriterOptions = def
     { -- This option causes literate haskell to be written using '>' marks in
       -- html, which I think is a good default.
       writerExtensions = enableExtension Ext_smart pandocExtensions
-    , -- We want to have hightlighting by default, to be compatible with earlier
+      -- We want to have highlighting by default, to be compatible with earlier
       -- Hakyll releases
-      writerHighlightStyle = Just pygments
+    , writerHighlightStyle = Just pygments
+    }
+hblogPandocFinalWriterOptions :: WriterOptions
+hblogPandocFinalWriterOptions = hblogPandocWriterOptions
+    {
+      writerTableOfContents = True
+    , writerTemplate        = Just "$toc$\n$body$"
     }
 hblogPandocReaderOptions :: ReaderOptions
 hblogPandocReaderOptions = def

@@ -102,7 +102,7 @@ hblogMain = hakyll $ do
                                -- Show recent posts
                                listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents)
 
-            pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
+            pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocFinalWriterOptions (titleFixer titles)
                 >>= loadAndApplyTemplate "templates/post.html"    postsContext
                 >>= loadAndApplyTemplate "templates/default.html" postsContext
                 >>= relativizeUrls
