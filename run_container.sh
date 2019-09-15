@@ -9,8 +9,9 @@ CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 
 "$(dirname $0)"/stop_container.sh || true
 sudo $CONTAINER_BIN rm hblog || true
-cp ../Docker_Shell/container_run_init_start.sh .
-cp ../Docker_Shell/container_run_init_end.sh .
+mkdir -p container_copies
+cp ../Docker_Shell/container_run_init_start.sh container_copies/
+cp ../Docker_Shell/container_run_init_end.sh container_copies/
 sudo $CONTAINER_BIN build -t rlpowell/hblog .
 rm container_run_init_start.sh || true
 rm container_run_init_end.sh || true
