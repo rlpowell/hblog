@@ -116,14 +116,48 @@ in the following order:
 Dates
 =====
 
+We store file dates using git timestamps.  I have considered many
+other options that don't work, to wit:
+
+- Use the file's timestamp for the last mod time; this fails because
+git doesn't preserve timestamps, so rolling back the repo or running
+a fresh git clone entirely destroys this information.
+- Storing the info in headers, perhaps updated by automation.  This
+fails because when the user does a *non-automated* checkin, I want
+everything to Just Work (tm), without the user having to manually
+update a bunch of headers.
+- We could store the timestamp info in a separate data file of some
+kind, but this would require that the automation notice when
+non-automated checkins occured and update the timestamp info on that
+basis.  This obvious way to do that would be to make the timestamp
+file line up with the last checkin, which means we gain nothing by
+maintaining the file.
+
+The *disadvantage* is that modifying the git timestamps of past
+checkings is a huge pain in the ass.  So don't do that, even if you
+need to correct problems.  Use the orig_date header to correct
+problems with the original posting date and simply add a git commit
+with --date to change last modified date.
+
 File dates are handled using the author timestamp of the git commits on the
 files.  This is important because git commits have two timestamps, the commit
 timestamp and the author timestamp, the latter being entirely up to the
 committer, much like the name and email.
 
-We track two dates for each file: initial/original commit and most recent
-commit; these are presented to the user in the obvious way.  We get them like
-so:
+When we do automated checkins, if the file on disk has changed we
+make a commit for that that has the file date as its author
+timestamp.  For all autamated checkins that change the file (i.e.
+automated reformatting), we get the author timestamp of the previous
+commit, and both set the file timestamp using that and also use it
+as the author timestamp of the new commit.
+
+So, basically, the timestamp of all commits should be the same as
+the most recent previous actual change to the file by the user.
+
+At rendering time, we extract two dates for each file:
+initial/original commit and most recent commit; these are presented
+to the user as the "original post time" and "last modified time".
+We get them like so:
 
     # Original:
     $ git log --diff-filter=A --follow --format=%ai -n 1 -- app/hblog.hs
@@ -133,13 +167,15 @@ so:
     $ git log --format=%ai -n 1 -- app/hblog.hs
     2016-11-28 23:50:34 -0800
 
-The user can also override the initial date value using orig_date. This is
-particularly useful when we don't actually know the original date.
+The user can also override the initial date value using orig_date in
+the file's header. This is particularly useful when we don't
+actually know the original date.
 
-Overriding last_mod_date is not supported, as it's too easy for that to stop
-matching reality; make a git commit with the date you want if you need to lie
-about the last_mod_date, that way any future changes will work correctly (as
-long as they are checked in, which the scripting shuold force).
+Overriding last_mod_date is not supported, as it's too easy for that
+to stop matching reality; make a git commit with the date you want
+using --date if you need to lie about the last_mod_date, that way
+any future changes will work correctly (as long as they are checked
+in, which the scripting shuold force).
 
 Tags & Categories
 =================

@@ -1,11 +1,16 @@
 FROM rlpowell/stack
 
-RUN sudo yum install -y mailx exim
+# If you make changes here, run ./stop_container.sh to have them
+# actually take effect
+
+RUN sudo yum install -y mailx exim wdiff colordiff
 
 USER rlpowell
 RUN mkdir -p /home/rlpowell/src/hblog
 WORKDIR /home/rlpowell/src/hblog
 ENV PATH="/home/rlpowell/.local/bin/:${PATH}"
+
+COPY hbgwdiff.sh /tmp/
 
 COPY container_run_init.sh /tmp/
 RUN sudo chown 1000 /tmp/container_run_init.sh

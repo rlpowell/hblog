@@ -38,6 +38,8 @@ then
   git init .
   git add .
   git commit -m "Initial checkin" -a
+  echo "Sleeping to help with sync."
+  sleep 10
   cd $origpwd
 fi
 
@@ -69,37 +71,45 @@ do
   short=$(snipdir "$fname" "$indir")
   mkdir -p $(dirname "$tempdir/$short")
 
-  # Make sure everything is checked in
-  origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
-  if [ -z "$origdate" ]
-  then
-    origdate="$(date --iso-8601=seconds -r "$fname")"
-  fi
+  # Before you make changes to any of the data handling here, read
+  # and update the "Dates" section in DESIGN-CODE.  This stuff is
+  # complicated.
+  filedate="$(date --iso-8601=seconds -r "$fname")"
   cd "$(dirname $fname)"
 
-  # Needs changes checked in
-  if ! git diff --quiet "$(basename $fname)"
-  then
-    echo "Found changes to $(basename $fname)"
-    git --no-pager diff "$(basename $fname)"
-    git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
-    git commit -m "Automated checkin of external changes to $fname at $(date)" \
-      --date="$origdate" \
-      "$(basename $fname)"
-  fi
-
-  # Never been checked in before
+  # Make sure everything is checked in and updated
   if [ ! "$(git ls-files "$(basename $fname)")" ]
   then
-    echo "Found new file $(basename $fname)"
+    # Never been checked in before
+    echo "Found new file $fname"
     git add "$(basename $fname)"
-    git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "NEW FILE: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
-    git commit -m "Automated initial checkin of $fname at $(date)" \
-      --date="$origdate" \
+    cat $(basename $fname) | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "NEW FILE: hblog automation: initial checkin: \"$fname\"" rlpowell@digitalkingdom.org
+    # Before you make changes to any of the data handling here, read
+    # and update the "Dates" section in DESIGN-CODE.  This stuff is
+    # complicated.
+    git commit -m "Automated initial checkin of $fname at $(date) ; file date is $filedate" \
+      --date="$filedate" \
       "$(basename $fname)"
+    echo "Sleeping to help with sync."
+    sleep 10
+  elif ! git diff --quiet "$(basename $fname)"
+  then
+    # Needs changes checked in
+    echo "Found changes to $fname"
+    GIT_EXTERNAL_DIFF=/tmp/hbgwdiff.sh git --no-pager diff "$(basename $fname)"
+    GIT_EXTERNAL_DIFF=/tmp/hbgwdiff.sh git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: external changes: \"$fname\"" rlpowell@digitalkingdom.org
+    # Before you make changes to any of the data handling here, read
+    # and update the "Dates" section in DESIGN-CODE.  This stuff is
+    # complicated.
+    git commit -m "Automated checkin of external changes to $fname at $(date) ; file date is $filedate" \
+      --date="$filedate" \
+      "$(basename $fname)"
+    echo "Sleeping to help with sync."
+    sleep 10
   fi
+
   cd "$origpwd"
-  touch -d "$origdate" "$fname"
+  touch -d "$filedate" "$fname"
 
   mkdir -p ~/.hblog-cache/
   cache_file=~/.hblog-cache/$(echo $fname | sed 's;/;_;g')
@@ -116,7 +126,7 @@ do
     # checkins, so we fix it.
     sed -i '/[]](/s/%20/ /g' "$tempdir/$short"
     cp "$fname" "$cache_file"
-    touch -d "$origdate" "$fname" "$cache_file" "$tempdir/$short"
+    touch -d "$filedate" "$fname" "$cache_file" "$tempdir/$short"
   else
     echo "File $fname matches its cached version; not updating."
   fi
@@ -146,21 +156,25 @@ checkin () {
       exit 1
     fi
 
-    diff -u "$orig_file" "$new_file" || true
-    diff -u "$orig_file" "$new_file" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: \"$(basename $fname)\"" rlpowell@digitalkingdom.org
+    /tmp/hbgwdiff.sh x "$orig_file" x x "$new_file" || true
+    /tmp/hbgwdiff.sh x "$orig_file" x x "$new_file" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: $type differences: \"$orig_file\"" rlpowell@digitalkingdom.org
     short=$(snipdir "$orig_file" "$indir")
-    origdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
-    touch -d "$origdate" "$new_file"
+    # Before you make changes to any of the data handling here, read
+    # and update the "Dates" section in DESIGN-CODE.  This stuff is
+    # complicated.
+    prevdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
+    touch -d "$prevdate" "$new_file"
     cp -p "$new_file" "$orig_file"
     export TZ=America/Los_Angeles
-    export GIT_AUTHOR_DATE="$origdate"
-    export GIT_COMMITTER_DATE="$origdate"
-    git -C "$indir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date)" \
-      --date="$origdate" \
+    export GIT_AUTHOR_DATE="$prevdate"
+    git -C "$indir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date) ; preserving previous checkin date of $prevdate" \
+      --date="$prevdate" \
       "$short"
+    echo "Sleeping to help with sync."
+    sleep 10
 
     # When it's all done, we want the apparent file date to have not changed.
-    touch -d "$origdate" "$orig_file"
+    touch -d "$prevdate" "$orig_file"
   fi
 }
 

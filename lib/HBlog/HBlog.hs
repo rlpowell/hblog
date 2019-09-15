@@ -48,6 +48,9 @@ hblogMain = hakyll $ do
 
     titles <- fmap mconcat $ mapM getTitlePair ids
 
+    -- Before you make changes to any of the data handling here, read
+    -- and update the "Dates" section in DESIGN-CODE.  This stuff is
+    -- complicated.
     gitTimes <- fmap mconcat $ preprocess $ mapM getGitTimes ids
 
     -- ************
@@ -465,6 +468,9 @@ titleFixerInternal titles headers link@(Link x text (rawURL, z)) =
 titleFixerInternal _ _ x = x
 
 --------------------------- Date Handling ------------------------------
+-- Before you make changes to any of the data handling here, read
+-- and update the "Dates" section in DESIGN-CODE.  This stuff is
+-- complicated.
 
 data GitTimes = GitTimes { gtid :: Identifier, gtlatest :: UTCTime, gtinitial :: UTCTime } deriving (Ord, Eq, Show)
 
@@ -477,6 +483,9 @@ getGitTimes identifier = do
     -- Strip off the "posts/" part
     let gitFilePath = joinPath $ dropPosts path
 
+    -- Before you make changes to any of the data handling here, read
+    -- and update the "Dates" section in DESIGN-CODE.  This stuff is
+    -- complicated.
     (exit1, stdout1, stderr1) <- readProcessWithExitCode "git" ["-C", gitRepoPath, "log", "--diff-filter=A", "--follow", "--format=%ai", "-n", "1", "--", gitFilePath] ""
     if exit1 /= ExitSuccess then
       do fail $ "getGitTimes: Couldn't get the date of the first commit for " ++ path ++ ", error: " ++ stderr1
@@ -495,6 +504,9 @@ getGitTimes identifier = do
     else
       return ()
 
+    -- Before you make changes to any of the data handling here, read
+    -- and update the "Dates" section in DESIGN-CODE.  This stuff is
+    -- complicated.
     (exit2, stdout2, stderr2) <- readProcessWithExitCode "git" ["-C", gitRepoPath, "log", "--format=%ai", "-n", "1", gitFilePath] ""
     if exit2 /= ExitSuccess then
       do fail $ "getGitTimes: Couldn't get the date of the latest/last commit for " ++ path
@@ -654,12 +666,20 @@ postCtx allTags allCategories gtimes = mconcat
 
     -- We always use the last_mod_date from git; if you want to
     -- override that, make a new git commit and use --date
+    --
+    -- Before you make changes to any of the data handling here, read
+    -- and update the "Dates" section in DESIGN-CODE.  This stuff is
+    -- complicated.
     , field  "last_mod_date" (gitTimeToField gtimes gtlatest)
     -- In fact, we explicitely fail if you try to use it from header
     -- metadata
     , failIfMetadatas ["last_mod_date", "date", "published"]
     -- For orig_date, though, if you specify it in the metadata we
     -- take that, whether it parses or not, otherwise we use git
+    --
+    -- Before you make changes to any of the data handling here, read
+    -- and update the "Dates" section in DESIGN-CODE.  This stuff is
+    -- complicated.
     , dateFieldWithFallback defaultTimeLocale ((flip getMetadataField) "orig_date") (getGitTimeUTCCompiler gtimes gtinitial) "orig_date" "%B %e, %Y"
     , constField "gitTimes" $ show gtimes
     -- This one is weird: the allTags we pass are *not* the tags it
