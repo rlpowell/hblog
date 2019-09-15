@@ -13,4 +13,18 @@ then
   ./run_container.sh
 fi
 
-sudo $CONTAINER_BIN exec -i hblog zsh -c "export PATH=/home/rlpowell/.local/bin:$PATH ; ./run_build.sh >/tmp/build.out 2>&1 || cat /tmp/build.out"
+set +e
+sudo $CONTAINER_BIN exec -i hblog zsh -c "export PATH=/home/rlpowell/.local/bin:$PATH ; bash -x ./run_build.sh 2>&1" >/tmp/hblog_cron.$$ 2>&1
+exitcode=$?
+set -e
+
+if [ "$exitcode" -ne 0 ]
+then
+  echo "Errors found; showing full output."
+  cat /tmp/hblog_cron.$$
+elif grep -q -i mail /tmp/hblog_cron.$$
+then
+  echo "Changes found; showing full output."
+  cat /tmp/hblog_cron.$$
+fi
+rm -f /tmp/hblog_cron.$$
