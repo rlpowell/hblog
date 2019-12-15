@@ -4,21 +4,18 @@ exec 2>&1
 set -e
 set -x
 
+# First, build
+"$(dirname $0)"/build_container.sh
+
 CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
 CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 
 "$(dirname $0)"/stop_container.sh || true
-sudo $CONTAINER_BIN rm hblog || true
-mkdir -p container_copies
-cp ../Docker_Shell/container_run_init_start.sh container_copies/
-cp ../Docker_Shell/container_run_init_end.sh container_copies/
-sudo $CONTAINER_BIN build -t rlpowell/hblog .
-rm container_run_init_start.sh || true
-rm container_run_init_end.sh || true
-sudo $CONTAINER_BIN run --name hblog -v ~/public_html/hblog:/web:z -v volume--home--rlpowell:/home/rlpowell -p 0.0.0.0:2224:22 -p 0.0.0.0:8084:8084 -d -t -i rlpowell/hblog bash -x /tmp/container_run_init.sh
+
+sudo -u rlpowell $CONTAINER_BIN run --userns=keep-id --name hblog -v ~/public_html/hblog:/web:rw -v /home/rlpowell:/home/rlpowell:rw -p 2224:22 -p 8084:8084 -d -t -i rlpowell/hblog bash -x container_run_init.sh
 sleep 5
-sudo $CONTAINER_BIN logs hblog
-sudo $CONTAINER_BIN ps -a -f name=hblog
+sudo -u rlpowell $CONTAINER_BIN logs hblog
+sudo -u rlpowell $CONTAINER_BIN ps -a -f name=hblog
 echo
 echo
 echo Now connect with SSH

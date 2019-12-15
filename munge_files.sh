@@ -3,6 +3,8 @@
 set -e
 # set -x
 
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin/:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
+
 # rectifier is fundamentally whole-tree based; it needs to know
 # about everybody to know what things are available to link to.
 #

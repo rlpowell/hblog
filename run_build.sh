@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin/:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
+
 dir="$(dirname $0)"
 cd "$dir"
 ./setup_links.sh

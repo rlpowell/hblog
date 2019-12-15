@@ -8,13 +8,13 @@ CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 
 cd ~/src/hblog/
 
-if ! sudo $CONTAINER_BIN ps | grep -q rlpowell/hblog
+if ! sudo -u rlpowell $CONTAINER_BIN ps | grep -q rlpowell/hblog
 then
   ./run_container.sh
 fi
 
 set +e
-sudo $CONTAINER_BIN exec -i hblog zsh -c "export PATH=/home/rlpowell/.local/bin:$PATH ; bash -x ./run_build.sh 2>&1" >/tmp/hblog_cron.$$ 2>&1
+sudo -u rlpowell $CONTAINER_BIN exec -i hblog zsh -c "export PATH=/home/rlpowell/.local/bin:$PATH ; bash -x ./run_build.sh 2>&1" >/tmp/hblog_cron.$$ 2>&1
 exitcode=$?
 set -e
 

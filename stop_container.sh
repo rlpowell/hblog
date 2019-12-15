@@ -6,6 +6,6 @@ set -x
 CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
 CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 
-sudo $CONTAINER_BIN stop --time=30 hblog
-sudo $CONTAINER_BIN kill hblog
-sudo $CONTAINER_BIN rm hblog
+sudo -u rlpowell $CONTAINER_BIN stop --time=30 hblog
+sudo -u rlpowell $CONTAINER_BIN kill hblog
+sudo -u rlpowell $CONTAINER_BIN rm hblog
