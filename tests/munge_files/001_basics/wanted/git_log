@@ -1,8 +1,8 @@
 commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Author: Robin Lee Powell <robinleepowell@gmail.com>
 Date:   [date]
 
-    Automated Checkin: rectifier differences found at [date]
+    Automated Checkin: rectifier differences found in tests/munge_files/001_basics/out/foo/001.md at [date] ; preserving previous checkin date of [date]
 
 diff --git a/foo/001.md b/foo/001.md
 index [hash]..[hash]
@@ -16,10 +16,10 @@ index [hash]..[hash]
 +test before [look a link!](How WiFi Actually Works) after
 
 commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Author: Robin Lee Powell <robinleepowell@gmail.com>
 Date:   [date]
 
-    Automated Checkin: unphone differences found at [date]
+    Automated Checkin: unphone differences found in tests/munge_files/001_basics/out/foo/001.md at [date] ; preserving previous checkin date of [date]
 
 diff --git a/foo/001.md b/foo/001.md
 index [hash]..[hash]
@@ -33,10 +33,10 @@ index [hash]..[hash]
 +test before [look a link!](wifi works) after
 
 commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Author: Robin Lee Powell <robinleepowell@gmail.com>
 Date:   [date]
 
-    Automated Checkin: pandoc to-and-from markdown differences found at [date]
+    Automated Checkin: pandoc to-and-from markdown differences found in tests/munge_files/001_basics/out/foo/001.md at [date] ; preserving previous checkin date of [date]
 
 diff --git a/foo/001.md b/foo/001.md
 index [hash]..[hash]
@@ -50,10 +50,10 @@ index [hash]..[hash]
  test before qwl look a link! qwu wifi works qw after
 
 commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Author: Robin Lee Powell <robinleepowell@gmail.com>
 Date:   [date]
 
-    Automated Checkin: pandoc to-and-from markdown differences found at [date]
+    Automated Checkin: pandoc to-and-from markdown differences found in tests/munge_files/001_basics/out/bar/how_wifi_actually_works.md at [date] ; preserving previous checkin date of [date]
 
 diff --git a/bar/how_wifi_actually_works.md b/bar/how_wifi_actually_works.md
 index [hash]..[hash]
@@ -72,7 +72,7 @@ index [hash]..[hash]
      25-15:31 <       treed> which in the best possible 2.4Ghz case gets you 3 stations
 
 commit [hash]
-Author: Robin Lee Powell <rlpowell@digitalkingdom.org>
+Author: Robin Lee Powell <robinleepowell@gmail.com>
 Date:   [date]
 
     Initial checkin

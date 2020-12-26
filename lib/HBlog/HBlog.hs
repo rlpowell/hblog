@@ -8,7 +8,7 @@ module HBlog.HBlog
     ) where
 
 import           HBlog.Lib
-import           Debug.Trace                            (trace)
+import           Debug.Trace                            (trace, traceM, traceId)
 import           Data.List
 import           Hakyll                          hiding (Redirect(..))
 import           System.FilePath
@@ -64,41 +64,27 @@ hblogMain = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    -- This bit is all about generating the Recent Changes sidebar.
-    --
-    -- "loadAll", which we need to use for getting a list of posts
-    -- to show in the "Recent Changes" sidebar, causes Hakyll to say
-    -- that X depends on the thing X is loadAll-ing.  We're putting
-    -- the Recents list on the pages themselves, which means the
-    -- most recent page has a dependency on itself (and you can't
-    -- fix it by having it not show itself, because the most recent
-    -- page and the second most recent page will make 2-step
-    -- dependency cycle).
-    --
-    -- This loads all the posts with a version of "recents" and
-    -- *doesn't* load the default.html stuff (the stuff with the
-    -- Recent Changes sidebar); we then load these versions when we
-    -- need the recents list.
-    --
-    -- It would probably also be possible to do this by making
-    -- direct use of the "gitTimes" and "titles" variables, but we'd
-    -- need to manually figure out the correct URL in that case from
-    -- the md file name, so doing it this way.
-    match "posts/**.md" $ version "recents" $ do
-        route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
-        compile $ do
-            pandocCompilerWithTransform hblogPandocReaderOptions hblogPandocWriterOptions (titleFixer titles)
-                >>= loadAndApplyTemplate "templates/post.html"    (postCtx allTags allCategories gitTimes)
-                >>= relativizeUrls
-
     match "posts/**.md" $ do
         route $ (gsubRoute "posts/" (const "")) `composeRoutes` setExtension "html"
         compile $ do
             myId <- getUnderlying
             categs <- myGetCategory myId
-            -- Load the posts we need for the Recent Changes list;
-            -- see the 'version "recents"' explanation above.
-            recents <- (selectRecents myId) =<< (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ (mconcat categs) ++ "/**") .&&. hasVersion "recents")
+
+            -- Example trace:
+            -- loads1 <- loadAll ("posts/computing/**" .&&. hasVersion "recents")
+            -- traceM ("loads1: " ++ show (loads1 :: [Item String]))
+            -- loads2 <- loadAll ("posts/**" .&&. hasVersion "recents")
+            -- traceM ("loads2: " ++ show (loads2 :: [Item String]))
+
+            -- Normally we find recents from the current category,
+            -- but for the meta pages we use computing *and* career
+            let pattern = if categs == [] then
+                    (fromGlob "posts/computing/**.md") .||. (fromGlob "posts/career/**.md")
+                else
+                    (fromGlob $ "posts/" ++ (head categs) ++ "/**.md")
+
+            recents <- (selectNotSelf myId) =<< (myRecentFirst gitTimes) =<< myGetIdentifiers pattern
+
             let postsContext = postCtx allTags allCategories gitTimes `mappend`
                                -- Distinguish things like archive.html from regular posts
                                constField "article" "yes"            `mappend`
@@ -127,15 +113,15 @@ hblogMain = hakyll $ do
 --                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
 --                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
 --                 >>= relativizeUrls
--- 
--- 
+
+
     forM_ (tagsMap allCategories) $ \(categ, _) ->
         create [fromFilePath $ categ ++ "/archive.html" ] $ do
             route idRoute
             compile $ do
                 -- Get only the posts in this category
-                posts <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasNoVersion)
-                recents <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasVersion "recents")
+                posts <- (myRecentFirst gitTimes) =<< loadAll (fromGlob $ "posts/" ++ categ ++ "/**")
+                recents <- (myRecentFirst gitTimes) =<< myGetIdentifiers (fromGlob $ "posts/" ++ categ ++ "/**")
                 let archiveCtx =
                         listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                         listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
@@ -146,22 +132,6 @@ hblogMain = hakyll $ do
                     >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
                     >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                     >>= relativizeUrls
-
-
---    match "index.html" $ do
---        route idRoute
---        compile $ do
---            posts <- (myRecentFirst gitTimes) =<< loadAll "posts/**"
---            let indexCtx = mconcat [
---                    listField "posts" (postCtx allTags allCategories gitTimes) (return posts)
---                    , constField "title" "Home"
---                    , (postCtx allTags allCategories gitTimes)
---                    ]
---
---            getResourceBody
---                >>= applyAsTemplate indexCtx
---                >>= loadAndApplyTemplate "templates/default.html" indexCtx
---                >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
 
@@ -195,8 +165,8 @@ hblogMain = hakyll $ do
         -- FIXME: Copied from posts, need to refactor
         route idRoute
         compile $ do
-            posts <- (myRecentFirst gitTimes) =<< loadAll (pattern .&&. hasNoVersion)
-            recents <- (myRecentFirst gitTimes) =<< loadAll ((fromGlob $ "posts/" ++ categ ++ "/**") .&&. hasVersion "recents")
+            posts <- (myRecentFirst gitTimes) =<< loadAll pattern
+            recents <- (myRecentFirst gitTimes) =<< myGetIdentifiers (fromGlob $ "posts/" ++ categ ++ "/**")
             let ctx = constField "title" title `mappend`
                         listField "recents" (postCtx allTags allCategories gitTimes) (return $ take 3 recents) `mappend`
                         listField "posts" (postCtx allTags allCategories gitTimes) (return posts) `mappend`
@@ -205,7 +175,6 @@ hblogMain = hakyll $ do
                 >>= loadAndApplyTemplate "templates/post-list.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" ctx
                 >>= relativizeUrls
-
 
 --------------------------------------------------------------------------------
 
@@ -273,11 +242,11 @@ myCategoryCheckFields = Context $ \k _ i -> do
       -- Control.Applicative ; see Hakyll/Core/Compiler/Internal.hs
       CA.empty
 
--- Used for the Recent Changes sidebar; just picks 3 and then makes
--- sure none of them is the current article itself, cuz that looks
--- kinda dumb.
-selectRecents :: MonadMetadata m => Identifier -> [Item a] -> m [Item a]
-selectRecents myId recents = return $ filter (\x -> ((itemIdentifier x) { identifierVersion = Nothing } ) /= myId) recents
+-- Used for the Recent Changes sidebar; makes sure none of them is
+-- the items listed is current article itself, cuz that looks kinda
+-- dumb.
+selectNotSelf :: MonadMetadata m => Identifier -> [Item a] -> m [Item a]
+selectNotSelf myId recents = return $ filter (\x -> ((itemIdentifier x) { identifierVersion = Nothing } ) /= myId) recents
 
 -- | Find the category of the current item.
 --
@@ -350,6 +319,19 @@ myGetCategory x =
                 else
                     -- This shouldn't ever happen
                     return $ [fail "In myGetCategory, something with 2 or fewer path elements is not an archive file; " ++ (show filePath)]
+
+-- Given a pattern, searches the already-loaded metadata with
+-- getMatches for items matching that pattern and returns them (with
+-- no body)
+--
+-- Mostly stolen from https://github.com/dannysu/hakyll-blog/blob/321532e82d6e847f45c93f58f83b6b354be6da1a/src/HakyllHelper.hs
+--
+-- See http://rlpowell.name/computing/general/hakyll_recent_posts.html
+-- for more details on how this works
+myGetIdentifiers :: Pattern -> Compiler [Item String]
+myGetIdentifiers pattern = do
+    identifiers <- getMatches pattern
+    return [Item identifier "" | identifier <- identifiers]
 
 titleCase :: String -> String
 titleCase (hed:tale) = Char.toUpper hed : map Char.toLower tale
@@ -542,7 +524,7 @@ getGitTimeUTC ident times typeF =
       typeF $ head timeList
 
 -- Returns a function that sorts a list of items using getGitTimeUTC
-myRecentFirst :: MonadMetadata m =>[GitTimes] -> [Item a] -> m [Item a]
+myRecentFirst :: MonadMetadata m => [GitTimes] -> [Item a] -> m [Item a]
 myRecentFirst gtimes = recentFirstWith $ (\x -> getGitTimeUTC x gtimes gtlatest)
 
 -- Check for header metadata with the given names, and fail if
