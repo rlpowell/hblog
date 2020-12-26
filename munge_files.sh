@@ -45,6 +45,12 @@ then
   cd $origpwd
 fi
 
+MAILX=mailx
+if [ "$testing" ]
+then
+  MAILX="echo mailx --"
+fi
+
 mkdir -p $tempdir
 
 snipdir () {
@@ -59,14 +65,14 @@ do
   if [[ $fname =~ 'conflicted copy' ]]
   then
     echo "Dropbox conflicted file: $fname; bailing"
-    echo "Dropbox conflicted file: $fname" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Dropbox' rlpowell@digitalkingdom.org
+    echo "Dropbox conflicted file: $fname" | $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Dropbox' rlpowell@digitalkingdom.org
     exit 1
   fi
 
   if [[ $fname =~ 'sync-conflict' ]]
   then
     echo "SyncThing conflicted file: $fname; bailing"
-    echo "SyncThing conflicted file: $fname" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Syncthing' rlpowell@digitalkingdom.org
+    echo "SyncThing conflicted file: $fname" | $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s 'CONFLICTED FILE Found: Syncthing' rlpowell@digitalkingdom.org
     exit 1
   fi
 
@@ -85,7 +91,7 @@ do
     # Never been checked in before
     echo "Found new file $fname"
     git add "$(basename $fname)"
-    cat $(basename $fname) | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "NEW FILE: hblog automation: initial checkin: \"$fname\"" rlpowell@digitalkingdom.org
+    cat $(basename $fname) | $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "NEW FILE: hblog automation: initial checkin: \"$fname\"" rlpowell@digitalkingdom.org
     # Before you make changes to any of the data handling here, read
     # and update the "Dates" section in DESIGN-CODE.  This stuff is
     # complicated.
@@ -99,7 +105,7 @@ do
     # Needs changes checked in
     echo "Found changes to $fname"
     GIT_EXTERNAL_DIFF=/tmp/hbgwdiff.sh git --no-pager diff "$(basename $fname)"
-    GIT_EXTERNAL_DIFF=/tmp/hbgwdiff.sh git --no-pager diff "$(basename $fname)" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: external changes: \"$fname\"" rlpowell@digitalkingdom.org
+    GIT_EXTERNAL_DIFF=/tmp/hbgwdiff.sh git --no-pager diff "$(basename $fname)" | $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: external changes: \"$fname\"" rlpowell@digitalkingdom.org
     # Before you make changes to any of the data handling here, read
     # and update the "Dates" section in DESIGN-CODE.  This stuff is
     # complicated.
@@ -115,7 +121,7 @@ do
 
   mkdir -p ~/.hblog-cache/
   cache_file=~/.hblog-cache/$(echo $fname | sed 's;/;_;g')
-  if [ ! -f $cache_file ] || ! diff -q $fname $cache_file >/dev/null 2>&1
+  if [ "$testing" ] || [ ! -f $cache_file ] || ! diff -q $fname $cache_file >/dev/null 2>&1
   then
     echo "File $fname does not match its cached version; running pandoc on it to normalize its syntax."
     stack exec pandoc -- -s -f markdown -t markdown --wrap=preserve -o $tempdir/$short $fname
@@ -154,22 +160,30 @@ checkin () {
     then
       echo "Massive file shrink: $orig_file has gone from $(stat -c %s $orig_file) bytes to $(stat -c %s $new_file) bytes; bailing."
       echo "Massive file shrink: $orig_file has gone from $(stat -c %s $orig_file) bytes to $(stat -c %s $new_file) bytes." | \
-        mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "hblog: FILE SHRINK FOUND: $orig_file" rlpowell@digitalkingdom.org
+        $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "hblog: FILE SHRINK FOUND: $orig_file" rlpowell@digitalkingdom.org
       exit 1
     fi
 
     /tmp/hbgwdiff.sh x "$orig_file" x x "$new_file" || true
-    /tmp/hbgwdiff.sh x "$orig_file" x x "$new_file" | mailx -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: $type differences: \"$orig_file\"" rlpowell@digitalkingdom.org
-    short=$(snipdir "$orig_file" "$indir")
+    /tmp/hbgwdiff.sh x "$orig_file" x x "$new_file" | $MAILX -v -S smtp=mail -S hostname=hblog-container -r rlpowell@digitalkingdom.org -s "FILE CHANGES: hblog automation: $type differences: \"$orig_file\"" rlpowell@digitalkingdom.org
+
+    usedir="$indir"
+    if [ "$testing" ]
+    then
+      usedir="$outdir"
+    fi
+
     # Before you make changes to any of the data handling here, read
     # and update the "Dates" section in DESIGN-CODE.  This stuff is
     # complicated.
-    prevdate="$(git -C "$indir" log --format='%ai' -n 1 "$short")"
+    short=$(snipdir "$orig_file" "$usedir")
+    prevdate="$(git -C "$usedir" log --format='%ai' -n 1 "$short")"
+
     touch -d "$prevdate" "$new_file"
     cp -p "$new_file" "$orig_file"
     export TZ=America/Los_Angeles
     export GIT_AUTHOR_DATE="$prevdate"
-    git -C "$indir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date) ; preserving previous checkin date of $prevdate" \
+    git -C "$usedir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date) ; preserving previous checkin date of $prevdate" \
       --date="$prevdate" \
       "$short"
     echo "Sleeping to help with sync."
@@ -217,6 +231,7 @@ then
     sed -r -e 's/^commit \S+$/commit [hash]/' \
     -e 's/^Date:   .*/Date:   [date]/' \
     -e 's/^(    Automated Checkin: .* found at) .*/\1 [date]/' \
+    -e 's/^(    Automated Checkin: .* found in .* at) [^;]* (; preserving previous checkin date of) .*/\1 [date] \2 [date]/' \
     -e 's/^index [^.]*..[^.]*$/index [hash]..[hash]/' \
     >git_log
   cd "$origpwd"
