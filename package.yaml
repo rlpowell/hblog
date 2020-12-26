@@ -1,0 +1,105 @@
+name:                hblog
+version:             0.1.0.0
+synopsis:            RLP's hakyll blog
+description:         Please see README.md
+github:              rlpowell/hblog
+license:             MIT
+license-file:        LICENSE
+author:              Robin Lee Powell
+maintainer:          rlpowell@digitalkingdom.org
+copyright:           2020 Robin Lee Powell
+category:            Web
+
+# extra-source-files:
+# - README.md
+# - ChangeLog.md
+
+ghc-options:
+- -Wall
+
+dependencies:
+- base >= 4.7 && < 5
+- blaze-html
+- MissingH
+- QuickCheck
+- bytestring
+- containers
+- data-default
+- directory
+- edit-distance
+- filemanip
+- filepath
+- hakyll
+- hspec
+- mtl
+- network-uri
+- pandoc
+- pandoc-citeproc
+- pandoc-types
+- parsec
+- pcre-heavy
+- pcre-light
+- process
+- string-conversions
+- system-fileio
+- tagsoup
+- template-haskell
+- texmath
+- text
+- time
+- time-locale-compat
+- transformers
+- unix
+- yaml
+
+library:
+  source-dirs: lib
+  exposed-modules:
+  - HBlog.Lib
+  - HBlog.HBlog
+  - HBlog.Rectifier
+  - HBlog.Spec
+  - HBlog.TikiToMD
+  - HBlog.UnPhone
+
+_exe-ghc-options: &exe-ghc-options
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
+
+
+executables:
+  hblog:
+    main:          hblog.hs
+    source-dirs:   app
+    ghc-options: *exe-ghc-options
+    dependencies:
+    - hblog
+
+  tiki_to_md:
+    main:          tiki_to_md.hs
+    source-dirs:   app
+    ghc-options: *exe-ghc-options
+    dependencies:
+    - hblog
+
+  unphone:
+    main:          unphone.hs
+    source-dirs:   app
+    ghc-options: *exe-ghc-options
+    dependencies:
+    - hblog
+
+  rectifier:
+    main:          rectifier.hs
+    source-dirs:   app
+    ghc-options: *exe-ghc-options
+    dependencies:
+    - hblog
+
+tests:
+  hblog-test:
+    source-dirs:      test
+    main:             Spec.hs
+    dependencies:
+    - hblog

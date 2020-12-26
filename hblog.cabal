@@ -1,129 +1,295 @@
-name:                hblog
-version:             0.1.0.0
-synopsis:            RLP's hakyll blog
-description:         Please see README.md
-homepage:            https://github.com/rlpowell/hblog
-license:             MIT
-license-file:        LICENSE
-author:              Robin Lee Powell
-maintainer:          rlpowell@digitalkingdom.org
-copyright:           2016 Robin Lee Powell
-category:            Web
-build-type:          Simple
-cabal-version:       >=1.10
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 0654c621edc4c83c70bbfd0d3e5056c82e0e44023ff8191edbc4e7642b36a60a
+
+name:           hblog
+version:        0.1.0.0
+synopsis:       RLP's hakyll blog
+description:    Please see README.md
+category:       Web
+homepage:       https://github.com/rlpowell/hblog#readme
+bug-reports:    https://github.com/rlpowell/hblog/issues
+author:         Robin Lee Powell
+maintainer:     rlpowell@digitalkingdom.org
+copyright:      2020 Robin Lee Powell
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/rlpowell/hblog
 
 library
-  hs-source-dirs:      lib
-  exposed-modules:     HBlog.Lib
-                     , HBlog.HBlog
-                     , HBlog.Rectifier
-                     , HBlog.Spec
-                     , HBlog.TikiToMD
-                     , HBlog.UnPhone
-  build-depends:       base >= 4.7 && < 5
-                     -- HBlog.Lib
-                     , pcre-light
-                     , pcre-heavy
-                     , template-haskell
-                     , pandoc
-                     , pandoc-types
-                     , parsec
-                     , network-uri
-                     , containers
-                     , texmath
-                     , tagsoup
-                     , mtl
-                     , data-default
-                     , system-fileio
-                     , MissingH
-                     -- HBlog.HBlog
-                     , hakyll == 4.9.*
-                     , pcre-heavy
-                     , filepath
-                     , unix
-                     , blaze-html
-                     , containers
-                     , string-conversions
-                     , pandoc-types
-                     , network-uri
-                     , pandoc
-                     , directory
-                     , time
-                     , process
-                     , transformers
-                     , time-locale-compat
-                     , text
-                     -- HBlog.Rectifier
-                     , filemanip
-                     , bytestring
-                     , edit-distance
-                     -- lib/HBLog/Spec.hs
-                     , hspec
-                     , QuickCheck
-                     , process
-                     , directory
-                     , transformers
-                     , yaml
-                     , filepath
-                     , unix
-                     -- HBlog.TikiToMD
-                     , filepath
-                     , pandoc
-                     , pandoc-types
-                     , filemanip
-                     , directory
-                     , text
-                     -- HBlog.UnPhone
-                     , directory
-                     , filepath
-                     , unix
-                     , pcre-heavy
-                     , pcre-light
-                     , filemanip
-  ghc-options:      -Wall
-  default-language:    Haskell2010
+  exposed-modules:
+      HBlog.Lib
+      HBlog.HBlog
+      HBlog.Rectifier
+      HBlog.Spec
+      HBlog.TikiToMD
+      HBlog.UnPhone
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      lib
+  ghc-options: -Wall
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
+  default-language: Haskell2010
 
 executable hblog
-  main-is:          hblog.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , hblog
-  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
-  default-language: Haskell2010
-
-executable tiki_to_md
-  main-is:          tiki_to_md.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , hblog
-  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
-  default-language: Haskell2010
-
-executable unphone
-  main-is:          unphone.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , hblog
-  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  main-is: hblog.hs
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hblog
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
   default-language: Haskell2010
 
 executable rectifier
-  main-is:          rectifier.hs
-  hs-source-dirs:   app
-  build-depends:    base == 4.*
-                  , hblog
-  ghc-options:      -threaded -Wall -rtsopts -with-rtsopts=-N
+  main-is: rectifier.hs
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hblog
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
+  default-language: Haskell2010
+
+executable tiki_to_md
+  main-is: tiki_to_md.hs
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hblog
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
+  default-language: Haskell2010
+
+executable unphone
+  main-is: unphone.hs
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hblog
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
   default-language: Haskell2010
 
 test-suite hblog-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
-                     , hblog
-  ghc-options:         -threaded -Wall -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
-
-source-repository head
-  type:     git
-  location: https://github.com/rlpowell/hblog
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_hblog
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      MissingH
+    , QuickCheck
+    , base >=4.7 && <5
+    , blaze-html
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , edit-distance
+    , filemanip
+    , filepath
+    , hakyll
+    , hblog
+    , hspec
+    , mtl
+    , network-uri
+    , pandoc
+    , pandoc-citeproc
+    , pandoc-types
+    , parsec
+    , pcre-heavy
+    , pcre-light
+    , process
+    , string-conversions
+    , system-fileio
+    , tagsoup
+    , template-haskell
+    , texmath
+    , text
+    , time
+    , time-locale-compat
+    , transformers
+    , unix
+    , yaml
+  default-language: Haskell2010

@@ -1,0 +1,56 @@
+name:                hblog
+version:             0.1.0.0
+synopsis:            RLP's hakyll blog
+description:         Please see README.md
+github:              https://github.com/rlpowell/hblog
+license:             MIT
+license-file:        LICENSE
+author:              Robin Lee Powell
+maintainer:          rlpowell@digitalkingdom.org
+copyright:           2020 Robin Lee Powell
+category:            Web
+
+# extra-source-files:
+# - README.md
+# - ChangeLog.md
+
+ghc-options:
+- -Wall
+
+dependencies:
+- base >= 4.7 && < 5
+- blaze-html
+- MissingH
+- QuickCheck
+- bytestring
+- containers
+- data-default
+- directory
+- edit-distance
+- filemanip
+- filepath
+- hspec
+- mtl
+- network-uri
+- parsec
+- pcre-heavy
+- pcre-light
+- process
+- string-conversions
+- system-fileio
+- tagsoup
+- template-haskell
+- texmath
+- text
+- time
+- time-locale-compat
+- transformers
+- unix
+- yaml
+
+executables:
+  hblog:
+    main:          hblog.hs
+    source-dirs:   app
+    dependencies:
+    - hblog

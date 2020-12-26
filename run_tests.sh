@@ -1,6 +1,5 @@
 dir="$(dirname $0)"
 cd "$dir"
-./setup_links.sh
 
 echo "Unpacking git zips."
 oldpwd=$(pwd)
@@ -12,9 +11,12 @@ do
   cd "$oldpwd"
 done
 
-stack build hblog
-stack install hblog
+/bin/echo -e "\n\nNOTE: In cases where the primary command succeeds, the output (stdout/stderr) will not be shown from that command, only from the diff that runs after.\n\n"
+
 stack test --test-arguments "$*"
+exitval="$?"
 
 echo "Deleting .git directories."
 find tests/ -name .git | xargs rm -rf
+
+exit "$exitval"

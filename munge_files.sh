@@ -3,7 +3,7 @@
 set -e
 # set -x
 
-export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin/:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH:/usr/local/bin/:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
 
 # rectifier is fundamentally whole-tree based; it needs to know
 # about everybody to know what things are available to link to.
@@ -124,7 +124,7 @@ do
   if [ "$testing" ] || [ ! -f $cache_file ] || ! diff -q $fname $cache_file >/dev/null 2>&1
   then
     echo "File $fname does not match its cached version; running pandoc on it to normalize its syntax."
-    stack exec pandoc -- -s -f markdown -t markdown --wrap=preserve -o $tempdir/$short $fname
+    pandoc -s -f markdown -t markdown --wrap=preserve -o $tempdir/$short $fname
     # Pandoc likes to turn
     #   [test](ched: The Chunk Editor)
     # into
@@ -208,19 +208,15 @@ checkin_dir () {
 
 checkin_dir "$tempdir" "$outdir" "pandoc to-and-from markdown"
 
-echo "Building hblog."
-stack build hblog
-stack install
-
 rm -rf "$tempdir/"
 mkdir -p "$tempdir"
-stack exec unphone -- "$outdir" "$tempdir"
+unphone "$outdir" "$tempdir"
 
 checkin_dir "$tempdir" "$outdir" unphone
 
 rm -rf "$tempdir/"
 mkdir -p "$tempdir"
-stack exec rectifier -- "$outdir" "$tempdir"
+rectifier "$outdir" "$tempdir"
 
 checkin_dir "$tempdir" "$outdir" rectifier
 

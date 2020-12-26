@@ -4,32 +4,20 @@ export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin/:/usr/local/sbin:/sbin:/b
 
 dir="$(dirname $0)"
 cd "$dir"
-./setup_links.sh
 
 set -x
 set -e
 
-if [ ! -f run_container.sh ]
-then
-  echo "You seem to be in the wrong place."
-  exit 1
-fi
+rm -rf _cache _site
 
-rm -rf _site
-rm -rf _cache
+podman build -f hblog/Dockerfile -t hblog /home/rlpowell/src
 
-# munge_files runs a stack build and stack install
-munge_files posts/
+chcon -R -t container_file_t ~/src/hblog/ ~/public_html/hblog/
 
-hblog build
+podman run --rm -it -v /home/rlpowell/src/hblog:/opt/hblog \
+  -v ~/Docs/Public/hblog_posts:/opt/hblog/posts \
+  -v ~/.hblog-cache:/root/.hblog-cache \
+  -v ~/public_html/hblog:/web \
+  hblog ./run_build_internal.sh
 
-rm -rf _cache
-
-if [ -d /web/ ]
-then
-  chcon -R -t container_file_t /web/
-  rsync -a --delete _site/ /web/
-  chcon -R -t httpd_user_content_t /web/
-else
-  echo "No /web/ mounted; not copying there."
-fi
+chcon -R -t httpd_user_content_t ~/public_html/hblog/

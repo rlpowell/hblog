@@ -1,28 +1,21 @@
 #!/bin/bash
 
-exec 2>&1
-set -e
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin/:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
 
-CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
-CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
+exec 2>&1
 
 cd ~/src/hblog/
 
-if ! $CONTAINER_BIN ps | grep -q rlpowell/hblog
-then
-  ./run_container.sh
-fi
-
-set +e
-$CONTAINER_BIN exec -i hblog zsh -c "export PATH=/home/rlpowell/.local/bin:$PATH ; bash -x ./run_build.sh 2>&1" >/tmp/hblog_cron.$$ 2>&1
+./run_build.sh >/tmp/hblog_cron.$$ 2>&1
 exitcode=$?
-set -e
 
 if [ "$exitcode" -ne 0 ]
 then
   echo "Errors found; showing full output."
   cat /tmp/hblog_cron.$$
-elif grep -q -i mail /tmp/hblog_cron.$$
+# If we see mail happening that isn't part of a Docker RUN line,
+# changes must have occurred
+elif grep -v '^STEP [0-9]*: RUN' /tmp/hblog_cron.$$ | grep -q -i mail
 then
   echo "Changes found; showing full output."
   cat /tmp/hblog_cron.$$
