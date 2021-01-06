@@ -40,8 +40,6 @@ then
   git init .
   git add .
   git commit -m "Initial checkin" -a
-  echo "Sleeping to help with sync."
-  sleep 10
   cd $origpwd
 fi
 
@@ -98,8 +96,6 @@ do
     git commit -m "Automated initial checkin of $fname at $(date) ; file date is $filedate" \
       --date="$filedate" \
       "$(basename $fname)"
-    echo "Sleeping to help with sync."
-    sleep 10
   elif ! git diff --quiet "$(basename $fname)"
   then
     # Needs changes checked in
@@ -112,8 +108,6 @@ do
     git commit -m "Automated checkin of external changes to $fname at $(date) ; file date is $filedate" \
       --date="$filedate" \
       "$(basename $fname)"
-    echo "Sleeping to help with sync."
-    sleep 10
   fi
 
   cd "$origpwd"
@@ -186,8 +180,6 @@ checkin () {
     git -C "$usedir" commit -m "Automated Checkin: $type differences found in $orig_file at $(date) ; preserving previous checkin date of $prevdate" \
       --date="$prevdate" \
       "$short"
-    echo "Sleeping to help with sync."
-    sleep 10
 
     # When it's all done, we want the apparent file date to have not changed.
     touch -d "$prevdate" "$orig_file"

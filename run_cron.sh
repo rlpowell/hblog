@@ -6,6 +6,15 @@ exec 2>&1
 
 cd ~/src/hblog/
 
+LOCK_FILE=/home/rlpowell/scratch/hblog_run_cron_lock
+exec 99>"$LOCK_FILE"
+flock -n 99
+if [[ $? -ne 0 ]]
+then
+  echo "Could not acquire lock; exiting."
+  exit 1
+fi
+
 ./run_build.sh >/tmp/hblog_cron.$$ 2>&1
 exitcode=$?
 
