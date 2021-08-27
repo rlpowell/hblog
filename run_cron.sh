@@ -24,7 +24,7 @@ then
   cat /tmp/hblog_cron.$$
 # If we see mail happening that isn't part of a Docker RUN line,
 # changes must have occurred
-elif grep -v '^STEP [0-9]*: RUN' /tmp/hblog_cron.$$ | grep -q -i mail
+elif grep -v '^STEP [0-9/]*: RUN' /tmp/hblog_cron.$$ | grep -q -i mail
 then
   echo "Changes found; showing full output."
   cat /tmp/hblog_cron.$$
